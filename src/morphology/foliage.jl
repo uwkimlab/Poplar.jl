@@ -1,33 +1,36 @@
 include("radiation.jl")
 
 @system Foliage(Radiation) begin
+    #=========
+    Parameters
+    ==========#
     "Initial foliage drymass"
     iWF ~ preserve(parameter, u"kg/ha")
 
     # Specific leaf area
     "Specific leaf area at age 0"
-    SLA0 ~ preserve(parameter, u"m^2/kg")
+    SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg")
     
     "Specfic leaf area for mature leaves"
-    SLA1 ~ preserve(parameter, u"m^2/kg")
+    SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg")
     
     "Age at which specific leaf area = (SLA0 + SLA1)/2"
-    tSLA ~ preserve(parameter)
+    tSLA => 1 ~ preserve(parameter)
+    
+    "Maximum litterfall rate"
+    gammaF1 => 0 ~ preserve(parameter)
+
+    "Literfall rate at t = 0"
+    gammaF0 => 0 ~ preserve(parameter)
+
+    "Age at which litterfall rate has median value"
+    tgammaF => 0 ~ preserve(parameter)
 
     growthFoliage(NPP, pF) => NPP * pF ~ track(u"kg/ha/hr") # foliage
 
     deathFoliage(WF, mF, mortality, stemNo) => begin
         mF * mortality * (WF / stemNo)
     end ~ track(u"kg/ha/hr", when=flagMortal)
-
-    "Maximum litterfall rate"
-    gammaF1 ~ preserve(parameter)
-
-    "Literfall rate at t = 0"
-    gammaF0 ~ preserve(parameter)
-
-    "Age at which litterfall rate has median value"
-    tgammaF ~ preserve(parameter)
 
     # Monthly litterfall rate
     gammaF(gammaF1, gammaF0, standAge, tgammaF) => begin

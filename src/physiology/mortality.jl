@@ -2,32 +2,35 @@
 This system calculate age and stress related mortality.
 """
 @system Mortality begin
+    #=========
+    Parameters
+    ==========#
     "Mortality rate for large t"
-    gammaN1 ~ preserve(parameter)
+    gammaN1 => 0 ~ preserve(parameter)
     
     "Seedling mortality rate (t=0)"
-    gammaN0 ~ preserve(parameter)
+    gammaN0 => 0 ~ preserve(parameter)
     
     "Age at which mortality rate has median value"
-    tgammaN ~ preserve(parameter)
+    tgammaN => 0 ~ preserve(parameter)
     
     "Shape of mortality response"
-    ngammaN ~ preserve(parameter)
+    ngammaN => 1 ~ preserve(parameter)
     
     "Max. stem mass per tree at 1000 trees/hectare"
-    wSx1000 ~ preserve(parameter, u"kg")
+    wSx1000 => 200 ~ preserve(parameter, u"kg")
     
     "Power in self-thinning rule"
-    thinPower ~ preserve(parameter)
+    thinPower => 1.5 ~ preserve(parameter)
     
     "Fraction mean single-tree foliage biomass lost per dead tree"
-    mF ~ preserve(parameter)
+    mF => 0 ~ preserve(parameter)
     
     "Fraction mean single-tree root biomass lost per dead tree"
-    mR ~ preserve(parameter)
+    mR => 0.2 ~ preserve(parameter)
     
     "Fraction mean single-tree stem biomass lost per dead tree"
-    mS ~ preserve(parameter)
+    mS => 0.2 ~ preserve(parameter)
 
     # Thinning
     

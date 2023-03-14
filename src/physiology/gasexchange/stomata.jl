@@ -1,8 +1,4 @@
 @system StomataBase begin
-    gs: stomatal_conductance ~ hold
-    gb: boundary_layer_conductance ~ hold
-    A_net: net_photosynthesis ~ hold
-
     drb: diffusivity_ratio_boundary_layer => 1.37 ~ preserve(#= u"H2O/CO2", =# parameter)
     dra: diffusivity_ratio_air => 1.6 ~ preserve(#= u"H2O/CO2", =# parameter)
 

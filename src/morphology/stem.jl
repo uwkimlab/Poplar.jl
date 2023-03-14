@@ -1,5 +1,4 @@
 @system Stem begin
-
     "Initial stem drymass"
     iWS ~ preserve(parameter, u"kg/ha")
 

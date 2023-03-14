@@ -1,5 +1,4 @@
 @system Phenology begin
-    # Calendar variable to reference date
     calendar(context) ~ ::Calendar
     
     "Initial age"
@@ -16,7 +15,7 @@
     rAge => 0.95 ~ preserve(parameter)
 
     "Age at canopy cover"
-    fullCanAge => 3 ~ preserve(parameter)
+    fullCanAge => 0 ~ preserve(parameter)
 
     flagAge(nAge) => nAge != 0 ~ flag
     fAge(standAge, maxAge, rAge, nAge) => (1 / (1 + (standAge / maxAge / rAge) ^ nAge)) ~ track(when=flagAge, init=1)

@@ -1,8 +1,4 @@
 @system C3Base begin
-    # Ci: intercellular_co2 ~ hold 
-    # I2: effective_irradiance ~ hold
-    # T: leaf_temperature ~ hold
-
     Tk(T): absolute_leaf_temperature ~ track(u"K")
 
     Tb: base_temperature => 25 ~ preserve(u"°C", parameter)

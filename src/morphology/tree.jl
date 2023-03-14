@@ -11,43 +11,43 @@ include("root.jl")
 
     # Branch and bark fraction
     "Branch and bark fraction at age 0"
-    fracBB0 ~ preserve(parameter)
+    fracBB0 => 0 ~ preserve(parameter)
     
     "Branch and bark fraction for mature stands"
-    fracBB1 ~ preserve(parameter)
+    fracBB1 => 0 ~ preserve(parameter)
     
     "Age at which frac BB = (fracBB0 + fracBB1) / 2"
-    tBB ~ preserve(parameter)
+    tBB => 0 ~ preserve(parameter)
     
     # Basic density
     "Minimum basic density (for young trees)"
-    rho0 ~ preserve(parameter, u"kg/m^3")
+    rho0 => 0.358 ~ preserve(parameter, u"kg/m^3")
     
     "Maximum basic density (for older trees)"
-    rho1 ~ preserve(parameter, u"kg/m^3")
+    rho1 => 0.358 ~ preserve(parameter, u"kg/m^3")
     
     "Age at which rho = (rhoMin + rhoMax) / 2"
-    tRho ~ preserve(parameter) # 
+    tRho => 4 ~ preserve(parameter) # 
     
     # Stem height
     "Constant in the stem height relationship"
-    aH ~ preserve(parameter)
+    aH => 0.9740 ~ preserve(parameter)
     
     "Power of DBH in the stem height relationship"
-    nHB ~ preserve(parameter)
+    nHB => 0.6816 ~ preserve(parameter)
     
     "Power of stocking in the stem height relationship"
-    nHN ~ preserve(parameter)
+    nHN => 0.1064 ~ preserve(parameter)
     
     # Stem volume
     "Constant in the stem volume relationship"
-    aV ~ preserve(parameter)
+    aV => 0.0001 ~ preserve(parameter)
     
     "Power of DBH in the stem volume relationship"
-    nVB ~ preserve(parameter)
+    nVB => 2.3270 ~ preserve(parameter)
     
     "Power of stocking in the stem volume relationship"
-    nVN ~ preserve(parameter)
+    nVN => 1.0915 ~ preserve(parameter)
 
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/d")
     W(dW) ~ accumulate(u"kg/ha", init=iW) # total drymass
@@ -76,14 +76,14 @@ include("root.jl")
     end ~ track(u"m^2/ha") # base area
     
     # Height
-    height(aH, nounit(avDBH), nHB, nHN, stemNo) => begin
-        aH * avDBH ^ nHB * stemNo ^ nHN
-    end ~ track
+    height(aH, nounit(avDBH), nHB, nHN, nounit(stemNo)) => begin
+        aH * avDBH ^ nHB * stemNo ^ nHN * u"m"
+    end ~ track(u"m")
     
     # Stand volume per hectare
-    standVol(WS, aV, avDBH, nVB, nVN, fracBB, stemNo, density) => begin
+    standVol(WS, aV, nounit(avDBH), nVB, nVN, fracBB, nounit(stemNo), density) => begin
         if aV > 0
-            aV * avDBH ^ nVB * stemNo ^ nVN
+            aV * avDBH ^ nVB * stemNo ^ nVN * u"m^3/ha"
         else
             WS * (1 - fracBB) / density
         end

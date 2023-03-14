@@ -1,22 +1,13 @@
 @system Sun begin
-    #TODO override Location
-    # loc(context): location ~ ::Location #(override)
-    # calendar ~ ::Calendar(override)
-    # weather ~ ::Weather(override)
-
-    lat => 36u"°" ~ preserve(u"°", parameter)
-    long => 128u"°" ~ preserve(u"°", parameter)
-    alti => 20u"m" ~ preserve(u"m", parameter)
-    
-    # @derive time? -- takes account different Julian day conventions (03-01 vs. 01-01)
+    calendar(context) ~ ::Calendar(override)
     t(calendar.time): datetime ~ track::datetime
     d(t): day => Dates.dayofyear(t) ~ track::int(u"d")
     h(t): hour => Dates.hour(t) ~ track::int(u"hr")
 
     # Make a system for location (?)
-    ϕ(lat): latitude ~ preserve(u"°", parameter) # DO NOT convert to radians for consistency
-    λ(long): longitude ~ preserve(u"°", parameter) # leave it as in degrees, used only once for solar noon calculation
-    alt(alti): altitude ~ preserve(u"m", parameter)
+    lat: latitude => 36u"°" ~ preserve(u"°", parameter) # DO NOT convert to radians for consistency
+    long: longitude => 128u"°" ~ preserve(u"°", parameter) # leave it as in degrees, used only once for solar noon calculation
+    alt: altitude => 20u"m" ~ preserve(u"m", parameter)
 
     # DELETE
     # solrad(weather.solrad): solar_radiation ~ track(u"W/m^2")
@@ -29,7 +20,7 @@
 
     #HACK always use degrees for consistency and easy tracing
     #FIXME pascal version of LightEnv uses iqbal()
-    δSun(declination_angle_spencer): declination_angle ~ track(u"°")
+    declination_angle(declination_angle_spencer) ~ track(u"°")
 
     # Goudriaan 1977
     declination_angle_goudriaan(d) => begin
@@ -66,7 +57,7 @@
     dph: degree_per_hour => 360u"°" / 24u"hr" ~ preserve(u"°/hr")
 
     # LC is longitude correction for Light noon, Wohlfart et al, 2000; Campbell & Norman 1998
-    LC(λ, dph): longitude_correction => begin
+    LC(λ=long, dph): longitude_correction => begin
         # standard meridian for pacific time zone is 120 W, Eastern Time zone : 75W
         # LC is positive if local meridian is east of standard meridian, i.e., 76E is east of 75E
         #standard_meridian = -120
@@ -85,7 +76,7 @@
     solar_noon(LC, EoT) => 12u"hr" - LC - EoT ~ track(u"hr")
 
     # θs: zenith angle
-    hour_angle_at(ϕ, δ=δSun; θs(u"°")) => begin
+    hour_angle_at(ϕ=lat, δ=declination_angle; θs(u"°")) => begin
         # this value should never become negative because -90 <= latitude <= 90 and -23.45 < decl < 23.45
         #HACK is this really needed for crop models?
         # preventing division by zero for N and S poles
@@ -113,7 +104,7 @@
 
     hour_angle(h, solar_noon, dph) => ((h - solar_noon) * dph) ~ track(u"°")
 
-    αs(h=hour_angle, δ=δSun, ϕ): _angle => begin
+    αs(h=hour_angle, δ=declination_angle, ϕ=lat): _angle => begin
         #FIXME When time gets the same as solarnoon, this function fails. 3/11/01 ??
         asind(cos(h) * cos(δ) * cos(ϕ) + sin(δ) * sin(ϕ))
     end ~ track(u"°")
@@ -127,7 +118,7 @@
     # View point from south, morning: +, afternoon: -
     # See An introduction to solar radiation by Iqbal (1983) p 15-16
     # Also see https://www.susdesign.com/sunangle/
-    ϕs(αs, δ=δSun, ϕ): azimuth_angle => begin
+    ϕs(αs, δ=declination_angle, ϕ=lat): azimuth_angle => begin
         acosd((sin(δ) - sin(αs) * sin(ϕ)) / (cos(αs) * cos(ϕ)))
     end ~ track(u"°")
 
@@ -141,7 +132,7 @@
         101.3exp(-altitude / 8200u"m")
     end ~ track(u"kPa")
 
-    mSun(p, ts): optical_air_mass_number => begin
+    optical_air_mass_number(p, ts) => begin
         #FIXME check 101.3 is indeed in kPa
         #iszero(t_s) ? 0. : p / (101.3u"kPa" * sin(t_s))
         p / (101.3u"kPa" * sin(ts))
@@ -165,7 +156,7 @@
         Fdif * solar_radiation
     end ~ track(u"W/m^2")
 
-    Fdir(τ, m=mSun): directional_coeff => begin
+    Fdir(τ, m=optical_air_mass_number): directional_coeff => begin
         # Goudriaan and van Laar's global solar radiation
         #FIXME should be goudriaan() version
         goudriaan(τ) = τ * (1 - diffusive_coeff)
@@ -178,7 +169,7 @@
     end ~ track
 
     # Fdif: Fraction of diffused light
-    Fdif(τ, m=mSun): diffusive_coeff => begin
+    Fdif(τ, m=optical_air_mass_number): diffusive_coeff => begin
         # Goudriaan and van Laar's global solar radiation
         goudriaan(τ) = begin
             # clear sky : 20% diffuse

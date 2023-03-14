@@ -6,10 +6,7 @@ include("irradiance.jl")
 include("stomata.jl")
 include("../../atmosphere/atmosphere.jl")
 
-@system GasExchange(BoundaryLayer, Stomata, IntercellularSpace, Irradiance, EnergyBalance, C3, Atmosphere) begin
-    # weather ~ ::Weather(override)
-    # soil ~ ::Soil(override)
-
+@system GasExchange(Atmosphere, BoundaryLayer, Stomata, IntercellularSpace, Irradiance, EnergyBalance, C3) begin
     #FIXME: confusion between PFD vs. PPFD
     PPFD: photosynthetic_photon_flux_density ~ track(u"μmol/m^2/s" #= Quanta =#, override)
     LAI: leaf_area_index ~ track(override)

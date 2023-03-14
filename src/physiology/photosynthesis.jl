@@ -1,23 +1,10 @@
 include("gasexchange/gasexchange.jl")
 
 @system Photosynthesis begin
-    # sun ~ hold
-    # soil ~ hold
-
-    # LAI: leaf_area_index ~ hold
-    # PD: planting_density ~ hold
-    # water_supply ~ hold
-    # H2O_weight ~ hold
-    # CO2_weight ~ hold
-    # CH2O_weight ~ hold
-
-    # atmosphere(context) ~ ::Atmosphere
-    # calendar(context) ~ ::Calendar
-    
     # Calculating transpiration and photosynthesis with stomatal controlled by leaf water potential LeafWP Y
     #TODO: use leaf_nitrogen_content, leaf_width, ET_supply
-    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit) ~ ::GasExchange
-    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded) ~ ::GasExchange
+    sunlit_gasexchange(context, calendar, PPFD=Q_sun, LAI=LAI_sunlit) ~ ::GasExchange
+    shaded_gasexchange(context, calendar, PPFD=Q_sh, LAI=LAI_shaded) ~ ::GasExchange
 
     #TODO: leaf_width for poplar
     leaf_width => begin
@@ -38,12 +25,6 @@ include("gasexchange/gasexchange.jl")
     #     s = ws * PD / 3600 / ww / LAI
     #     iszero(LAI) ? zero(s) : s
     # end ~ track(u"mol/m^2/s" #= H2O =#)
-
-    # LAI_sunlit(sunlit_leaf_area_index): sunlit_leaf_area_index ~ track
-    # LAI_shaded(shaded_leaf_area_index): shaded_leaf_area_index ~ track
-
-    # Q_sun(irradiance_Q_sunlit): sunlit_irradiance ~ track(u"μmol/m^2/s" #= Quanta =#)
-    # Q_sh(irradiance_Q_shaded): shaded_irradiance ~ track(u"μmol/m^2/s" #= Quanta =#)
 
     A_gross(a=sunlit_gasexchange.A_gross_total, b=shaded_gasexchange.A_gross_total): gross_CO2_umol_per_m2_s => begin
         a + b
