@@ -1,3 +1,5 @@
+include("gasexchange/gasexchange.jl")
+
 @system Photosynthesis begin
     # sun ~ hold
     # soil ~ hold

@@ -4,7 +4,7 @@ include("energybalance.jl")
 include("intercellularspace.jl")
 include("irradiance.jl")
 include("stomata.jl")
-include("../atmosphere/atmosphere.jl")
+include("../../atmosphere/atmosphere.jl")
 
 @system GasExchange(BoundaryLayer, Stomata, IntercellularSpace, Irradiance, EnergyBalance, C3, Atmosphere) begin
     # weather ~ ::Weather(override)
