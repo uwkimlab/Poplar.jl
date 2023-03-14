@@ -5,6 +5,9 @@ version = "1.0.0-DEV"
 
 [deps]
 Cropbox = "a904b226-abf1-11e9-2713-059ba252a964"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [compat]
 Cropbox = "0.3"
