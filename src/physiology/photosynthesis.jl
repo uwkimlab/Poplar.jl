@@ -27,33 +27,21 @@ include("gasexchange/gasexchange.jl")
         a + b
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
-    # plantsPerMeterSquare units are umol CO2 m-2 ground s-1
-    # in the following we convert to g C plant-1 per hour
-    # photosynthesis_gross is umol CO2 m-2 leaf s-1
-
     A_net(a=sunlit_gasexchange.A_net_total, b=shaded_gasexchange.A_net_total): net_CO2_umol_per_m2_s => begin
-        # grams CO2 per plant per hour
         a + b
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
+    # Canopy transpiration (sunlit + shaded)
     ET(a=sunlit_gasexchange.E_total, b=shaded_gasexchange.E_total): transpiration_H2O_mol_per_m2_s => begin
-        #TODO need to save this?
-        # when outputting the previous step transpiration is compared to the current step's water uptake
-        #self.transpiration_old = self.transpiration
-        #FIXME need to check if LAIs are negative?
-        #transpiration = sunlit_gasexchange.ET * max(0, sunlit_LAI) + shaded_gasexchange.ET * max(0, shaded_LAI)
         a + b
     end ~ track(u"mmol/m^2/s" #= H2O =#)
-
-    # final values
-    assimilation(gross_assimilation) ~ track(u"kg/ha/hr")
 
     CO2_weight => 44.0098 ~ preserve(u"g/mol")
     C_weight => 12.0107 ~ preserve(u"g/mol")
     CH2O_weight => 30.031 ~ preserve(u"g/mol")
     H2O_weight => 18.01528 ~ preserve(u"g/mol")
     
-    gross_assimilation(A_gross, w=CH2O_weight) => begin
+    GPP(A_gross, w=CH2O_weight) => begin
         # grams carbo per plant per hour
         #FIXME check unit conversion between C/CO2 to CH2O
         A_gross * w
@@ -65,14 +53,14 @@ include("gasexchange/gasexchange.jl")
         A_net * w
     end ~ track(u"kg/ha/hr")
 
+    # Canopy transpiration
     transpiration(ET, w=H2O_weight) => begin
         # Units of Transpiration from sunlit->ET are mol m-2 (leaf area) s-1
         # Calculation of transpiration from ET involves the conversion to gr per plant per hour
         ET * w
     end ~ track(u"kg/ha/hr")
 
-    vapor_pressure_deficit(VPD) ~ track(u"kPa")
-
+    # Canopy conductance
     conductance(gs_sun=sunlit_gasexchange.gs, LAI_sunlit, gs_sh=shaded_gasexchange.gs, LAI_shaded, LAI) => begin
         #HACK ensure 0 when one of either LAI is 0, i.e., night
         # average stomatal conductance Yang
