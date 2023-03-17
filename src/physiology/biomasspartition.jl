@@ -32,8 +32,9 @@
     "Value of 'mR' when FR = 0"
     m0 => 0 ~ preserve(parameter)
     
-    fPhysiology(fVPD#=, fSW=#, fAge) => begin
-        min(fVPD#=, fSW,=#) * fAge
+    "Modifier for root partitioning based on VPD, SW, and Age"
+    fPhysiology(fVPD, fSW, fAge) => begin
+        min(fVPD, fSW) * fAge
     end ~ track
 
     mR(m0, FR) => m0 + (1 - m0) * FR ~ preserve
