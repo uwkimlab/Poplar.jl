@@ -11,8 +11,8 @@
         mR * mortality * (WR / stemNo)
     end ~ track(u"kg/ha/hr", when=flagMortal)
 
-    gammaRhour(calendar, gammaR) => begin
-        (1 - (1 - gammaR)^(1 / daysinmonth(calendar.date') / 24)) / u"hr"
+    gammaRhour(date, gammaR) => begin
+        (1 - (1 - gammaR)^(1 / daysinmonth(date') / 24)) / u"hr"
     end ~ track(u"hr^-1")
 
     rootTurnover(gammaRhour, WR) => gammaRhour * WR ~ track(u"kg/ha/hr")

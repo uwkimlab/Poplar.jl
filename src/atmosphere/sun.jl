@@ -1,16 +1,7 @@
 @system Sun begin
-    calendar(context) ~ ::Calendar(override)
-    t(calendar.time): datetime ~ track::datetime
-    d(t): day => Dates.dayofyear(t) ~ track::int(u"d")
-    h(t): hour => Dates.hour(t) ~ track::int(u"hr")
-
-    # Make a system for location (?)
     lat: latitude => 36u"°" ~ preserve(u"°", parameter) # DO NOT convert to radians for consistency
     long: longitude => 128u"°" ~ preserve(u"°", parameter) # leave it as in degrees, used only once for solar noon calculation
     alt: altitude => 20u"m" ~ preserve(u"m", parameter)
-
-    # DELETE
-    # solrad(weather.solrad): solar_radiation ~ track(u"W/m^2")
     
     τ: transmissivity => 0.5 ~ preserve(parameter) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
 

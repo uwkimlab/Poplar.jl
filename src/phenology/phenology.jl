@@ -1,12 +1,10 @@
 @system Phenology begin
-    calendar(context) ~ ::Calendar
-    
     "Initial age"
-    iAge => 1 ~ preserve(parameter) # Initial age 
+    iAge => 1 ~ preserve(parameter, u"yr") # Initial age 
 
     # Age modifier
     "Maximum stand age used in age modifier"
-    maxAge => 50 ~ preserve(parameter)
+    maxAge => 50 ~ preserve(parameter, u"yr")
     
     "Power of relative age in function for fAge"
     nAge => 4 ~ preserve(parameter)
@@ -22,5 +20,5 @@
 
     # Stand age in days and years
     standAgeHour => 1 ~ accumulate::Int64(init=iAge, timeunit=u"hr")
-    standAge(calendar, standAgeHour) => standAgeHour / (24 * daysinyear(calendar.date')) ~ track
+    standAge(date, standAgeHour) => standAgeHour / (24 * daysinyear(date')) ~ track
 end

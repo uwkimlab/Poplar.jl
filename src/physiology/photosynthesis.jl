@@ -3,18 +3,15 @@ include("gasexchange/gasexchange.jl")
 @system Photosynthesis begin
     # Calculating transpiration and photosynthesis with stomatal controlled by leaf water potential LeafWP Y
     #TODO: use leaf_nitrogen_content, leaf_width, ET_supply
-    sunlit_gasexchange(context, calendar, PPFD=Q_sun, LAI=LAI_sunlit) ~ ::GasExchange
-    shaded_gasexchange(context, calendar, PPFD=Q_sh, LAI=LAI_shaded) ~ ::GasExchange
+    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit) ~ ::GasExchange
+    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded) ~ ::GasExchange
 
-    #TODO: leaf_width for poplar
     leaf_width => begin
-        # to be calculated when implemented for individal leaves
-        #5.0 # for maize
-        1.5 # for garlic
+        10 # for poplar?
     end ~ preserve(u"cm", parameter)
 
     #TODO how do we get LeafWP and ET_supply?
-    LWP(WP_leaf): leaf_water_potential ~ track(u"MPa")
+    # LWP(WP_leaf): leaf_water_potential ~ track(u"MPa")
 
     # evapotranspiration_supply(LAI, PD, ws=water_supply, ww=H2O_weight) => begin
     #     #TODO common handling logic for zero LAI
@@ -68,11 +65,11 @@ include("gasexchange/gasexchange.jl")
         A_net * w
     end ~ track(u"kg/ha/hr")
 
-    # transpiration(ET, w=H2O_weight) => begin
-    #     # Units of Transpiration from sunlit->ET are mol m-2 (leaf area) s-1
-    #     # Calculation of transpiration from ET involves the conversion to gr per plant per hour
-    #     ET / w
-    # end ~ track(u"kg/ha/hr")
+    transpiration(ET, w=H2O_weight) => begin
+        # Units of Transpiration from sunlit->ET are mol m-2 (leaf area) s-1
+        # Calculation of transpiration from ET involves the conversion to gr per plant per hour
+        ET * w
+    end ~ track(u"kg/ha/hr")
 
     vapor_pressure_deficit(VPD) ~ track(u"kPa")
 

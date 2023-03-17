@@ -11,8 +11,9 @@ This system keeps track of soil water balance.
     # "Minimum available soil water"
     # minASW ~ preserve(parameter, u"mm")
 
-    # "Irrigation"
-    # irrigation ~ preserve(parameter, u"mm/d")
+    # # TODO
+    # # "Irrigation"
+    # # irrigation ~ preserve(parameter, u"mm/d")
 
     # "Fraction of excess water pooled"
     # poolFractn ~ preserve(parameter)
@@ -36,8 +37,8 @@ This system keeps track of soil water balance.
     # BLcond ~ preserve(parameter, u"m/s")
 
     # # ASW and MaxASW and pool in mm/d
-    # ASWday(ASW) => ASW / u"d" ~ track(u"mm/d")
-    # maxASWday(maxASW) => maxASW / u"d" ~ track(u"mm/d")
+    # ASWhour(ASW) => ASW / u"d" ~ track(u"mm/d")
+    # maxASWhour(maxASW) => maxASW / u"d" ~ track(u"mm/d")
     # poolDay(pool) => pool / u"d" ~ track(u"mm/d")
     
     # # Conductance modifier (ambient CO2)

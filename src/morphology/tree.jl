@@ -2,12 +2,13 @@ include("foliage.jl")
 include("stem.jl")
 include("root.jl")
 
+"This system represents the characteristics of the "
 @system Tree(Foliage, Stem, Root) begin
     "Initial total drymass"
     iW(iWS, iWF, iWR) => iWS + iWF + iWR ~ preserve(u"kg/ha")
 
     "Initial tree count"
-    iStemNo ~ preserve(parameter, u"ha^-1")
+    iStemNo => 1000 ~ preserve(parameter, u"ha^-1")
 
     # Branch and bark fraction
     "Branch and bark fraction at age 0"

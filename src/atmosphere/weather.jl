@@ -1,5 +1,5 @@
 @system Weather begin
-    data ~ provide(init=calendar.time, parameter)
+    data ~ provide(init=time, parameter)
 
     solrad: solar_radiation ~ drive(from=data, by=:SolRad, u"W/m^2")
 

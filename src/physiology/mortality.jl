@@ -42,8 +42,8 @@ This system calculate age and stress related mortality.
     end ~ track
     
     # Mortality rate (daily)
-    gammaNhour(calendar, gammaN) => begin
-        (1 - (1 - gammaN)^(1 / daysinyear(calendar.date') / 24)) / u"hr"
+    gammaNhour(date, gammaN) => begin
+        (1 - (1 - gammaN)^(1 / daysinyear(date') / 24)) / u"hr"
     end ~ track(u"hr^-1")
     
     # Mortality flag

@@ -1,8 +1,8 @@
 @system BiomassPartition begin
     
-    #=========
-    Parameters
-    ==========#
+    #===========
+     Parameters
+    ===========#
     
     "Fertility rating"
     FR => 0.4582 ~ preserve(parameter)
@@ -37,7 +37,7 @@
     end ~ track
 
     mR(m0, FR) => m0 + (1 - m0) * FR ~ preserve
-    pFS(pfsConst, nounit(avDBH), pfsPower) => pfsConst * (avDBH ^ pfsPower) ~ track # foliage and stem partition
+    pFS(pfsConst, nounit(avDBH), pfsPower) => pfsConst * avDBH ^ pfsPower ~ track # foliage and stem partition
     pR(pRx, pRn, fPhysiology, mR) => pRx * pRn / (pRn + ( pRx - pRn) * fPhysiology * mR) ~ track # root partition
     pS(pR, pFS) => (1 - pR) / (1 + pFS) ~ track # stem partition
     pF(pR, pS) => 1 - pR - pS ~ track # foliage partition

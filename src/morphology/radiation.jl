@@ -14,18 +14,11 @@ end
 end
 
 @system Radiation begin
-    # sun ~ ::Sun(override)
-    # LAI: leaf_area_index ~ track(override)
-
     leaf_angle => ellipsoidal ~ preserve::LeafAngle(parameter)
 
     "ratio of horizontal to vertical axis of an ellipsoid"
     LAF: leaf_angle_factor => begin
-        #1
-        # leaf angle factor for corn leaves, Campbell and Norman (1998)
-        #1.37
-        # leaf angle factor for garlic canopy, from Rizzalli et al. (2002),  X factor in Campbell and Norman (1998)
-        0.7
+        3
     end ~ preserve(parameter)
 
     wave_band => photosynthetically_active_radiation ~ preserve::WaveBand(parameter)
@@ -36,20 +29,12 @@ end
     "clumping index"
     clumping => 1.0 ~ preserve(parameter)
 
-    #FIXME reflectance?
-    #r_h => 0.05 ~ preserve(parameter)
-
-    # Forward from Sun
-
-    #TODO better name to make it drive?
+    # Variables from Sun
     current_zenith_angle(zenith_angle) ~ track(u"°")
     elev_angle(αs) ~ track(u"°")
     I0_dr(PARdir) ~ track(u"μmol/m^2/s" #= Quanta =#)
     I0_df(PARdif) ~ track(u"μmol/m^2/s" #= Quanta =#)
 
-    # Leaf angle stuff?
-
-    #TODO better name?
     leaf_angle_coeff(a=leaf_angle, leaf_angle_factor; zenith_angle(u"°")) => begin
         elevation_angle = 90u"°" - zenith_angle
         #FIXME need to prevent zero like sin_beta / cot_beta?
@@ -75,9 +60,7 @@ end
         end
     end ~ call
 
-    #TODO make it @property if arg is not needed
     # Kb: Campbell, p 253, Ratio of projected area to hemi-surface area for an ellipsoid
-    #TODO rename to extinction_coeff?
     "extinction coefficient assuming spherical leaf dist"
     Kb_at(leaf_angle_coeff, clumping; zenith_angle(u"°")): projection_ratio_at => begin
         leaf_angle_coeff(zenith_angle) * clumping
@@ -161,36 +144,36 @@ end
     # I_l?: dePury (1997) #
     #######################
 
-    "dePury (1997) eqn A3"
-    I_lb(I0_dr, rho_cb, Kb1; L): irradiance_lb => begin
-        I0_dr * (1 - rho_cb) * Kb1 * exp(-Kb1 * L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "dePury (1997) eqn A3"
+    # I_lb(I0_dr, rho_cb, Kb1; L): irradiance_lb => begin
+    #     I0_dr * (1 - rho_cb) * Kb1 * exp(-Kb1 * L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    "dePury (1997) eqn A5"
-    I_ld(I0_df, rho_cb, Kd1; L): irradiance_ld => begin
-        I0_df * (1 - rho_cb) * Kd1 * exp(-Kd1 * L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "dePury (1997) eqn A5"
+    # I_ld(I0_df, rho_cb, Kd1; L): irradiance_ld => begin
+    #     I0_df * (1 - rho_cb) * Kd1 * exp(-Kd1 * L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    "dePury (1997) eqn A5"
-    I_l(; L): irradiance_l => (I_lb(L) + I_ld(L)) ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "dePury (1997) eqn A5"
+    # I_l(; L): irradiance_l => (I_lb(L) + I_ld(L)) ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    "dePury (1997) eqn A5"
-    I_lbSun(I0_dr, s, Kb, I_lSh; L): irradiance_l_sunlit => begin
-        I_lb_sunlit = I0_dr * (1 - s) * Kb
-        #TODO: check name I_lbSun vs. I_l_sunlit?
-        I_l_sunlit = I_lb_sunlit + I_lSh(L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "dePury (1997) eqn A5"
+    # I_lbSun(I0_dr, s, Kb, I_lSh; L): irradiance_l_sunlit => begin
+    #     I_lb_sunlit = I0_dr * (1 - s) * Kb
+    #     #TODO: check name I_lbSun vs. I_l_sunlit?
+    #     I_l_sunlit = I_lb_sunlit + I_lSh(L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    "dePury (1997) eqn A5"
-    I_lSh(I_ld, I_lbs; L): irradiance_l_shaded => begin
-        I_ld(L) + I_lbs(L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "dePury (1997) eqn A5"
+    # I_lSh(I_ld, I_lbs; L): irradiance_l_shaded => begin
+    #     I_ld(L) + I_lbs(L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    #FIXME: check name I_lbs vs. I_lbSun
-    "dePury (1997) eqn A5"
-    I_lbs(I0_dr, rho_cb, s, Kb1, Kb; L): irradiance_lbs => begin
-        I0_dr * ((1 - rho_cb) * Kb1 * exp(-Kb1 * L) - (1 - s) * Kb * exp(-Kb * L))
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # #FIXME: check name I_lbs vs. I_lbSun
+    # "dePury (1997) eqn A5"
+    # I_lbs(I0_dr, rho_cb, s, Kb1, Kb; L): irradiance_lbs => begin
+    #     I0_dr * ((1 - rho_cb) * Kb1 * exp(-Kb1 * L) - (1 - s) * Kb * exp(-Kb * L))
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     """
     total irradiance at the top of the canopy,
@@ -205,37 +188,34 @@ end
     # I_tot, I_sun, I_shade: absorbed irradiance integrated over LAI per ground area
     #FIXME: not used, but seems producing very low values, need to check equations
 
-    "Total irradiance absorbed by the canopy, de Pury and Farquhar (1997)"
-    I_c(rho_cb, I0_dr, I0_df, Kb1, Kd1, LAI): canopy_irradiance => begin
-        #I_c = I_cSun + I_cSh
-        I(I0, K) = (1 - rho_cb) * I0 * (1 - exp(-K * LAI))
-        I_tot = I(I0_dr, Kb1) + I(I0_df, Kd1)
-    end ~ track(u"μmol/m^2/s" #= Quanta =#)
+    # "Total irradiance absorbed by the canopy, de Pury and Farquhar (1997)"
+    # I_c(rho_cb, I0_dr, I0_df, Kb1, Kd1, LAI): canopy_irradiance => begin
+    #     #I_c = I_cSun + I_cSh
+    #     I(I0, K) = (1 - rho_cb) * I0 * (1 - exp(-K * LAI))
+    #     I_tot = I(I0_dr, Kb1) + I(I0_df, Kd1)
+    # end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
-    "The irradiance absorbed by the sunlit fraction, de Pury and Farquhar (1997)"
-    I_cSun(s, rho_cb, rho_cd, I0_dr, I0_df, Kb, Kb1, Kd1, LAI): canopy_sunlit_irradiance => begin
-        # should this be the same os Qsl? 03/02/08 SK
-        I_c_sunlit = begin
-            I0_dr * (1 - s) * (1 - exp(-Kb * LAI)) +
-            I0_df * (1 - rho_cd) * (1 - exp(-(Kd1 + Kb) * LAI)) * Kd1 / (Kd1 + Kb) +
-            I0_dr * ((1 - rho_cb) * (1 - exp(-(Kb1 + Kb) * LAI)) * Kb1 / (Kb1 + Kb) - (1 - s) * (1 - exp(-2Kb * LAI)) / 2)
-        end
-    end ~ track(u"μmol/m^2/s" #= Quanta =#)
+    # "The irradiance absorbed by the sunlit fraction, de Pury and Farquhar (1997)"
+    # I_cSun(s, rho_cb, rho_cd, I0_dr, I0_df, Kb, Kb1, Kd1, LAI): canopy_sunlit_irradiance => begin
+    #     # should this be the same os Qsl? 03/02/08 SK
+    #     I_c_sunlit = begin
+    #         I0_dr * (1 - s) * (1 - exp(-Kb * LAI)) +
+    #         I0_df * (1 - rho_cd) * (1 - exp(-(Kd1 + Kb) * LAI)) * Kd1 / (Kd1 + Kb) +
+    #         I0_dr * ((1 - rho_cb) * (1 - exp(-(Kb1 + Kb) * LAI)) * Kb1 / (Kb1 + Kb) - (1 - s) * (1 - exp(-2Kb * LAI)) / 2)
+    #     end
+    # end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
-    "The irradiance absorbed by the shaded fraction, de Pury and Farquhar (1997)"
-    I_cSh(I_c, I_cSun): canopy_shaded_irradiance => (I_c - I_cSun) ~ track(u"μmol/m^2/s" #= Quanta =#)
+    # "The irradiance absorbed by the shaded fraction, de Pury and Farquhar (1997)"
+    # I_cSh(I_c, I_cSun): canopy_shaded_irradiance => (I_c - I_cSun) ~ track(u"μmol/m^2/s" #= Quanta =#)
 
-    ######
-    # Q? #
-    ######
+    #==
+     Q 
+    ==#
 
-    # sunlit_photon_flux_density(_sunlit_Q) ~ track
-    # shaded_photon_flux_density(_shaded_Q) ~ track
-
-    "total irradiance (dir + dif) at depth L, simple empirical approach"
-    Q_tot(I0_tot, s, Kb, Kd; L): irradiance_Q_tot => begin
-        I0_tot * exp(-sqrt(1 - s) * ((Kb + Kd) / 2) * L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "total irradiance (dir + dif) at depth L, simple empirical approach"
+    # Q_tot(I0_tot, s, Kb, Kd; L): irradiance_Q_tot => begin
+    #     I0_tot * exp(-sqrt(1 - s) * ((Kb + Kd) / 2) * L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     "total beam radiation at depth L"
     Q_bt(I0_dr, s, Kb; L): irradiance_Q_bt => begin
@@ -267,10 +247,10 @@ end
         I0_dr * Kb + Q_sh
     end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
-    "flux density on sunlit leaves at depth L"
-    Q_sun_at(I0_dr, Kb; L): irradiance_Q_sunlit_at => begin
-        I0_dr * Kb + Q_sh_at(L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "flux density on sunlit leaves at depth L"
+    # Q_sun_at(I0_dr, Kb; L): irradiance_Q_sunlit_at => begin
+    #     I0_dr * Kb + Q_sh_at(L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     "mean flux density on shaded leaves over LAI"
     Q_sh(Q_dm, Q_scm): irradiance_Q_shaded => begin
@@ -278,18 +258,18 @@ end
         Q_dm + Q_scm
     end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
-    "diffuse flux density on shaded leaves at depth L"
-    Q_sh_at(Q_d, Q_sc; L): irradiance_Q_shaded_at => begin
-        # It does not include soil reflection
-        Q_d(L) + Q_sc(L)
-    end ~ call(u"μmol/m^2/s" #= Quanta =#)
+    # "diffuse flux density on shaded leaves at depth L"
+    # Q_sh_at(Q_d, Q_sc; L): irradiance_Q_shaded_at => begin
+    #     # It does not include soil reflection
+    #     Q_d(L) + Q_sc(L)
+    # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    "weighted average of Soil reflectance over canopy accounting for exponential decay"
-    Q_soilm(LAI, rho_soil, s, Kd, Q_soil): irradiance_Q_soilm => begin
-        # Integral Qd / Integral L
-        Q = Q_soil * rho_soil * (1 - exp(-sqrt(1 - s) * Kd * LAI)) / (sqrt(1 - s) * Kd * LAI)
-        isnan(Q) ? zero(Q) : Q
-    end ~ track(u"μmol/m^2/s" #= Quanta =#)
+    # "weighted average of Soil reflectance over canopy accounting for exponential decay"
+    # Q_soilm(LAI, rho_soil, s, Kd, Q_soil): irradiance_Q_soilm => begin
+    #     # Integral Qd / Integral L
+    #     Q = Q_soil * rho_soil * (1 - exp(-sqrt(1 - s) * Kd * LAI)) / (sqrt(1 - s) * Kd * LAI)
+    #     isnan(Q) ? zero(Q) : Q
+    # end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
     "weighted average scattered radiation within canopy"
     Q_scm(LAI, I0_dr, s, Kb): irradiance_Q_scm => begin
@@ -311,8 +291,8 @@ end
         Q_bt(L) - Q_b(L)
     end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
-    "total PFD at the soil surface under the canopy"
-    Q_soil(LAI, Q_tot): irradiance_Q_soil => Q_tot(LAI) ~ track(u"μmol/m^2/s" #= Quanta =#)
+    # "total PFD at the soil surface under the canopy"
+    # Q_soil(LAI, Q_tot): irradiance_Q_soil => Q_tot(LAI) ~ track(u"μmol/m^2/s" #= Quanta =#)
 
     ###################
     # Leaf Area Index #
@@ -337,6 +317,7 @@ end
         sunrisen ? exp(-Kb * L) : 0.
     end ~ call
 
+    "shaded fraction of current layer"
     shaded_fraction(sunlit_fraction; L) => begin
         1 - sunlit_fraction(L)
     end ~ call
