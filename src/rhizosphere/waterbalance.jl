@@ -23,52 +23,38 @@ This system keeps track of soil water balance.
     "LAI for maximum rainfall interception"
     LAImaxIntcptn ~ preserve(parameter)
 
-    "Minimum canopy conductance"
-    minCond ~ preserve(parameter, u"m/s")
-    
-    "Maximum canopy conductance"
-    maxCond ~ preserve(parameter, u"m/s")
-    
-    "LAI for maximum canopy conductance"
-    LAIgcx ~ preserve(parameter)
-
-    # ASW and MaxASW and pool in mm/d
-    ASWhour(ASW) => ASW / u"d" ~ track(u"mm/d")
-    maxASWhour(maxASW) => maxASW / u"d" ~ track(u"mm/d")
-    poolHour(pool) => pool / u"d" ~ track(u"mm/d")
-            
     # Intercepted rainfall ratio
     interception(maxIntcptn, LAI, LAImaxIntcptn) => begin
         (LAImaxIntcptn == 0) ? (maxIntcptn) : (maxIntcptn * min(1, LAI / LAImaxIntcptn))
     end ~ track
 
     # Intercepted rainfall
-    rainInterception(intcptn, rain) => intcptn * rain ~ track(u"mm/hr")
+    rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
       
     # Canopy evapotranspiration
-    evapTransp(canTransp, rainIntcptn) => begin
-        canTransp + rainIntcptn
-    end ~ track(u"mm/d", max=ASWday)
+    evapotranspiration(transpiration, rainInterception) => begin
+        transpiration + rainIntcptn
+    end ~ track(u"mm/hr", max=ASWhour)
     
-    excessSW(ASWday, maxASWday, evapTransp, irrigation, rain) => begin
-        ASWday + rain - evapTransp + irrigation - maxASWday
-    end ~ track(u"mm/d", min=0u"mm/d")
+    excessSW(ASWhour, maxASWhour, evapotranspiration, irrigation, rain) => begin
+        ASWhour + rain + poolHour - evapTransp + irrigation - maxASWhour
+    end ~ track(u"mm/hr", min=0u"mm/hr")
     
-    lossPool(ASWday, maxASWday, evapTransp, irrigation, rain, poolDay) => begin
-        maxASWday - (ASWday - evapTransp + irrigation + rain + poolDay)
-    end ~ track(u"mm/d", min=0u"mm/d", max=poolDay)
+    lossPool(ASWhour, maxASWhour, evapTransp, irrigation, rain, poolHour) => begin
+        maxASWhour - (ASWhour - evapTransp + irrigation + rain + poolHour)
+    end ~ track(u"mm/hr", min=0u"mm/hr", max=poolHour)
     
     gainPool(excessSW, poolFractn) => begin
         poolFractn * excessSW
-    end ~ track(u"mm/d", min=0u"mm/d")
+    end ~ track(u"mm/hr", min=0u"mm/hr")
     
-    # Daily change in water pool
-    dPool(gainPool, lossPool) => gainPool - lossPool ~ track(u"mm/d")
+    # Hourly change in pool
+    dPool(gainPool, lossPool) => gainPool - lossPool ~ track(u"mm/hr")
     
     # Daily runoff
     dRunoff(poolFractn, excessSW) => begin
         (1 - poolFractn) * excessSW
-    end ~ track(u"mm/d")
+    end ~ track(u"mm/hr")
     
     # Daily change in available soil water
     dASW(dPool, evapTransp#=, irrigation=#, rain) => begin
@@ -80,7 +66,12 @@ This system keeps track of soil water balance.
         evapTransp / (canTransp + rainIntcptn)
     end ~ track
     
-    # ASW(dASW) ~ accumulate(u"mm", init=iASW, min=minASW, max=maxASW)
-    # pool(dPool) ~ accumulate(u"mm")
-    # runoff(dRunoff) ~ accumulate(u"mm")
+    ASW(dASW) ~ accumulate(u"mm", init=iASW, min=minASW, max=maxASW)
+    pool(dPool) ~ accumulate(u"mm")
+    runoff(dRunoff) ~ accumulate(u"mm")
+
+    # ASW and MaxASW and pool in mm/hr
+    ASWhour(ASW) => ASW / u"d" ~ track(u"mm/hr")
+    maxASWhour(maxASW) => maxASW / u"d" ~ track(u"mm/hr")
+    poolHour(pool) => pool / u"d" ~ track(u"mm/hr")
 end

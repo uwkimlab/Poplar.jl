@@ -13,6 +13,8 @@
 
     wind: wind_speed ~ drive(from=data, by=:Wind, u"m/s")
 
+    rain ~ drive(from=data, by=:Rain, u"mm/hr")
+
     P_air: air_pressure => 100 ~ preserve(parameter, u"kPa")
 
     VPD(T_air, RH, D) => D(T_air, RH) ~ track(u"kPa")

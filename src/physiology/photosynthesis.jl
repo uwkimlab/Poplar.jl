@@ -40,6 +40,7 @@ include("gasexchange/gasexchange.jl")
     C_weight => 12.0107 ~ preserve(u"g/mol")
     CH2O_weight => 30.031 ~ preserve(u"g/mol")
     H2O_weight => 18.01528 ~ preserve(u"g/mol")
+    H2O_density => 997 ~ preserve(u"kg/m^3")
     
     GPP(A_gross, w=CH2O_weight) => begin
         # grams carbo per plant per hour
@@ -54,11 +55,11 @@ include("gasexchange/gasexchange.jl")
     end ~ track(u"kg/ha/hr")
 
     # Canopy transpiration
-    transpiration(ET, w=H2O_weight) => begin
+    transpiration(ET, w=H2O_weight, d=H2O_density) => begin
         # Units of Transpiration from sunlit->ET are mol m-2 (leaf area) s-1
         # Calculation of transpiration from ET involves the conversion to gr per plant per hour
-        ET * w
-    end ~ track(u"kg/ha/hr")
+        ET * w / d
+    end ~ track(u"mm/hr")
 
     # Canopy conductance
     conductance(gs_sun=sunlit_gasexchange.gs, LAI_sunlit, gs_sh=shaded_gasexchange.gs, LAI_shaded, LAI) => begin
@@ -66,6 +67,6 @@ include("gasexchange/gasexchange.jl")
         # average stomatal conductance Yang
         c = ((gs_sun * LAI_sunlit) + (gs_sh * LAI_shaded)) / LAI
         #c = max(zero(c), c)
-        iszero(LAI) ? zero(c) : c
+        # iszero(LAI) ? zero(c) : c
     end ~ track(u"mol/m^2/s/bar")
 end
