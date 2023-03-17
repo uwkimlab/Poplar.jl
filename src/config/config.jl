@@ -17,7 +17,7 @@ NI_GasExchange = @config(
         Jm25 = 98.9269941286961,
         g1 = 9.670307198008624,
     )
-);
+)
 
 EI_GasExchange = @config(
     :GasExchange => (
@@ -38,4 +38,4 @@ EI_GasExchange = @config(
         Jm25 = 98.9269941286961,
         g1 = 9.670307198008624,
     )
-);
+)
