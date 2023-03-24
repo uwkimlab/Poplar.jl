@@ -13,12 +13,12 @@ include("gasexchange/gasexchange.jl")
     end ~ preserve(u"cm", parameter)
 
     "Gross photosynthetic rate (sunlit + shaded)"
-    A_gross(a=sunlit_gasexchange.A_gross_total, b=shaded_gasexchange.A_gross_total): gross_CO2_umol_per_m2_s => begin
+    A_gross(a=sunlit_gasexchange.A_gross_total, b=shaded_gasexchange.A_gross_total, w=leaf_width): gross_CO2_umol_per_m2_s => begin
         a + b
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
     "Net photosynthetic rate (sunlit + shaded)"
-    A_net(a=sunlit_gasexchange.A_net_total, b=shaded_gasexchange.A_net_total): net_CO2_umol_per_m2_s => begin
+    A_net(a=sunlit_gasexchange.A_net_total, b=shaded_gasexchange.A_net_total, w=leaf_width): net_CO2_umol_per_m2_s => begin
         a + b
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 

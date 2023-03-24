@@ -73,8 +73,8 @@ Amichev = @config(
         SLA0 = 10.8,
         SLA1 = 10.8,
         tSLA = 1,
-        MaxIntcptn = 0.15,
-        LAImaxIntcptn = 0,
+        maxInterception = 0.15,
+        LAImaxInterception = 0,
         fullCanAge = 0,
         fracBB0 = 0,
         fracBB1 = 0,
@@ -111,8 +111,8 @@ Headlee = @config(
         thinPower = -1.45,
         SLA0 = 19,
         SLA1 = 10,
-        maxIntcptn = 0.24,
-        LAImaxIntcptn = 7.3,
+        maxInterception = 0.24,
+        LAImaxInterception = 7.3,
         coeffCond = 0.05,
         BLcond = 0.05,
         fracBB0 = 0.64,
@@ -134,3 +134,5 @@ Headlee = @config(
         ngammaN = 1,
     )
 )
+
+c1 = @config(NI_GasExchange, Headlee)

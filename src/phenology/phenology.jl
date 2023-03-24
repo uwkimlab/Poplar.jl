@@ -3,7 +3,7 @@
     iAge => 1 ~ preserve(parameter, u"yr") # Initial age 
 
     # Age modifier
-    "Maximum stand age used in age modifier"
+    "Determines rate of physiological decline of forest"
     maxAge => 50 ~ preserve(parameter, u"yr")
     
     "Power of relative age in function for fAge"
@@ -12,10 +12,9 @@
     "Relative age to give fAge = 0.5"
     rAge => 0.95 ~ preserve(parameter)
 
-    "Age at canopy cover"
-    fullCanAge => 0 ~ preserve(parameter)
-
     flagAge(nAge) => nAge != 0 ~ flag
+
+    "Physiological modifier based on age"
     fAge(standAge, maxAge, rAge, nAge) => (1 / (1 + (standAge / maxAge / rAge) ^ nAge)) ~ track(when=flagAge, init=1)
 
     # Stand age in days and years

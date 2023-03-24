@@ -35,7 +35,10 @@ This system calculate age and stress related mortality.
     # Thinning
     
     # Defoliation
-    
+
+
+    # Age & Stress #
+
     # Mortality rate (yearly)
     gammaN(standAge, gammaN0, gammaN1, tgammaN, ngammaN) => begin
         gammaN1 + (gammaN0 - gammaN1) * exp(-log(2) * (standAge / tgammaN) ^ ngammaN)
@@ -51,4 +54,22 @@ This system calculate age and stress related mortality.
     
     # Dead trees per hectare per day
     mortality(gammaNhour, stemNo) => gammaNhour * stemNo ~ track(u"ha^-1/hr", when=flagMortal)
+
+
+    # Self-thinning
+    selfThin(WS, StemNo, wSx1000, accuracy, mS) => begin
+    n = StemNo / 1000u"ha^-1"
+    x1 = mS * WS / StemNo
+        while true
+            x2 = wSx1000 * n ^ (1 - thinPower)
+            fN = (x2) - (x1 * n) - ((1 - mS) * WS / 1000u"ha^-1")
+            dfN = ((1 - thinPower) * x2 / n) - (x1)
+            dN = -fN / dfN
+            n = n + dN
+            if abs(dN) <= accuracy
+                break
+            end
+        end
+    StemNo - 1000u"ha^-1" * n
+    end ~ track(u"ha^-1")
 end

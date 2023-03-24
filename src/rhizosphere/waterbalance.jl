@@ -15,17 +15,17 @@ This system keeps track of soil water balance.
     irrigation => 0 ~ preserve(parameter, u"mm/hr")
 
     "Fraction of excess water pooled"
-    poolFractn => ~ preserve(parameter)
+    poolFraction => 0 ~ preserve(parameter)
 
     "Maximum propotion of rainfall evaporated from canopy"
-    maxIntcptn ~ preserve(parameter)
+    maxInterception ~ preserve(parameter)
 
     "LAI for maximum rainfall interception"
-    LAImaxIntcptn ~ preserve(parameter)
+    LAImaxInterception ~ preserve(parameter)
 
     "Proportion of rain intercepted"
-    interception(maxIntcptn, LAI, LAImaxIntcptn) => begin
-        (LAImaxIntcptn == 0) ? (maxIntcptn) : (maxIntcptn * min(1, LAI / LAImaxIntcptn))
+    interception(LAI, maxInterception, LAImaxInterception) => begin
+        (LAImaxInterception == 0) ? (maxInterception) : (maxInterception * min(1, LAI / LAImaxInterception))
     end ~ track
 
     "Intercepted rain"
@@ -38,35 +38,35 @@ This system keeps track of soil water balance.
     
     "Hourly excess soil water"
     excessSW(ASWhour, maxASWhour, evapotranspiration, irrigation, rain) => begin
-        ASWhour + rain + poolHour - evapTransp + irrigation - maxASWhour
+        ASWhour + rain + poolHour - evapotranspiration + irrigation - maxASWhour
     end ~ track(u"mm/hr", min=0u"mm/hr")
     
     "Hourly loss in water pool"
-    lossPool(ASWhour, maxASWhour, evapTransp, irrigation, rain, poolHour) => begin
-        maxASWhour - (ASWhour - evapTransp + irrigation + rain + poolHour)
+    lossPool(ASWhour, maxASWhour, evapotranspiration, irrigation, rain, poolHour) => begin
+        maxASWhour - (ASWhour - evapotranspiration + irrigation + rain + poolHour)
     end ~ track(u"mm/hr", min=0u"mm/hr", max=poolHour)
     
     "Hourly gain in water pool"
-    gainPool(excessSW, poolFractn) => begin
-        poolFractn * excessSW
+    gainPool(excessSW, poolFraction) => begin
+        poolFraction * excessSW
     end ~ track(u"mm/hr", min=0u"mm/hr")
     
     "Hourly net change in water pool"
     dPool(gainPool, lossPool) => gainPool - lossPool ~ track(u"mm/hr")
     
     "Hourly runoff rate"
-    dRunoff(poolFractn, excessSW) => begin
-        (1 - poolFractn) * excessSW
+    dRunoff(poolFraction, excessSW) => begin
+        (1 - poolFraction) * excessSW
     end ~ track(u"mm/hr")
     
-    "Hourly change in avilable soi water"
-    dASW(dPool, evapTransp#=, irrigation=#, rain) => begin
-         -dPool - evapTransp#= + irrigation=# + rain
+    "Hourly change in avilable soil water"
+    dASW(dPool, evapotranspiration#=, irrigation=#, rain) => begin
+         -dPool - evapotranspiration#= + irrigation=# + rain
     end ~ track(u"mm/hr")
     
     "Production modifier for GPP and NPP"
-    transpScaleFactor(evapTransp, canTransp, rainIntcptn) => begin
-        evapTransp / (canTransp + rainIntcptn)
+    transpScaleFactor(evapotranspiration, canTransp, rainIntcptn) => begin
+        evapotranspiration / (canTransp + rainIntcptn)
     end ~ track
     
     ASW(dASW) ~ accumulate(u"mm", init=iASW, min=minASW, max=maxASW)
