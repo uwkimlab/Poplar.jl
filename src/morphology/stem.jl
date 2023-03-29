@@ -6,8 +6,6 @@
     "Initial stem drymass"
     iWS => 2000 ~ preserve(parameter, u"kg/ha")
 
-    #
-
     growthStem(NPP, pS) => NPP * pS ~ track(u"kg/ha/hr") 
 
     deathStem(WS, mS, mortality, stemNo) => begin

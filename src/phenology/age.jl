@@ -22,11 +22,8 @@
 
     flagAge(nAge) => nAge != 0 ~ flag
 
-    "Physiological modifier based on age"
-    fAge(standAge, maxAge, rAge, nAge) => (1 / (1 + (standAge / maxAge / rAge) ^ nAge)) ~ track(when=flagAge, init=1)
-
     "Stand age (hours)"
-    standAgeHour => 1 ~ accumulate::Int64(u"hr", init=iAge)
+    standAgeHour ~ advance(u"hr", init=iAge)
 
     "Stand age (years)"
     standAgeYear(standAgeHour) ~ track(u"yr")

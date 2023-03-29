@@ -177,7 +177,7 @@ Headlee = @config(
 
 c1 = @config(
     configGasExchangeNI,
-    Headlee,
+    Amichev,
     :Clock => :step => 1u"hr",
     :Calendar => (
         :init => ZonedDateTime(2007, 9, 1, tz"Asia/Seoul"),

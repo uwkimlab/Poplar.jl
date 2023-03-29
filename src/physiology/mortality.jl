@@ -62,13 +62,15 @@ This system calculate age and stress related mortality.
     selfThinning(accuracy, mS, stemNo, WS, wSx1000, thinPower) => begin
         n = stemNo / 1000u"ha^-1"
         x1 = mS * WS / stemNo
+        i = 0
         while true
             x2 = wSx1000 * n ^ (1 - thinPower)
             fN = (x2) - (x1 * n) - ((1 - mS) * WS / 1000u"ha^-1")
             dfN = ((1 - thinPower) * x2 / n) - (x1)
             dN = -fN / dfN
             n = n + dN
-            if abs(dN) <= accuracy
+            i = i + 1
+            if abs(dN) <= accuracy || i >= 5
                 break
             end
         end
