@@ -15,6 +15,6 @@
         end
     end ~ preserve::int(round, optional)
 
-    d(time) => Dates.dayofyear(t) ~ track::int(u"d")
-    h(time) => Dates.hour(t) ~ track::int(u"hr")
+    d(time) => Dates.dayofyear(time) ~ track::int(u"d")
+    h(time) => Dates.hour(time) ~ track::int(u"hr")
 end

@@ -2,6 +2,11 @@
 This system keeps track of soil water balance.
 """
 @system WaterBalance begin
+
+    #=========
+    Parameters
+    =========#
+
     "Initial available soil water"
     iASW => 1 ~ preserve(parameter, u"mm")
 
@@ -23,6 +28,27 @@ This system keeps track of soil water balance.
     "LAI for maximum rainfall interception"
     LAImaxInterception ~ preserve(parameter)
 
+    "Moisture ratio deficit for fTheta = 0.5"
+    SWconst0 => 0.7 ~ preserve(parameter)
+    
+    SWconst(soilClass, SWconst0) => begin
+        ((Int(soilClass) > 0) ? (0.8 - 0.1 * Int(soilClass)) : (SWconst0)) 
+    end ~ preserve
+
+    "Power of moisture ratio deficit"
+    SWpower0 => 9 ~ preserve(parameter)
+    
+    SWpower(soilClass, SWpower0) => begin
+        ((Int(soilClass) > 0) ? (11 - 2 * Int(soilClass)) : (SWpower0))
+    end ~ preserve
+
+    #=
+    =#
+
+    fSW(ASW, maxASW, SWconst, SWpower) => begin
+        1 / (1 + ((1 - (ASW / maxASW)) / SWconst) ^ SWpower)
+    end ~ track
+
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
         (LAImaxInterception == 0) ? (maxInterception) : (maxInterception * min(1, LAI / LAImaxInterception))
@@ -37,7 +63,7 @@ This system keeps track of soil water balance.
     end ~ track(u"mm/hr", max=ASWhour)
     
     "Hourly excess soil water"
-    excessSW(ASWhour, maxASWhour, evapotranspiration, irrigation, rain) => begin
+    excessSW(ASWhour, maxASWhour, evapotranspiration, irrigation, rain, poolHour) => begin
         ASWhour + rain + poolHour - evapotranspiration + irrigation - maxASWhour
     end ~ track(u"mm/hr", min=0u"mm/hr")
     
@@ -65,8 +91,8 @@ This system keeps track of soil water balance.
     end ~ track(u"mm/hr")
     
     "Production modifier for GPP and NPP"
-    transpScaleFactor(evapotranspiration, canTransp, rainIntcptn) => begin
-        evapotranspiration / (canTransp + rainIntcptn)
+    transpScaleFactor(evapotranspiration, transpiration, rainInterception) => begin
+        evapotranspiration / (transpiration + rainInterception)
     end ~ track
     
     ASW(dASW) ~ accumulate(u"mm", init=iASW, min=minASW, max=maxASW)

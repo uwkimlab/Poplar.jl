@@ -1,5 +1,19 @@
-# Gas Exchange parameters for 
-NI_GasExchange = @config(
+configCalendar = @config(
+    :Calendar => (
+        init = ZonedDateTime(2007, 9, 1, tz"Asia/Seoul"),
+        last = ZonedDateTime(2017, 8, 31, tz"Asia/Seoul"),
+    )
+)
+
+configAtmosphere = @config(
+    :Atmosphere => (
+        lat = -41.4,
+        CO2 = 350,
+        data = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
+    )
+)
+
+configGasExchangeNI = @config(
     :GasExchange => (
         Tp25 = 11.55,
         Rd25 = 1.5, 
@@ -20,7 +34,7 @@ NI_GasExchange = @config(
     )
 )
 
-EI_GasExchange = @config(
+configGasExchangeEI = @config(
     :GasExchange => (
         Tp25 = 11.55,
         Rd25 = 1.5, 
@@ -35,9 +49,35 @@ EI_GasExchange = @config(
         Hj = 219.4,
         Sj = 704.2,
         Γ25 = 36.9,
-        Vcm25 = 56.95822653317411,
-        Jm25 = 98.9269941286961,
-        g1 = 9.670307198008624,
+        Vcm25 = 65.07387082971192,
+        Jm25 = 118.2302458598954,
+        g1 = 8.187614565131721,
+    )
+)
+
+configModel = @config(
+    :Model => (
+        # Initialization
+        iAge = 0,
+        iWF = 2000,
+        iWS = 1000,
+        iWR = 2000,
+        iStemNo = 2100,
+        iASW = 999,
+
+        # Biomass partition
+        FR = 0,
+
+        # Mortality
+        wSx1000 = 400,
+        gammaN0 = 0,
+        gammaN1 = 3,
+        tgammaN = 3,
+
+        # Water balance
+        maxASW = 340,
+        minASW = 0,
+
     )
 )
 
@@ -128,11 +168,30 @@ Headlee = @config(
         nVB = 1.96,
         nVN = -0.3,
         tgammaF = 18,
-        gammaN1 = 0,
-        gammaN0 = 3.5,
+        gammaN1 = 3.5,
+        gammaN0 = 0,
         tgammaN = 1,
         ngammaN = 1,
     )
 )
 
-c1 = @config(NI_GasExchange, Headlee)
+c1 = @config(
+    configGasExchangeNI,
+    Headlee,
+    :Clock => :step => 1u"hr",
+    :Calendar => (
+        :init => ZonedDateTime(2007, 9, 1, tz"Asia/Seoul"),
+        :last => ZonedDateTime(2017, 8, 31, tz"Asia/Seoul"),
+    ),
+    :Weather => :data => Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul"),
+    :Model => (;
+        :iAge => 2, # Initial Age
+        :iWF => 4000, # Initial foliage mass (kg/ha)
+        :iWR => 5000, # Initial root mass (kg/ha)
+        :iWS => 4000, # Initial stem mass (kg/ha)
+        :iStemNo => 1430, # Initial number of trees per hectare
+        :leaf_angle_factor => 3
+    ),
+)
+
+

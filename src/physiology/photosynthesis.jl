@@ -1,19 +1,23 @@
 include("gasexchange/gasexchange.jl")
 
 @system Photosynthesis begin
+
+    #=================
+    Gas-exchange Model
+    =================#
+
     "Gas exchange model for sunlit leaves"
-    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit) ~ ::GasExchange
+    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width) ~ ::GasExchange
 
     "Gas exchange model for shaded leaves"
-    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded) ~ ::GasExchange
+    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width) ~ ::GasExchange
 
-    "Leaf width"
-    leaf_width => begin
-        10 # for poplar?
-    end ~ preserve(u"cm", parameter)
+    #=================
+    
+    =================#
 
     "Gross photosynthetic rate (sunlit + shaded)"
-    A_gross(a=sunlit_gasexchange.A_gross_total, b=shaded_gasexchange.A_gross_total, w=leaf_width): gross_CO2_umol_per_m2_s => begin
+    A_gross(a=sunlit_gasexchange.A_gross_total, b=shaded_gasexchange.A_gross_total): gross_CO2_umol_per_m2_s => begin
         a + b
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 

@@ -26,6 +26,11 @@ include("radiation.jl")
     "Age at which litterfall rate has median value"
     tgammaF => 0 ~ preserve(parameter)
 
+    "Leaf width"
+    leaf_width => begin
+        10 # for poplar?
+    end ~ preserve(u"cm", parameter)
+
     growthFoliage(NPP, pF) => NPP * pF ~ track(u"kg/ha/hr") # foliage
 
     deathFoliage(WF, mF, mortality, stemNo) => begin
@@ -33,7 +38,7 @@ include("radiation.jl")
     end ~ track(u"kg/ha/hr", when=flagMortal)
 
     # Monthly litterfall rate
-    gammaF(gammaF1, gammaF0, standAge, tgammaF) => begin
+    gammaFmonth(gammaF1, gammaF0, standAge, tgammaF) => begin
         if tgammaF * gammaF1 == 0
             gammaF1
         else
@@ -43,8 +48,8 @@ include("radiation.jl")
     end ~ track
     
     # Hourly litterfall rate
-    gammaFhour(calendar, gammaF) => begin
-        (1 - (1 - gammaF)^(1 / daysinmonth(calendar.date') / 24)) / u"hr"
+    gammaFhour(date, gammaFmonth) => begin
+        (1 - (1 - gammaFmonth)^(1 / daysinmonth(date) / 24)) / u"hr"
     end ~ track(u"hr^-1")
 
     litterfall(gammaFhour, WF) => gammaFhour * WF ~ track(u"kg/ha/hr")

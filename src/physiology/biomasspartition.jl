@@ -37,7 +37,7 @@
         min(fVPD, fSW) * fAge
     end ~ track
 
-    # Not sure what to call this
+    "?"
     m1(m0, FR) => m0 + (1 - m0) * FR ~ preserve
     pFS(pfsConst, nounit(avDBH), pfsPower) => pfsConst * avDBH ^ pfsPower ~ track # foliage and stem partition
     pR(pRx, pRn, fPhysiology, m1) => pRx * pRn / (pRn + (pRx - pRn) * fPhysiology * m1) ~ track # root partition
