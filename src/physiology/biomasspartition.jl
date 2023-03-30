@@ -31,7 +31,20 @@
 
     "Value of 'm1' when FR = 0"
     m0 => 0 ~ preserve(parameter)
+
+    "Stomatal response to VPD"
+    coeffCond => 0.05 ~ preserve(parameter, u"mbar^-1")
     
+    "Soilwater modifier on root partitioning"
+    fSW(ASW, maxASW, SWconst, SWpower) => begin
+        1 / (1 + ((1 - (ASW / maxASW)) / SWconst) ^ SWpower)
+    end ~ track
+
+    "VPD modifier on root partitioning"
+    fVPD(VPD, coeffCond) => begin
+        exp(-coeffCond * VPD)
+    end ~ track
+
     "Modifier for root partitioning based on VPD, SW, and Age"
     fPhysiology(fVPD, fSW, fAge) => begin
         min(fVPD, fSW) * fAge

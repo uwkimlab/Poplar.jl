@@ -7,11 +7,11 @@
     ellipsoidal = 6
 end
 
-@enum WaveBand begin
-    photosynthetically_active_radiation = 1
-    near_infrared = 2
-    longwave = 3
-end
+# @enum WaveBand begin
+#     photosynthetically_active_radiation = 1
+#     near_infrared = 2
+#     longwave = 3
+# end
 
 @system Radiation begin
     leaf_angle => ellipsoidal ~ preserve::LeafAngle(parameter)
@@ -21,10 +21,11 @@ end
         3
     end ~ preserve(parameter)
 
-    wave_band => photosynthetically_active_radiation ~ preserve::WaveBand(parameter)
+    # UNUSED
+    # wave_band => photosynthetically_active_radiation ~ preserve::WaveBand(parameter)
 
     "scattering coefficient (reflectance + transmittance)"
-    s: scattering => 0.15 ~ preserve(parameter)
+    scattering => 0.15 ~ preserve(parameter)
 
     "clumping index"
     clumping => 1.0 ~ preserve(parameter)
@@ -90,11 +91,11 @@ end
 
     #TODO better name
     "Kb prime in de Pury and Farquhar(1997)"
-    Kb1(Kb, s): projection_ratio_prime => (Kb * sqrt(1 - s)) ~ track
+    Kb1(Kb, scattering): projection_ratio_prime => (Kb * sqrt(1 - scattering)) ~ track
 
     #TODO better name
     "Kd1: Kd prime in de Pury and Farquhar(1997)"
-    Kd1(Kd, s): diffusion_ratio_prime => (Kd * sqrt(1 - s)) ~ track
+    Kd1(Kd, scattering): diffusion_ratio_prime => (Kd * sqrt(1 - scattering)) ~ track
 
     ################
     # Reflectivity #
@@ -110,8 +111,8 @@ end
     """
     canopy reflection coefficients for beam horizontal leaves, beam uniform leaves, and diffuse radiations
     """
-    rho_h(s): canopy_reflectivity_horizontal_leaf => begin
-        (1 - sqrt(1 - s)) / (1 + sqrt(1 - s))
+    rho_h(scattering): canopy_reflectivity_horizontal_leaf => begin
+        (1 - sqrt(1 - scattering)) / (1 + sqrt(1 - scattering))
     end ~ track
 
     #TODO make consistent interface with siblings
@@ -158,8 +159,8 @@ end
     # I_l(; L): irradiance_l => (I_lb(L) + I_ld(L)) ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     # "dePury (1997) eqn A5"
-    # I_lbSun(I0_dr, s, Kb, I_lSh; L): irradiance_l_sunlit => begin
-    #     I_lb_sunlit = I0_dr * (1 - s) * Kb
+    # I_lbSun(I0_dr, scattering, Kb, I_lSh; L): irradiance_l_sunlit => begin
+    #     I_lb_sunlit = I0_dr * (1 - scattering) * Kb
     #     #TODO: check name I_lbSun vs. I_l_sunlit?
     #     I_l_sunlit = I_lb_sunlit + I_lSh(L)
     # end ~ call(u"μmol/m^2/s" #= Quanta =#)
@@ -171,8 +172,8 @@ end
 
     # #FIXME: check name I_lbs vs. I_lbSun
     # "dePury (1997) eqn A5"
-    # I_lbs(I0_dr, rho_cb, s, Kb1, Kb; L): irradiance_lbs => begin
-    #     I0_dr * ((1 - rho_cb) * Kb1 * exp(-Kb1 * L) - (1 - s) * Kb * exp(-Kb * L))
+    # I_lbs(I0_dr, rho_cb, scattering, Kb1, Kb; L): irradiance_lbs => begin
+    #     I0_dr * ((1 - rho_cb) * Kb1 * exp(-Kb1 * L) - (1 - scattering) * Kb * exp(-Kb * L))
     # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     """
@@ -196,12 +197,12 @@ end
     # end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
     # "The irradiance absorbed by the sunlit fraction, de Pury and Farquhar (1997)"
-    # I_cSun(s, rho_cb, rho_cd, I0_dr, I0_df, Kb, Kb1, Kd1, LAI): canopy_sunlit_irradiance => begin
+    # I_cSun(scattering, rho_cb, rho_cd, I0_dr, I0_df, Kb, Kb1, Kd1, LAI): canopy_sunlit_irradiance => begin
     #     # should this be the same os Qsl? 03/02/08 SK
     #     I_c_sunlit = begin
-    #         I0_dr * (1 - s) * (1 - exp(-Kb * LAI)) +
+    #         I0_dr * (1 - scattering) * (1 - exp(-Kb * LAI)) +
     #         I0_df * (1 - rho_cd) * (1 - exp(-(Kd1 + Kb) * LAI)) * Kd1 / (Kd1 + Kb) +
-    #         I0_dr * ((1 - rho_cb) * (1 - exp(-(Kb1 + Kb) * LAI)) * Kb1 / (Kb1 + Kb) - (1 - s) * (1 - exp(-2Kb * LAI)) / 2)
+    #         I0_dr * ((1 - rho_cb) * (1 - exp(-(Kb1 + Kb) * LAI)) * Kb1 / (Kb1 + Kb) - (1 - scattering) * (1 - exp(-2Kb * LAI)) / 2)
     #     end
     # end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
@@ -213,27 +214,27 @@ end
     ==#
 
     # "total irradiance (dir + dif) at depth L, simple empirical approach"
-    # Q_tot(I0_tot, s, Kb, Kd; L): irradiance_Q_tot => begin
-    #     I0_tot * exp(-sqrt(1 - s) * ((Kb + Kd) / 2) * L)
+    # Q_tot(I0_tot, scattering, Kb, Kd; L): irradiance_Q_tot => begin
+    #     I0_tot * exp(-sqrt(1 - scattering) * ((Kb + Kd) / 2) * L)
     # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     "total beam radiation at depth L"
-    Q_bt(I0_dr, s, Kb; L): irradiance_Q_bt => begin
-        I0_dr * exp(-sqrt(1 - s) * Kb * L)
+    Q_bt(I0_dr, scattering, Kb; L): irradiance_Q_bt => begin
+        I0_dr * exp(-sqrt(1 - scattering) * Kb * L)
     end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     "net diffuse flux at depth of L within canopy"
-    Q_d(I0_dr, s, Kd; L): irradiance_Q_d => begin
-        I0_df * exp(-sqrt(1 - s) * Kd * L)
+    Q_d(I0_dr, scattering, Kd; L): irradiance_Q_d => begin
+        I0_df * exp(-sqrt(1 - scattering) * Kd * L)
     end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     """
     weighted average absorbed diffuse flux over depth of L within canopy
     accounting for exponential decay, Campbell p261
     """
-    Q_dm(LAI, I0_df, s, Kd): irradiance_Q_dm => begin
+    Q_dm(LAI, I0_df, scattering, Kd): irradiance_Q_dm => begin
         # Integral Qd / Integral L
-        Q = I0_df * (1 - exp(-sqrt(1 - s) * Kd * LAI)) / (sqrt(1 - s) * Kd * LAI)
+        Q = I0_df * (1 - exp(-sqrt(1 - scattering) * Kd * LAI)) / (sqrt(1 - scattering) * Kd * LAI)
         isnan(Q) ? zero(Q) : Q
     end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
@@ -265,18 +266,18 @@ end
     # end ~ call(u"μmol/m^2/s" #= Quanta =#)
 
     # "weighted average of Soil reflectance over canopy accounting for exponential decay"
-    # Q_soilm(LAI, rho_soil, s, Kd, Q_soil): irradiance_Q_soilm => begin
+    # Q_soilm(LAI, rho_soil, scattering, Kd, Q_soil): irradiance_Q_soilm => begin
     #     # Integral Qd / Integral L
-    #     Q = Q_soil * rho_soil * (1 - exp(-sqrt(1 - s) * Kd * LAI)) / (sqrt(1 - s) * Kd * LAI)
+    #     Q = Q_soil * rho_soil * (1 - exp(-sqrt(1 - scattering) * Kd * LAI)) / (sqrt(1 - scattering) * Kd * LAI)
     #     isnan(Q) ? zero(Q) : Q
     # end ~ track(u"μmol/m^2/s" #= Quanta =#)
 
     "weighted average scattered radiation within canopy"
-    Q_scm(LAI, I0_dr, s, Kb): irradiance_Q_scm => begin
+    Q_scm(LAI, I0_dr, scattering, Kb): irradiance_Q_scm => begin
         # total beam including scattered absorbed by canopy
         #FIXME should the last part be multiplied by LAI like others?
         #TODO simplify by using existing variables (i.e. Q_bt, Q_b)
-        total_beam = I0_dr * (1 - exp(-sqrt(1 - s) * Kb * LAI)) / (sqrt(1 - s) * Kb)
+        total_beam = I0_dr * (1 - exp(-sqrt(1 - scattering) * Kb * LAI)) / (sqrt(1 - scattering) * Kb)
         # non scattered beam absorbed by canopy
         nonscattered_beam = I0_dr * (1 - exp(-Kb * LAI)) / Kb
         Q = (total_beam - nonscattered_beam) / LAI

@@ -5,6 +5,12 @@
     
     τ: transmissivity => 0.5 ~ preserve(parameter) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
 
+    Q: photosynthetic_active_radiation_conversion_factor => begin
+        # 4.55 is a conversion factor from W to photons for solar radiation, Goudriaan and van Laar (1994)
+        # some use 4.6 i.e., Amthor 1994, McCree 1981, Challa 1995.
+        4.6
+    end ~ preserve(u"μmol/J", parameter)
+
     #####################
     # Solar Coordinates #
     #####################
@@ -205,12 +211,6 @@
         end
         goudriaan(τ)
     end ~ track
-
-    Q: photosynthetic_active_radiation_conversion_factor => begin
-        # 4.55 is a conversion factor from W to photons for solar radiation, Goudriaan and van Laar (1994)
-        # some use 4.6 i.e., Amthor 1994, McCree 1981, Challa 1995.
-        4.6
-    end ~ preserve(u"μmol/J", parameter)
 
     # PARtot: total PAR (umol m-2 s-1) on horizontal surface (PFD)
     PARtot(solar_radiation, PARfr, Q): photosynthetic_active_radiation_total => begin

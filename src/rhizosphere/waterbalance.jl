@@ -20,7 +20,7 @@ This system keeps track of soil water balance.
     irrigation => 0 ~ preserve(parameter, u"mm/hr")
 
     "Fraction of excess water pooled"
-    poolFraction => 0 ~ preserve(parameter)
+    pool_fraction => 0 ~ preserve(parameter)
 
     "Maximum propotion of rainfall evaporated from canopy"
     maxInterception ~ preserve(parameter)
@@ -44,10 +44,6 @@ This system keeps track of soil water balance.
 
     #=
     =#
-
-    fSW(ASW, maxASW, SWconst, SWpower) => begin
-        1 / (1 + ((1 - (ASW / maxASW)) / SWconst) ^ SWpower)
-    end ~ track
 
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
@@ -73,16 +69,16 @@ This system keeps track of soil water balance.
     end ~ track(u"mm/hr", min=0u"mm/hr", max=poolHour)
     
     "Hourly gain in water pool"
-    gainPool(excessSW, poolFraction) => begin
-        poolFraction * excessSW
+    gainPool(excessSW, pool_fraction) => begin
+        pool_fraction * excessSW
     end ~ track(u"mm/hr", min=0u"mm/hr")
     
     "Hourly net change in water pool"
     dPool(gainPool, lossPool) => gainPool - lossPool ~ track(u"mm/hr")
     
     "Hourly runoff rate"
-    dRunoff(poolFraction, excessSW) => begin
-        (1 - poolFraction) * excessSW
+    dRunoff(pool_fraction, excessSW) => begin
+        (1 - pool_fraction) * excessSW
     end ~ track(u"mm/hr")
     
     "Hourly change in avilable soil water"
