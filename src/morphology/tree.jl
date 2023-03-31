@@ -100,9 +100,6 @@ include("root.jl")
     dStemNo(mortality) => -mortality ~ track(u"ha^-1/hr")
     stemNo(dStemNo) ~ accumulate(init=iStemNo, u"ha^-1")
 
-    "Average tree mass"
-    avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")
-
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/d")
 
     "Total weight"

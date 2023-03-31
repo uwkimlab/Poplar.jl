@@ -31,15 +31,15 @@ This system keeps track of soil water balance.
     "Moisture ratio deficit for fTheta = 0.5"
     SWconst0 => 0.7 ~ preserve(parameter)
     
-    SWconst(soilClass, SWconst0) => begin
-        ((Int(soilClass) > 0) ? (0.8 - 0.1 * Int(soilClass)) : (SWconst0)) 
+    SWconst(soil_class, SWconst0) => begin
+        ((Int(soil_class) > 0) ? (0.8 - 0.1 * Int(soil_class)) : (SWconst0)) 
     end ~ preserve
 
     "Power of moisture ratio deficit"
     SWpower0 => 9 ~ preserve(parameter)
     
-    SWpower(soilClass, SWpower0) => begin
-        ((Int(soilClass) > 0) ? (11 - 2 * Int(soilClass)) : (SWpower0))
+    SWpower(soil_class, SWpower0) => begin
+        ((Int(soil_class) > 0) ? (11 - 2 * Int(soil_class)) : (SWpower0))
     end ~ preserve
 
     #=

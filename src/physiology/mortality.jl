@@ -7,10 +7,10 @@ This system calculate age and stress related mortality.
     Parameters
     ==========#
     "Mortality rate for large t"
-    gammaN1 => 0 ~ preserve(parameter)
+    gammaN1 => 0 ~ preserve(u"percent", parameter)
     
     "Seedling mortality rate (t=0)"
-    gammaN0 => 0 ~ preserve(parameter)
+    gammaN0 => 0 ~ preserve(u"percent", parameter)
     
     "Age at which mortality rate has median value"
     tgammaN => 0 ~ preserve(parameter)
@@ -55,6 +55,11 @@ This system calculate age and stress related mortality.
     #============
     Self-thinning
     ============#
+
+    wSmax(stemNo, thinPower, wSx1000) => wSx1000 * (1000u"ha^-1" / stemNo) ^ thinPower ~ track(u"kg")
+
+    flag_self_thin(wSmax, avStemMass) => wSmax < avStemMass ~ flag
+
     "Accuracy of Newton-Raphson method"
     accuracy => 1/1000 ~ preserve
 
@@ -75,7 +80,7 @@ This system calculate age and stress related mortality.
             end
         end
         (stemNo - 1000u"ha^-1" * n) / u"hr"
-    end ~ track(u"ha^-1/hr")
+    end ~ track(u"ha^-1/hr", when=flag_self_thin)
 
     #=======
     Thinning

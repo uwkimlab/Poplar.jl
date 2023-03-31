@@ -13,5 +13,9 @@
     end ~ track(u"kg/ha/hr", when=flagMortal)
 
     dWS(growthStem, deathStem) => growthStem - deathStem ~ track(u"kg/ha/d")
+    
+    "Average stem mass"
+    avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")
+
     WS(dWS) ~ accumulate(u"kg/ha", init=iWS) # stem drymass
 end

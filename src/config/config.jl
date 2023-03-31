@@ -1,8 +1,9 @@
 include("../morphology/radiation.jl")
+include("../rhizosphere/soil.jl")
 
 config_Clock = @config(
     :Clock => (
-        step = 1u"hr"
+        step = 1u"hr",
     )
 )
 
@@ -64,25 +65,96 @@ config_GasExchange_EI = @config(
 )
 
 config_Model_Eucalyptus_globulus = @config(
-    :Model => (
-
-
-        # Biomass partition
-        FR = 0,
+    :Model => ( 
+        # BiomassPartition
+        FR = 1,
+        pFS2 = 1,
+        pFS20 = 0.15,
+        aWs = 0.095,
+        nWs = 2.4,
+        pRx = 0.8,
+        pRn = 0.25,
+        m0 = 0,
+        coeffCond = 0.05,
 
         # Mortality
-        wSx1000 = 400,
-        gammaN0 = 0,
         gammaN1 = 3,
+        gammaN0 = 0,
         tgammaN = 3,
+        ngammaN = 1,
+        wSx1000 = 400,
+        thinPower = 1.5,
+        mF = 0,
+        mR = 0.2,
+        mS = 0.2,
+         
+        # Tree
+        iStemNo= 2100,
+        fracBB0 = 0.75,
+        fracBB1 = 0.15,
+        tBB = 2,
+        rho0 = 0.450,
+        rho1 = 0.450,
+        tRho = 4,
+        aH = 0,
+        nHB = 0,
+        nHN = 0,
+        aV = 0,
+        nVB = 0,
+        nVN = 0,
+         
+        # Foliage
+        iWF = 2000,
+        SLA0= 11,
+        SLA1= 4,
+        tSLA= 2.5,
+        gammaF1= 0.027,
+        gammaF0= 0.001,
+        tgammaF= 12,
+        leaf_width= 3,
+         
+        # Stem
+        iWS = 1000,
+         
+        # Root
+        iWR = 2000,
+        gammaR= 0.015,
 
-        # Water balance
+        # Radiation
+        leaf_angle = ellipsoidal,
+        LAF = 3,
+        scattering = 0.15,
+        clumping = 1.0,
+
+        # Age
+        iAge = 0,
+        maxAge = 50,
+        nAge = 4,
+        rAge = 0.95,
+
+        # WaterBalance
+        iASW = 999,
         maxASW = 340,
         minASW = 0,
+        irrigation = 0,
+        pool_fraction = 0,
+        maxInterception = 0.15,
+        LAImaxInterception = 0,
+        SWconst0 = 0.7,
+        SWpower0 = 9,
 
+        # Soil
+        soil_class = CL,
     )
 )
 
+config_1 = @config(
+    config_Clock,
+    config_Calendar,
+    config_Atmosphere,
+    config_GasExchange_NI,
+    config_Model_Eucalyptus_globulus
+)
 
 # Amichev = @config(
 #     :Model => (
@@ -196,5 +268,3 @@ config_Model_Eucalyptus_globulus = @config(
 #         :leaf_angle_factor => 3
 #     ),
 # )
-
-
