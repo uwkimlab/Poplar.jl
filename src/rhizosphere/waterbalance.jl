@@ -86,10 +86,12 @@ This system keeps track of soil water balance.
          -dPool - evapotranspiration#= + irrigation=# + rain
     end ~ track(u"mm/hr")
     
+    flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
+
     "Production modifier for GPP and NPP"
     transpScaleFactor(evapotranspiration, transpiration, rainInterception) => begin
         evapotranspiration / (transpiration + rainInterception)
-    end ~ track
+    end ~ track(when=flag_transpiration, init=1)
     
     ASW(dASW) ~ accumulate(u"mm", init=iASW, min=minASW, max=maxASW)
     pool(dPool) ~ accumulate(u"mm")
