@@ -106,7 +106,7 @@ end
         Rd25 * T_dep(Ear)
     end ~ track(u"μmol/m^2/s")
 
-    # CO2 compensation point in the absence of day respiration, value from Bernacchi (2001)
+    # CO2 compensation point in the absence of day respiration, value from de Pury and Farquhar (1997)
     # TODO
     Γ25: co2_compensation_point_at_25 => 36.9 ~ preserve(u"μbar", parameter)
     

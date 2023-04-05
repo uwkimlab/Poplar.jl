@@ -1,18 +1,15 @@
 @system Sun begin
-    calendar(context) ~ ::Calendar(override)
-    t(calendar.time): datetime ~ track::datetime
-    d(t): day => Dates.dayofyear(t) ~ track::int(u"d")
-    h(t): hour => Dates.hour(t) ~ track::int(u"hr")
-
-    # Make a system for location (?)
     lat: latitude => 36u"°" ~ preserve(u"°", parameter) # DO NOT convert to radians for consistency
     long: longitude => 128u"°" ~ preserve(u"°", parameter) # leave it as in degrees, used only once for solar noon calculation
     alt: altitude => 20u"m" ~ preserve(u"m", parameter)
-
-    # DELETE
-    # solrad(weather.solrad): solar_radiation ~ track(u"W/m^2")
     
     τ: transmissivity => 0.5 ~ preserve(parameter) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
+
+    Q: photosynthetic_active_radiation_conversion_factor => begin
+        # 4.55 is a conversion factor from W to photons for solar radiation, Goudriaan and van Laar (1994)
+        # some use 4.6 i.e., Amthor 1994, McCree 1981, Challa 1995.
+        4.6
+    end ~ preserve(u"μmol/J", parameter)
 
     #####################
     # Solar Coordinates #
@@ -214,12 +211,6 @@
         end
         goudriaan(τ)
     end ~ track
-
-    Q: photosynthetic_active_radiation_conversion_factor => begin
-        # 4.55 is a conversion factor from W to photons for solar radiation, Goudriaan and van Laar (1994)
-        # some use 4.6 i.e., Amthor 1994, McCree 1981, Challa 1995.
-        4.6
-    end ~ preserve(u"μmol/J", parameter)
 
     # PARtot: total PAR (umol m-2 s-1) on horizontal surface (PFD)
     PARtot(solar_radiation, PARfr, Q): photosynthetic_active_radiation_total => begin
