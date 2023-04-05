@@ -97,7 +97,7 @@ include("root.jl")
     "Mean volume increment per hectare"
     MAI(standVol, standAge) => ((standAge > 0) ? (standVol / standAge) : 0) ~ track(u"m^3/ha")
 
-    dStemNo(mortality) => -mortality ~ track(u"ha^-1/hr")
+    dStemNo(mortality, thinning) => -mortality - thinning ~ track(u"ha^-1/hr")
     stemNo(dStemNo) ~ accumulate(init=iStemNo, u"ha^-1")
 
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/hr")

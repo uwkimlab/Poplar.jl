@@ -16,7 +16,7 @@ config_Calendar = @config(
 
 config_Atmosphere = @config(
     :Atmosphere => (
-        lat = -41.4,
+        lat = -26,
         CO2 = 350,
         data = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
     )
@@ -89,7 +89,7 @@ config_Model_Eucalyptus_globulus = @config(
         mS = 0.2,
          
         # Tree
-        iStemNo= 2100,
+        iStemNo= 1111,
         fracBB0 = 0.75,
         fracBB1 = 0.15,
         tBB = 2,
@@ -104,7 +104,7 @@ config_Model_Eucalyptus_globulus = @config(
         nVN = 0,
          
         # Foliage
-        iWF = 2000,
+        iWF = 7000,
         SLA0= 11,
         SLA1= 4,
         tSLA= 2.5,
@@ -114,7 +114,7 @@ config_Model_Eucalyptus_globulus = @config(
         leaf_width= 3,
          
         # Stem
-        iWS = 1000,
+        iWS = 5000,
          
         # Root
         iWR = 2000,
@@ -134,7 +134,7 @@ config_Model_Eucalyptus_globulus = @config(
 
         # WaterBalance
         iASW = 999,
-        maxASW = 340,
+        maxASW = 300,
         minASW = 0,
         irrigation = 0,
         pool_fraction = 0,
@@ -158,8 +158,18 @@ config_1 = @config(
 
 config_defoliation = @config(
     :Model => (
-        defoliation_date = [DateTime(2009), DateTime(2010)],
-        defoliation_value = [0.1, 0.1]
+        defoliation_time = [ZonedDateTime(2009, 9, 1, tz"Asia/Seoul")],
+        defoliation_value = [0.25]
+    )
+)
+
+config_thinning = @config(
+    :Model => (
+        thinning_time = [ZonedDateTime(2010, 9, 1, tz"Asia/Seoul"), ZonedDateTime(2013, 9, 1, tz"Asia/Seoul")],
+        thinning_value = [800u"ha^-1", 400u"ha^-1"],
+        thinning_F = [1, 0.5],
+        thinning_S = [1, 1],
+        thinning_R = [1, 1],
     )
 )
 

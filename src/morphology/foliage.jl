@@ -54,7 +54,7 @@ include("radiation.jl")
 
     litterfall(gammaFhour, WF) => gammaFhour * WF ~ track(u"kg/ha/hr")
 
-    dWF(growthFoliage, litterfall, deathFoliage, defoliation) => growthFoliage - litterfall - deathFoliage - defoliation ~ track(u"kg/ha/hr")
+    dWF(growthFoliage, litterfall, deathFoliage, defoliation, thinning_WF) => growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF ~ track(u"kg/ha/hr")
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF) # foliage drymass
 
     # Specific leaf area based on stand age (years)
