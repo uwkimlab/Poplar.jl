@@ -100,7 +100,7 @@ include("root.jl")
     dStemNo(mortality) => -mortality ~ track(u"ha^-1/hr")
     stemNo(dStemNo) ~ accumulate(init=iStemNo, u"ha^-1")
 
-    dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/d")
+    dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/hr")
 
     "Total weight"
     W(dW) ~ accumulate(u"kg/ha", init=iW)

@@ -156,6 +156,13 @@ config_1 = @config(
     config_Model_Eucalyptus_globulus
 )
 
+config_defoliation = @config(
+    :Model => (
+        defoliation_date = [DateTime(2009), DateTime(2010)],
+        defoliation_value = [0.1, 0.1]
+    )
+)
+
 # Amichev = @config(
 #     :Model => (
 #         # BiomassPartition

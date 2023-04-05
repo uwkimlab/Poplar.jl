@@ -9,8 +9,9 @@ include("morphology/morphology.jl")
 include("phenology/phenology.jl")
 include("physiology/physiology.jl")
 include("rhizosphere/rhizosphere.jl")
+include("silviculture/silviculture.jl")
 
-@system Model(Atmosphere, Calendar, Morphology, Phenology, Physiology, Rhizosphere, Controller)
+@system Model(Atmosphere, Calendar, Morphology, Phenology, Physiology, Rhizosphere, Silviculture, Controller)
 
 export Model
 end
