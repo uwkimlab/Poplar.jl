@@ -1,23 +1,21 @@
 @system Senescence begin
-    # Pstart: critical_photoperiod_threshold ~ preserve(parameter)
-    # Tb    : maximum_effective_temperature  ~ preserve(parameter, u"°C")
-    # Ycrit : critical_senescence_threshold  ~ preserve(parameter)
-    # x     : temperature_proportion         ~ preserve(parameter)
-    # y     : photoperiod_proportion         ~ preserve(parameter)
+    Pstart: critical_photoperiod_threshold => 12.87 ~ preserve(parameter, u"hr")
+    Tsen  : maximum_effective_temperature => 20.93 ~ preserve(parameter, u"°C")
+    Ycrit : critical_senescence_threshold => 8513.52 ~ preserve(parameter)
+    x     : temperature_proportion => 1        ~ preserve(parameter)
+    y     : photoperiod_proportion => 1        ~ preserve(parameter)
+
+    flag_senescence(T_air, Tsen, day_length, Pstart, d) => begin
+        (T_air < Tsen) && (day_length < Pstart) && (200u"d" < d)
+    end ~ flag
     
-    # YEAR(t = calendar.last) => Dates.year(t) ~ preserve::int
-    # Sday(t): day_of_year    => Dates.dayofyear(t) ~ track::int(u"d")
-    # Δt(context.clock.step) ~ preserve(u"d")
-    
-    # Rsen(Pd, Pstart, nounit(Td), nounit(Tb), x, y): senescence_rate => begin
-    #     if Td < Tb && Pd < Pstart
-    #         (Tb - Td)^x * (Pd/Pstart)^y
-    #     else
-    #         0
-    #     end
-    # end ~ track
-    # Ssen(Rsen): senescence_accumulated ~ accumulate
+    rSen(day_length, Pstart, nounit(T_air), nounit(Tsen), x, y): senescence_rate => begin
+        (Tsen - T_air)^x * (day_length / Pstart)^y / 24
+    end ~ track(when=flag_senescence)
+
+    sSen(rSen) ~ accumulate
+
+    # dSen(rSen, var) => 
 
     # m(Ssen, Ycrit): match      => (Ssen >= Ycrit) ~ flag
-    # stop(m, s = calendar.stop) => (m || s)  ~ flag
 end

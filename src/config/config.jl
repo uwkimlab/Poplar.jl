@@ -9,7 +9,7 @@ config_Clock = @config(
 
 config_Calendar = @config(
     :Calendar => (
-        init = ZonedDateTime(2007, 9, 1, tz"Asia/Seoul"),
+        init = ZonedDateTime(2008, 1, 1, tz"Asia/Seoul"),
         last = ZonedDateTime(2017, 8, 31, tz"Asia/Seoul"),
     )
 )
