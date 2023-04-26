@@ -16,7 +16,6 @@ config_Calendar = @config(
 
 config_Atmosphere = @config(
     :Atmosphere => (
-        lat = -26,
         CO2 = 350,
         data = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
     )
@@ -127,7 +126,7 @@ config_Model_Eucalyptus_globulus = @config(
         clumping = 1.0,
 
         # Age
-        iAge = 0,
+        iAge = 1,
         maxAge = 50,
         nAge = 4,
         rAge = 0.95,

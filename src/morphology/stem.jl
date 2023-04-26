@@ -12,7 +12,7 @@
         mS * mortality * (WS / stemNo)
     end ~ track(u"kg/ha/hr", when=flagMortal)
 
-    dWS(growthStem, deathStem, thinning_WS) => growthStem - deathStem - thinning_WS ~ track(u"kg/ha/hr")
+    dWS(growthStem, deathStem, thinning_WS, dBud) => growthStem - deathStem - thinning_WS - dBud ~ track(u"kg/ha/hr")
     
     "Average stem mass"
     avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")

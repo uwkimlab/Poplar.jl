@@ -1,21 +1,19 @@
 @system Senescence begin
-    Pstart: critical_photoperiod_threshold => 12.87 ~ preserve(parameter, u"hr")
-    Tsen  : maximum_effective_temperature => 20.93 ~ preserve(parameter, u"°C")
-    Ycrit : critical_senescence_threshold => 8513.52 ~ preserve(parameter)
-    x     : temperature_proportion => 1        ~ preserve(parameter)
-    y     : photoperiod_proportion => 1        ~ preserve(parameter)
+    P_sen => 13 ~ preserve(parameter, u"hr")
+    T_sen => 20.93 ~ preserve(parameter, u"°C")
+    Tk_sen(T_sen) ~ preserve(u"K")
 
-    flag_senescence(T_air, Tsen, day_length, Pstart, d) => begin
-        (T_air < Tsen) && (day_length < Pstart) && (200u"d" < d)
+    senescent(T_air, T_sen, day_length, P_sen, d, WF) => begin
+        (T_air < T_sen) && (day_length < P_sen) && (200u"d" < d) && (WF != 0u"kg/ha")
     end ~ flag
     
-    rSen(day_length, Pstart, nounit(T_air), nounit(Tsen), x, y): senescence_rate => begin
-        (Tsen - T_air)^x * (day_length / Pstart)^y / 24
-    end ~ track(when=flag_senescence)
+    SD(day_length, P_sen, Tk_air, Tk_sen): senescent_degrees => begin
+        (Tk_sen - Tk_air) * (day_length / P_sen)
+    end ~ track(when=senescent, u"K")
 
-    sSen(rSen) ~ accumulate
+    rSen => 1 ~ preserve(parameter, u"kg/ha/hr/K")
 
-    # dSen(rSen, var) => 
+    dSen(rSen, SD) => rSen * SD ~ track(u"kg/ha/hr")
 
-    # m(Ssen, Ycrit): match      => (Ssen >= Ycrit) ~ flag
+    # SDD(SD) ~ accumulate(u"K*hr")
 end
