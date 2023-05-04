@@ -103,5 +103,5 @@ include("root.jl")
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/hr")
 
     "Total weight"
-    W(dW) ~ accumulate(u"kg/ha", init=iW)
+    W(dW) ~ accumulate(u"kg/ha", init=iW, min=0)
 end

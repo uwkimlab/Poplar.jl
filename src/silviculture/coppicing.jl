@@ -1,15 +1,17 @@
 @system Coppicing begin
-    coppicing_date => [] ~ preserve::Vector(parameter, optional)
-    coppicing_value => [] ~ preserve::Vector(parameter, optional)
+    coppicing_time => [] ~ preserve::Vector(parameter, optional)
 
-    coppice(coppicing_date, date) => begin
-        date in coppicing_date
+    # Coppicing only possible when dormant (for now)
+    coppice(coppicing_time, time, dormant) => begin
+        (time in coppicing_time) && (dormant)
     end ~ flag
 
-    coppicing(coppicing_date, coppicing_value, date) => begin
-        index = findfirst(x -> x == date, coppicing_date)
-        coppicing_value[index]
-    end ~ track(when=coppice)
+    # Don't have to worry about foliage during dormancy
+    coppicing(step, WS, dWS) => begin
+        (WS / step) - dWS
+    end ~ track(when=coppice, u"kg/ha/hr")
 
-    # coppiced(WS)
+    coppiced(WS) => begin
+        WS == 0u"kg/ha"
+    end ~ flag
 end

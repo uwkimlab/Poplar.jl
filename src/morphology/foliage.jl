@@ -58,6 +58,7 @@ include("radiation.jl")
         growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF - dSen + dBud
     end ~ track(u"kg/ha/hr")
 
+    # Reset when coppice == true (not sure if it resets in the beginning or end of loop)
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
 
     # Specific leaf area based on stand age (years)

@@ -172,6 +172,12 @@ config_thinning = @config(
     )
 )
 
+config_coppicing = @config(
+    :Model => (
+        coppicing_time = [ZonedDateTime(2010, 12, 1, tz"Asia/Seoul")],
+    )
+)
+
 config_Amichev = @config(
     :Model => (
         # BiomassPartition

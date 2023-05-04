@@ -17,5 +17,6 @@
     "Average stem mass"
     avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")
 
-    WS(dWS) ~ accumulate(u"kg/ha", init=iWS) # stem drymass
+    # Reset when coppice == true (not sure if it resets in the beginning or the end of the loop)
+    WS(dWS) ~ accumulate(u"kg/ha", init=iWS, min=0) # stem drymass
 end
