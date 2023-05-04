@@ -4,8 +4,8 @@
 
     Bud_max => 2.5e3 ~ preserve(parameter, u"kg/ha")
 
-    budburst(F, Rf, Bud_max, Bud) => begin
-        (F >= Rf) && (Bud_max >= Bud)
+    budburst(F, Rf, Bud_max, Bud, coppiced) => begin
+        (F >= Rf) && (Bud_max >= Bud) && !coppiced
     end ~ flag
 
     BD(T_air, T_bud, T_bud_opt): budburst_degrees => begin

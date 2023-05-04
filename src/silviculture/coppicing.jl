@@ -7,8 +7,8 @@
     end ~ flag
 
     # Don't have to worry about foliage during dormancy
-    coppicing(step, WS, dWS) => begin
-        (WS / step) - dWS
+    coppicing(step, WS, growthStem, deathStem, thinning_WS, dBud) => begin
+        (WS / step) - (growthStem - deathStem - thinning_WS - dBud)
     end ~ track(when=coppice, u"kg/ha/hr")
 
     coppiced(WS) => begin

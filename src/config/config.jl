@@ -174,7 +174,7 @@ config_thinning = @config(
 
 config_coppicing = @config(
     :Model => (
-        coppicing_time = [ZonedDateTime(2010, 12, 1, tz"Asia/Seoul")],
+        coppicing_time = [ZonedDateTime(2008, 12, 1, tz"Asia/Seoul")],
     )
 )
 
