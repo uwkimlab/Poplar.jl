@@ -103,7 +103,7 @@ config_Model_Eucalyptus_globulus = @config(
         nVN = 0,
          
         # Foliage
-        iWF = 7000,
+        iWF = 2000,
         SLA0= 11,
         SLA1= 4,
         tSLA= 2.5,
@@ -113,7 +113,7 @@ config_Model_Eucalyptus_globulus = @config(
         leaf_width= 3,
          
         # Stem
-        iWS = 5000,
+        iWS = 1000,
          
         # Root
         iWR = 2000,
@@ -178,7 +178,7 @@ config_coppicing = @config(
     )
 )
 
-config_Amichev = @config(
+config_Model_Amichev = @config(
     :Model => (
         # BiomassPartition
         pFS2 = 0.8567,
@@ -271,3 +271,12 @@ config_Amichev = @config(
 #         ngammaN = 1,
 #     )
 # )
+
+config_2 = @config(
+    config_Clock,
+    config_Calendar,
+    config_Atmosphere,
+    config_GasExchange_NI,
+    config_Model_Eucalyptus_globulus,
+    config_Model_Amichev
+)
