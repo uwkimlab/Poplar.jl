@@ -42,9 +42,6 @@ This system keeps track of soil water balance.
         ((Int(soil_class) > 0) ? (11 - 2 * Int(soil_class)) : (SWpower0))
     end ~ preserve
 
-    #=
-    =#
-
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
         (LAImaxInterception == 0) ? (maxInterception) : (maxInterception * min(1, LAI / LAImaxInterception))
@@ -88,7 +85,7 @@ This system keeps track of soil water balance.
     
     flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
 
-    "Production modifier for GPP and NPP"
+    "Production modifier for GPP"
     transpScaleFactor(evapotranspiration, transpiration, rainInterception) => begin
         evapotranspiration / (transpiration + rainInterception)
     end ~ track(when=flag_transpiration, init=1)

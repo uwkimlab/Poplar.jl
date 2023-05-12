@@ -38,6 +38,12 @@
     "Root turnover"
     rootTurnover(gammaRhour, WR) => gammaRhour * WR ~ track(u"kg/ha/hr")
 
+    #========
+    Coppicing
+    ========#
+    # root mass repartitioned when coppiced == true
+    # root_partition()
+
     #=====
     Weight
     =====#

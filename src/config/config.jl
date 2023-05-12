@@ -157,14 +157,14 @@ config_1 = @config(
 
 config_defoliation = @config(
     :Model => (
-        defoliation_time = [ZonedDateTime(2009, 9, 1, tz"Asia/Seoul")],
+        defoliation_date = [ZonedDateTime(2009, 9, 1, tz"Asia/Seoul")],
         defoliation_value = [0.25]
     )
 )
 
 config_thinning = @config(
     :Model => (
-        thinning_time = [ZonedDateTime(2010, 9, 1, tz"Asia/Seoul"), ZonedDateTime(2013, 9, 1, tz"Asia/Seoul")],
+        thinning_date = [ZonedDateTime(2010, 9, 1, tz"Asia/Seoul"), ZonedDateTime(2013, 9, 1, tz"Asia/Seoul")],
         thinning_value = [800u"ha^-1", 400u"ha^-1"],
         thinning_F = [1, 0.5],
         thinning_S = [1, 1],
@@ -174,7 +174,7 @@ config_thinning = @config(
 
 config_coppicing = @config(
     :Model => (
-        coppicing_time = [ZonedDateTime(2008, 12, 1, tz"Asia/Seoul")],
+        coppicing_date = [ZonedDateTime(2008, 12, 1, tz"Asia/Seoul")],
     )
 )
 
