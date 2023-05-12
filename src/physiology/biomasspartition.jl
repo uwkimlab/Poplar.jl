@@ -59,18 +59,18 @@
     "Specifies the efficiency in converting root biomass into aboveground biomass."
     efficiency => 0.7  ~ preserve(parameter)
 
-    root_partition(NPP, NPP_target, frac, ) => begin
-        NPP_res = NPP_target - NPP
-        if NPP_res > 0 && (WR/W) > pRx
-            min(NPP_res, WR*(WR/W - pRx)*frac)
-        else
-            0
-        end
-    end ~ remember(when=coppiced)
+    # root_partition(NPP, NPP_target, frac, ) => begin
+    #     NPP_res = NPP_target - NPP
+    #     if NPP_res > 0 && (WR/W) > pRx
+    #         min(NPP_res, WR*(WR/W - pRx)*frac)
+    #     else
+    #         0
+    #     end
+    # end ~ remember(when=coppiced)
 
-    NPP(NPP, root_partition) => begin
-        NPP + root_partition
-    end ~ track(u"kg/ha/hr")
+    # NPP(NPP) => begin
+    #     NPP + root_partition
+    # end ~ track(u"kg/ha/hr")
 
     #=================
     Paritioning Ratios

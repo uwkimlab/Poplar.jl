@@ -4,4 +4,4 @@ include("dormancy.jl")
 include("senescence.jl")
 include("shooting.jl")
 
-@system Phenology(Age, Budburst, Dormancy, Senescence)
+@system Phenology(Age, Budburst, Dormancy, Shooting, Senescence)

@@ -1,4 +1,5 @@
 @system Coppicing begin
+    # Coppicing dates in the form of a vector of ZonedDateTime values.
     coppicing_date => [] ~ preserve::Vector(parameter, optional)
 
     # Coppicing only possible when dormant (for now), 
@@ -11,11 +12,8 @@
         (WS / step) - (growthStem - deathStem - thinning_WS - dBud)
     end ~ track(when=coppice, u"kg/ha/hr")
 
-    # Coppicing 
-    coppiced(WS) => begin
-        WS == 0u"kg/ha"
+    # Coppiced when stem biomass is zero.
+    coppiced(WS, W) => begin
+        WS == 0u"kg/ha" && W != 0u"kg/ha"
     end ~ flag
-
-    # Root partition predetermined when coppiced?
-    # Possibly set 
 end

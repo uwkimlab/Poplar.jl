@@ -23,8 +23,10 @@
     # bud growth per degree hours
     bud_rate => 1 ~ preserve(parameter, u"kg/ha/hr/K")
 
+    dBud_max(WS, step) => WS / step ~ track(u"kg/ha/hr")
+
     # bud growth per hour. WIP.
-    dBud(bud_rate, BD) => bud_rate * BD ~ track(u"kg/ha/hr")
+    dBud(bud_rate, BD) => bud_rate * BD ~ track(max=dBud_max, u"kg/ha/hr")
 
     # Accumulated bud growth for the year. Resets to 0 every year. Budburst halts when target is met.
     bud(dBud) ~ accumulate(reset=senescent, u"kg/ha")
