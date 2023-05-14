@@ -54,8 +54,12 @@ include("radiation.jl")
 
     litterfall(gammaFhour, WF) => gammaFhour * WF ~ track(u"kg/ha/hr")
 
-    dWF(growthFoliage, litterfall, deathFoliage, defoliation, thinning_WF) => growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF ~ track(u"kg/ha/hr")
-    WF(dWF) ~ accumulate(u"kg/ha", init=iWF) # foliage drymass
+    dWF(growthFoliage, litterfall, deathFoliage, defoliation, thinning_WF, dSen, dBud) => begin
+        growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF - dSen + dBud
+    end ~ track(u"kg/ha/hr")
+
+    # Reset when coppice == true (not sure if it resets in the beginning or end of loop)
+    WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
 
     # Specific leaf area based on stand age (years)
     SLA(standAge, SLA0, SLA1, tSLA) => begin

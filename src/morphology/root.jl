@@ -38,10 +38,16 @@
     "Root turnover"
     rootTurnover(gammaRhour, WR) => gammaRhour * WR ~ track(u"kg/ha/hr")
 
+    #========
+    Coppicing
+    ========#
+    # root mass repartitioned when coppiced == true
+    # root_partition()
+
     #=====
     Weight
     =====#
     
-    dWR(growthRoot, rootTurnover, deathRoot, thinning_WR) => growthRoot - rootTurnover - deathRoot - thinning_WR ~ track(u"kg/ha/hr")
-    WR(dWR) ~ accumulate(u"kg/ha", init=iWR) # root drymass
+    dWR(growthRoot, rootTurnover, deathRoot, thinning_WR, dShoot) => growthRoot - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
+    WR(dWR) ~ accumulate(u"kg/ha", init=iWR, min=0) # root drymass
 end

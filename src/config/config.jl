@@ -9,14 +9,13 @@ config_Clock = @config(
 
 config_Calendar = @config(
     :Calendar => (
-        init = ZonedDateTime(2007, 9, 1, tz"Asia/Seoul"),
+        init = ZonedDateTime(2008, 1, 1, tz"Asia/Seoul"),
         last = ZonedDateTime(2017, 8, 31, tz"Asia/Seoul"),
     )
 )
 
 config_Atmosphere = @config(
     :Atmosphere => (
-        lat = -26,
         CO2 = 350,
         data = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
     )
@@ -104,7 +103,7 @@ config_Model_Eucalyptus_globulus = @config(
         nVN = 0,
          
         # Foliage
-        iWF = 7000,
+        iWF = 2000,
         SLA0= 11,
         SLA1= 4,
         tSLA= 2.5,
@@ -114,7 +113,7 @@ config_Model_Eucalyptus_globulus = @config(
         leaf_width= 3,
          
         # Stem
-        iWS = 5000,
+        iWS = 1000,
          
         # Root
         iWR = 2000,
@@ -127,7 +126,7 @@ config_Model_Eucalyptus_globulus = @config(
         clumping = 1.0,
 
         # Age
-        iAge = 0,
+        iAge = 1,
         maxAge = 50,
         nAge = 4,
         rAge = 0.95,
@@ -158,14 +157,14 @@ config_1 = @config(
 
 config_defoliation = @config(
     :Model => (
-        defoliation_time = [ZonedDateTime(2009, 9, 1, tz"Asia/Seoul")],
+        defoliation_date = [ZonedDateTime(2009, 9, 1, tz"Asia/Seoul")],
         defoliation_value = [0.25]
     )
 )
 
 config_thinning = @config(
     :Model => (
-        thinning_time = [ZonedDateTime(2010, 9, 1, tz"Asia/Seoul"), ZonedDateTime(2013, 9, 1, tz"Asia/Seoul")],
+        thinning_date = [ZonedDateTime(2010, 9, 1, tz"Asia/Seoul"), ZonedDateTime(2013, 9, 1, tz"Asia/Seoul")],
         thinning_value = [800u"ha^-1", 400u"ha^-1"],
         thinning_F = [1, 0.5],
         thinning_S = [1, 1],
@@ -173,7 +172,16 @@ config_thinning = @config(
     )
 )
 
-config_Amichev = @config(
+config_coppicing = @config(
+    :Model => (
+        coppicing_date = [
+            ZonedDateTime(2008, 12, 31, tz"Asia/Seoul"),
+            ZonedDateTime(2009, 12, 31, tz"Asia/Seoul"),
+        ],
+    )
+)
+
+config_Model_Amichev = @config(
     :Model => (
         # BiomassPartition
         pFS2 = 0.8567,
@@ -266,3 +274,12 @@ config_Amichev = @config(
 #         ngammaN = 1,
 #     )
 # )
+
+config_2 = @config(
+    config_Clock,
+    config_Calendar,
+    config_Atmosphere,
+    config_GasExchange_NI,
+    config_Model_Eucalyptus_globulus,
+    config_Model_Amichev
+)

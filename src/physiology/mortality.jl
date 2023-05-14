@@ -82,15 +82,6 @@ This system calculate age and stress related mortality.
         (stemNo - 1000u"ha^-1" * n) / u"hr"
     end ~ track(u"ha^-1/hr", when=flag_self_thin)
 
-    #=======
-    Thinning
-    =======#
-    
-    #==========
-    Defoliation
-    ==========#
-
-
     #========
     Mortality
     ========#

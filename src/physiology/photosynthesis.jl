@@ -42,9 +42,12 @@ include("gasexchange/gasexchange.jl")
         A_gross * w * transpScaleFactor
     end ~ track(u"kg/ha/hr")
 
+    "NPP/GPP ratio"
+    γ => 0.47 ~ preserve(parameter) # From 3PG model, possibly different for poplars.
+
     "Net primary production"
-    NPP(A_net, w=CH2O_weight, transpScaleFactor) => begin
-        A_net * w * transpScaleFactor
+    NPP(γ, GPP) => begin
+        γ*GPP
     end ~ track(u"kg/ha/hr")
 
     "Canopy transpiration in mm/hr"

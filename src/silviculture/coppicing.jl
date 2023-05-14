@@ -1,13 +1,19 @@
 @system Coppicing begin
+    # Coppicing dates in the form of a vector of ZonedDateTime values.
     coppicing_date => [] ~ preserve::Vector(parameter, optional)
-    coppicing_value => [] ~ preserve::Vector(parameter, optional)
 
-    flag_coppicing(coppicing_date, date) => begin
-        date in coppicing_date
+    # Coppicing only possible when dormant (for now), 
+    coppice(coppicing_date, time, dormant) => begin
+        (time in coppicing_date) && (dormant)
     end ~ flag
 
-    coppicing(coppicing_date, coppicing_value, date) => begin
-        index = findfirst(x -> x == date, coppicing_date)
-        coppicing_value[index]
-    end ~ track(when=flag_coppicing)
+    # Don't have to worry about foliage during dormancy
+    coppicing(step, WS, growthStem, deathStem, thinning_WS, dBud) => begin
+        (WS / step) - (growthStem - deathStem - thinning_WS - dBud)
+    end ~ track(when=coppice, u"kg/ha/hr")
+
+    # Coppiced when stem biomass is zero.
+    coppiced(WS, W) => begin
+        WS == 0u"kg/ha" && W != 0u"kg/ha"
+    end ~ flag
 end

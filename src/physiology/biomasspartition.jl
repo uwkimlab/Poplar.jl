@@ -49,11 +49,53 @@
     fPhysiology(fVPD, fSW, fAge) => begin
         min(fVPD, fSW) * fAge
     end ~ track
+    
+    #Total partitionable (?) partition
+    # NPP_target ~ preserve(parameter, u"kg/ha/hr")
 
-    "?"
+    "Specifies the fractional amount of root biomass that exceeds the aboveground requirements that can be supplied in a given month."
+    frac => 0.02 ~ preserve(parameter)
+
+    "Specifies the efficiency in converting root biomass into aboveground biomass."
+    efficiency => 0.7  ~ preserve(parameter)
+
+    # root_partition(NPP, NPP_target, frac, ) => begin
+    #     NPP_res = NPP_target - NPP
+    #     if NPP_res > 0 && (WR/W) > pRx
+    #         min(NPP_res, WR*(WR/W - pRx)*frac)
+    #     else
+    #         0
+    #     end
+    # end ~ remember(when=coppiced)
+
+    # NPP(NPP) => begin
+    #     NPP + root_partition
+    # end ~ track(u"kg/ha/hr")
+
+    #=================
+    Paritioning Ratios
+    =================#
     m1(m0, FR) => m0 + (1 - m0) * FR ~ preserve
-    pFS(pfsConst, nounit(avDBH), pfsPower) => pfsConst * avDBH ^ pfsPower ~ track # foliage and stem partition
-    pR(pRx, pRn, fPhysiology, m1) => pRx * pRn / (pRn + (pRx - pRn) * fPhysiology * m1) ~ track # root partition
-    pS(pR, pFS) => (1 - pR) / (1 + pFS) ~ track # stem partition
-    pF(pR, pS) => 1 - pR - pS ~ track # foliage partition
+
+    "Ratio of foliage to stem parititioning"
+    pFS(pfsConst, nounit(avDBH), pfsPower) => pfsConst * avDBH ^ pfsPower ~ track
+
+    "Root partitioning proportion"
+    pR(pRx, pRn, fPhysiology, m1) => begin
+        # (pRx * pRn) / (pRn + (pRx - pRn) * fPhysiology * m1) 
+        0.14
+    end ~ track # root partitions
+
+    "Stem partitioning proportion"
+    pS(pR, pFS) => begin
+        # (1 - pR) / (1 + pFS)
+        0.52
+    end ~ track # stem partition
+
+    "Foliage paritioning proportion"
+    pF(pR, pS, pFS) => begin
+        # 1 - pR - pS # foliage partition
+        # (1 - pR) / (1 + (1 / pFS))
+        0.34
+    end ~ track 
 end

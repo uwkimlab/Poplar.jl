@@ -12,10 +12,11 @@
         mS * mortality * (WS / stemNo)
     end ~ track(u"kg/ha/hr", when=flagMortal)
 
-    dWS(growthStem, deathStem, thinning_WS) => growthStem - deathStem - thinning_WS ~ track(u"kg/ha/hr")
+    dWS(growthStem, deathStem, thinning_WS, dBud, dShoot, coppicing) => growthStem + dShoot - deathStem - thinning_WS - dBud - coppicing ~ track(u"kg/ha/hr")
     
     "Average stem mass"
     avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")
 
-    WS(dWS) ~ accumulate(u"kg/ha", init=iWS) # stem drymass
+    # Reset when coppice == true (not sure if it resets in the beginning or the end of the loop)
+    WS(dWS) ~ accumulate(u"kg/ha", init=iWS, min=0) # stem drymass
 end
