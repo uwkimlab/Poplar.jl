@@ -5,7 +5,7 @@
     shoot_max => 2e4 ~ preserve(parameter, u"kg/ha")
 
     shooting(F, Rf, shoot_max, shoot) => begin
-        (F >= Rf) && (shoot_max >= shoot)
+        (F >= Rf) && (shoot_max >= shoot) 
     end ~ flag
 
     ShD(T_air, T_shoot, T_shoot_opt): shooting_degrees => begin
