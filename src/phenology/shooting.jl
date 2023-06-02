@@ -1,3 +1,6 @@
+"""
+`Shooting` keeps track of new shoot growth post-coppicing.
+"""
 @system Shooting begin
     T_shoot => 8 ~ preserve(parameter, u"°C")
     T_shoot_opt => 32 ~ preserve(parameter, u"°C")
