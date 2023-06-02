@@ -1,3 +1,6 @@
+"""
+Calendar keeps track of date and time throughout simulation.
+"""
 @system Calendar begin
     init ~ preserve::datetime(extern, parameter)
     last => nothing ~ preserve::datetime(extern, parameter, optional)

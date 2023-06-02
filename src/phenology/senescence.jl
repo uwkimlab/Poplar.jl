@@ -1,3 +1,4 @@
+# Senescence keeps track of senescent days and quantifies senescence based on degree days.
 @system Senescence begin
     P_sen => 13 ~ preserve(parameter, u"hr")
     T_sen => 20.93 ~ preserve(parameter, u"°C")

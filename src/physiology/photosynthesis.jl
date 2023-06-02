@@ -1,5 +1,8 @@
 include("gasexchange/gasexchange.jl")
 
+"""
+Photosynthesis
+"""
 @system Photosynthesis begin
 
     #=================
