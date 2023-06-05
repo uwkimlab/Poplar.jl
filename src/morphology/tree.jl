@@ -104,4 +104,16 @@ include("root.jl")
 
     "Total weight"
     W(dW) ~ accumulate(u"kg/ha", init=iW, min=0)
+
+
+
+
+    # ?????
+
+
+    "Stem mass vs. diameter constant"
+    aWs => 0.0771 ~ preserve(parameter)
+    
+    "Stem mass vs. diameter exponent"
+    nWs => 2.2704 ~ preserve(parameter)
 end

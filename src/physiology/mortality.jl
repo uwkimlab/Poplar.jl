@@ -6,6 +6,7 @@ This system calculate age and stress related mortality.
     #=========
     Parameters
     ==========#
+
     "Mortality rate for large t"
     gammaN1 => 0 ~ preserve(u"percent", parameter)
     
@@ -33,9 +34,11 @@ This system calculate age and stress related mortality.
     "Fraction mean single-tree stem biomass lost per dead tree"
     mS => 0.2 ~ preserve(parameter)
 
+
     #=====================
     Age & Stress Mortality
     =====================#
+
     "Mortality rate (yearly)"
     gammaNyear(standAge, gammaN0, gammaN1, tgammaN, ngammaN) => begin
         gammaN1 + (gammaN0 - gammaN1) * exp(-log(2) * (standAge / tgammaN) ^ ngammaN)
@@ -52,6 +55,7 @@ This system calculate age and stress related mortality.
     "Age & stress-related mortality rate (hourly)"
     asMortality(gammaNhour, stemNo) => gammaNhour * stemNo ~ track(u"ha^-1/hr", when=flagMortal)
 
+
     #============
     Self-thinning
     ============#
@@ -60,9 +64,11 @@ This system calculate age and stress related mortality.
 
     flag_self_thin(wSmax, avStemMass) => wSmax < avStemMass ~ flag
 
-    "Accuracy of Newton-Raphson method"
+    # Accuracy of Newton-Raphson method used in self-thinning calculation.
     accuracy => 1/1000 ~ preserve
 
+    # Canopy "self-thins" to account for competition between stands.
+    # Follows the "self-thinning" rule.
     "Self-thinning rate"
     selfThinning(accuracy, mS, stemNo, WS, wSx1000, thinPower) => begin
         n = stemNo / 1000u"ha^-1"
