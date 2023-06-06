@@ -18,13 +18,6 @@
     
     pfsConst(pFS2, pfsPower) => pFS2 / 2 ^ pfsPower ~ preserve
     
-    # WHy are these here????
-    "Stem mass vs. diameter constant"
-    aWs => 0.0771 ~ preserve(parameter)
-    
-    "Stem mass vs. diameter exponent"
-    nWs => 2.2704 ~ preserve(parameter)
-    
     "Maximum fraction of NPP to roots"
     pRx => 0.34 ~ preserve(parameter)
     

@@ -14,6 +14,7 @@
     Growth
     =====#
 
+    # NPP multiplied by root partition in BiomassPartition
     "Canopy root growth rate"
     growthRoot(NPP, pR) => NPP * pR ~ track(u"kg/ha/hr") # root
 
@@ -30,6 +31,7 @@
     Turnover
     =======#
 
+    # Turnover rate in 3PG was monthly. Converted to hourly.
     "Root turnover rate"
     gammaRhour(date, gammaR) => begin
         (1 - (1 - gammaR)^(1 / daysinmonth(date) / 24)) / u"hr"

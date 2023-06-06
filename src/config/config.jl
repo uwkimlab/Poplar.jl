@@ -1,7 +1,6 @@
-#============================================
-This file contains a number of configurations
-used for simulation for convenience.
-============================================#
+#=============================================================
+This file contains a number of configurations for convenience.
+=============================================================#
 
 include("../morphology/radiation.jl")
 include("../rhizosphere/soil.jl")

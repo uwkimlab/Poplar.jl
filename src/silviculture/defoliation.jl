@@ -1,4 +1,8 @@
 @system Defoliation begin
+
+    # Defining defoliation dates and values
+    # Example of configuration in config.jl
+    
     defoliation_date => [] ~ preserve::Vector(parameter, optional)
     defoliation_value => [] ~ preserve::Vector(parameter, optional)
 
