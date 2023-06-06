@@ -1,4 +1,3 @@
-# Partitioning coefficients u
 @system BiomassPartition begin
     
     #===========
