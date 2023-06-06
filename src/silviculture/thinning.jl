@@ -1,4 +1,9 @@
 @system Thinning begin
+    
+    # Defining thinning dates, values and ratios
+    # Probably should use a tabulate variable instead
+    # Example of configuration in config.jl
+
     thinning_date => [] ~ preserve::Vector(parameter, optional)
     thinning_value => [] ~ preserve::Vector(parameter, optional)
     thinning_F => [] ~ preserve::Vector(parameter, optional)

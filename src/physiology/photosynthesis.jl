@@ -1,5 +1,8 @@
 include("gasexchange/gasexchange.jl")
 
+"""
+Photosynthesis
+"""
 @system Photosynthesis begin
 
     #=================
@@ -37,24 +40,31 @@ include("gasexchange/gasexchange.jl")
     H2O_weight => 18.01528 ~ preserve(u"g/mol")
     H2O_density => 997 ~ preserve(u"kg/m^3")
     
+    # Calculated by using gross photosynthesis and CH2O weight.
+    # Empirical transpiration scale factor from original 3PG model
+    # to account for water deficit.
     "Gross primary production"
     GPP(A_gross, w=CH2O_weight, transpScaleFactor) => begin
         A_gross * w * transpScaleFactor
     end ~ track(u"kg/ha/hr")
 
+    # From 3PG model, possibly different for poplars.
+    # Appears to be the standard value for most species.
     "NPP/GPP ratio"
-    γ => 0.47 ~ preserve(parameter) # From 3PG model, possibly different for poplars.
+    γ => 0.47 ~ preserve(parameter)
 
     "Net primary production"
     NPP(γ, GPP) => begin
         γ*GPP
     end ~ track(u"kg/ha/hr")
 
+    # Conversion to mm/hr to match water balance.
     "Canopy transpiration in mm/hr"
     transpiration(ET, w=H2O_weight, d=H2O_density) => begin
         ET * w / d
     end ~ track(u"mm/hr")
 
+    # Overall canopy conductance, not used in any calculations.
     "Canopy conductance"
     conductance(gs_sun=sunlit_gasexchange.gs, LAI_sunlit, gs_sh=shaded_gasexchange.gs, LAI_shaded, LAI) => begin
         #HACK ensure 0 when one of either LAI is 0, i.e., night

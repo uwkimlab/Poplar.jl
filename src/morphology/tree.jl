@@ -55,6 +55,12 @@ include("root.jl")
     
     "Power of stocking in the stem volume relationship"
     nVN => 1.0915 ~ preserve(parameter)
+
+    "Stem mass vs. diameter constant"
+    aWs => 0.0771 ~ preserve(parameter)
+    
+    "Stem mass vs. diameter exponent"
+    nWs => 2.2704 ~ preserve(parameter)
     
     #==========
     Stem Volume
@@ -98,6 +104,7 @@ include("root.jl")
     MAI(standVol, standAge) => ((standAge > 0) ? (standVol / standAge) : 0) ~ track(u"m^3/ha")
 
     dStemNo(mortality, thinning) => -mortality - thinning ~ track(u"ha^-1/hr")
+    
     stemNo(dStemNo) ~ accumulate(init=iStemNo, u"ha^-1")
 
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/hr")

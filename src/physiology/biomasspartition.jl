@@ -17,12 +17,6 @@
     
     pfsConst(pFS2, pfsPower) => pFS2 / 2 ^ pfsPower ~ preserve
     
-    "Stem mass vs. diameter constant"
-    aWs => 0.0771 ~ preserve(parameter)
-    
-    "Stem mass vs. diameter exponent"
-    nWs => 2.2704 ~ preserve(parameter)
-    
     "Maximum fraction of NPP to roots"
     pRx => 0.34 ~ preserve(parameter)
     
@@ -59,7 +53,8 @@
     "Specifies the efficiency in converting root biomass into aboveground biomass."
     efficiency => 0.7  ~ preserve(parameter)
 
-    # root_partition(NPP, NPP_target, frac, ) => begin
+    # Coppicing mechanism included in the modified 3PG model from CSTARS.
+    # root_partition(NPP, NPP_target, frac) => begin
     #     NPP_res = NPP_target - NPP
     #     if NPP_res > 0 && (WR/W) > pRx
     #         min(NPP_res, WR*(WR/W - pRx)*frac)
@@ -75,6 +70,8 @@
     #=================
     Paritioning Ratios
     =================#
+
+    # TODO: Better variable name? Empirical value used in foliage to stem ratio.
     m1(m0, FR) => m0 + (1 - m0) * FR ~ preserve
 
     "Ratio of foliage to stem parititioning"

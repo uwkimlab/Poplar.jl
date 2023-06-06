@@ -7,12 +7,14 @@
     ellipsoidal = 6
 end
 
+
 # @enum WaveBand begin
 #     photosynthetically_active_radiation = 1
 #     near_infrared = 2
 #     longwave = 3
 # end
 
+# Radiation calculates sunlit and sunshaded areas of the canopy.
 @system Radiation begin
     leaf_angle => ellipsoidal ~ preserve::LeafAngle(parameter)
 
@@ -21,7 +23,6 @@ end
         3
     end ~ preserve(parameter)
 
-    # UNUSED
     # wave_band => photosynthetically_active_radiation ~ preserve::WaveBand(parameter)
 
     "scattering coefficient (reflectance + transmittance)"

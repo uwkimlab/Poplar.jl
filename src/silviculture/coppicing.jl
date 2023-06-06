@@ -1,5 +1,6 @@
 @system Coppicing begin
     # Coppicing dates in the form of a vector of ZonedDateTime values.
+    # Example in configuration in config.jl
     coppicing_date => [] ~ preserve::Vector(parameter, optional)
 
     # Coppicing only possible when dormant (for now), 

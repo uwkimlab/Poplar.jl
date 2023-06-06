@@ -1,5 +1,8 @@
 include("radiation.jl")
 
+"""
+Foliage 
+"""
 @system Foliage(Radiation) begin
     #=========
     Parameters
