@@ -1,8 +1,10 @@
 @system Budburst begin
-    # Minimum temperature for budburst
+    # TODO: Change value to something reasonable
+    "Minimum temperature for budburst"
     T_bud => 8 ~ preserve(parameter, u"°C")
 
-    # Optimal temperature for budburst
+    # TODO: Change value to something reasonable
+    "Optimal temperature for budburst"
     T_bud_opt => 32 ~ preserve(parameter, u"°C")
 
     # Yearly target bud growth. Should possibly be a function of stem biomass?
