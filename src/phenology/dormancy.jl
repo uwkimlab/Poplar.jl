@@ -1,9 +1,13 @@
 @system Dormancy begin
 
-    
     T_dorm: temperature_threshold => 5.94915 ~ preserve(parameter, u"°C")
-    Rc: chilling_requirement => -149.549 ~ preserve(parameter, u"K*d")
-    Rf: forcing_requirement => 128.738 ~ preserve(parameter, u"K*d")
+
+    Rc: chilling_requirement => begin
+        -500
+        #-149.549
+    end ~ preserve(parameter, u"K*d")
+
+    Rf: forcing_requirement => 100 ~ preserve(parameter, u"K*d")
 
     dormant(WF) => begin
         WF == 0u"kg/ha"

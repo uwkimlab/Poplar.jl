@@ -40,7 +40,7 @@ end
     end ~ track(u"μbar")
 
     # TODO
-    Vcm25: maximum_carboxylation_rate_at_25 => 108.4 ~ preserve(u"μmol/m^2/s" #= CO2 =#, parameter)
+    Vcm25: maximum_carboxylation_rate_at_25 => 56.95822653317411 ~ preserve(u"μmol/m^2/s" #= CO2 =#, parameter)
     
     # Activation energy for carboxylation, from Kim and Lieth (2003)
     EaVc: activation_energy_for_carboxylation => 45.5 ~ preserve(u"kJ/mol", parameter)
@@ -52,7 +52,7 @@ end
 
 @system C3j(C3Base) begin
     # TODO
-    Jm25: maximum_electron_transport_rate_at_25 => 169.0 ~ preserve(u"μmol/m^2/s" #= Electron =#, parameter)
+    Jm25: maximum_electron_transport_rate_at_25 => 98.9269941286961 ~ preserve(u"μmol/m^2/s" #= Electron =#, parameter)
     
     # Activation energy for electron transport, from Kim and Lieth (2003)
     Eaj: activation_energy_for_electron_transport => 43.3 ~ preserve(u"kJ/mol", parameter)

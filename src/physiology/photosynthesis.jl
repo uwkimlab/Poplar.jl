@@ -16,7 +16,6 @@ Photosynthesis
     shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width) ~ ::GasExchange
 
     #=================
-    
     =================#
 
     "Gross photosynthetic rate (sunlit + shaded)"
@@ -51,7 +50,7 @@ Photosynthesis
     # From 3PG model, possibly different for poplars.
     # Appears to be the standard value for most species.
     "NPP/GPP ratio"
-    γ => 0.47 ~ preserve(parameter)
+    γ => 0.47 ~ preserve(parameter) # Amichev
 
     "Net primary production"
     NPP(γ, GPP) => begin

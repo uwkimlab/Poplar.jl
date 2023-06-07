@@ -17,22 +17,22 @@ This system calculate age and stress related mortality.
     tgammaN => 0 ~ preserve(parameter)
     
     "Shape of mortality response"
-    ngammaN => 1 ~ preserve(parameter)
+    ngammaN => 1 ~ preserve(parameter) # Amichev
     
     "Max. stem mass per tree at 1000 trees/hectare"
-    wSx1000 => 200 ~ preserve(parameter, u"kg")
+    wSx1000 => 200 ~ preserve(parameter, u"kg") # Amichev
     
     "Power in self-thinning rule"
-    thinPower => 1.5 ~ preserve(parameter)
+    thinPower => 1.5 ~ preserve(parameter) # Amichev
     
     "Fraction mean single-tree foliage biomass lost per dead tree"
-    mF => 0 ~ preserve(parameter)
+    mF => 0 ~ preserve(parameter) # Amichev
     
     "Fraction mean single-tree root biomass lost per dead tree"
-    mR => 0.2 ~ preserve(parameter)
+    mR => 0.2 ~ preserve(parameter) # Amichev
     
     "Fraction mean single-tree stem biomass lost per dead tree"
-    mS => 0.2 ~ preserve(parameter)
+    mS => 0.2 ~ preserve(parameter) # Amichev
 
 
     #=====================
