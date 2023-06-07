@@ -73,7 +73,7 @@ config_GasExchange_EI = @config(
 )
 
 config = @config(
-    config_Clock,
+    # config_Clock,
     config_Calendar,
     config_Atmosphere
 )
