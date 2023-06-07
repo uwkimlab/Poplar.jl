@@ -5,13 +5,6 @@ This file contains a number of sample configurations for convenience.
 include("../morphology/radiation.jl")
 include("../rhizosphere/soil.jl")
 
-# No need to include. step is set to 1u"hr" by default.
-config_Clock = @config(
-    :Clock => (
-        step = 1u"hr",
-    )
-)
-
 # Very important. Determines initial and final dates.
 # Weather data MUST include the date range specified.
 config_Calendar = @config(
@@ -73,7 +66,6 @@ config_GasExchange_EI = @config(
 )
 
 config = @config(
-    # config_Clock,
     config_Calendar,
     config_Atmosphere
 )
