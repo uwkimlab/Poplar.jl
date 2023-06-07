@@ -14,6 +14,7 @@
 
     rSen => 1 ~ preserve(parameter, u"kg/ha/hr/K")
 
+    # (WIP)
     dSen(rSen, SD) => rSen * SD ~ track(u"kg/ha/hr")
 
     # SDD(SD) ~ accumulate(u"K*hr")

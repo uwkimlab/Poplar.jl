@@ -24,24 +24,24 @@ Transpiration
     pool_fraction => 0 ~ preserve(parameter)
 
     "Maximum propotion of rainfall evaporated from canopy"
-    maxInterception ~ preserve(parameter)
+    maxInterception => 0.15 ~ preserve(parameter) # Sands
 
     "LAI for maximum rainfall interception"
-    LAImaxInterception ~ preserve(parameter)
+    LAImaxInterception => 0 ~ preserve(parameter) # Sands
 
-    "Moisture ratio deficit for fTheta = 0.5"
-    SWconst0 => 0.7 ~ preserve(parameter)
+    # "Moisture ratio deficit for fTheta = 0.5"
+    # SWconst0 => 0.7 ~ preserve(parameter)
     
-    SWconst(soil_class, SWconst0) => begin
-        ((Int(soil_class) > 0) ? (0.8 - 0.1 * Int(soil_class)) : (SWconst0)) 
-    end ~ preserve
+    # SWconst(soil_class, SWconst0) => begin
+    #     ((Int(soil_class) > 0) ? (0.8 - 0.1 * Int(soil_class)) : (SWconst0)) 
+    # end ~ preserve
 
-    "Power of moisture ratio deficit"
-    SWpower0 => 9 ~ preserve(parameter)
+    # "Power of moisture ratio deficit"
+    # SWpower0 => 9 ~ preserve(parameter)
     
-    SWpower(soil_class, SWpower0) => begin
-        ((Int(soil_class) > 0) ? (11 - 2 * Int(soil_class)) : (SWpower0))
-    end ~ preserve
+    # SWpower(soil_class, SWpower0) => begin
+    #     ((Int(soil_class) > 0) ? (11 - 2 * Int(soil_class)) : (SWpower0))
+    # end ~ preserve
 
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin

@@ -15,7 +15,7 @@ end
 
 @system Stomata(StomataBase) begin
     g0 => 0.01 ~ preserve(u"mol/m^2/s/bar" #= H2O =#, parameter)
-    g1 => 6.824 ~ preserve(parameter)
+    g1 => 9.670307198008624 ~ preserve(parameter)
 
     #HACK: avoid scaling issue with dimensionless unit
     hs(g0, g1, gb, m, A_net, Cs, RH): relative_humidity_at_leaf_surface => begin

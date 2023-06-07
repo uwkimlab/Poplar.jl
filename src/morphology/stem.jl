@@ -4,7 +4,7 @@
     =========#
 
     "Initial stem drymass"
-    iWS => 2000 ~ preserve(parameter, u"kg/ha")
+    iWS => 4000 ~ preserve(parameter, u"kg/ha")
 
     growthStem(NPP, pS) => NPP * pS ~ track(u"kg/ha/hr") 
 

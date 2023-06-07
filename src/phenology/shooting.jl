@@ -6,10 +6,11 @@
     T_shoot => 8 ~ preserve(parameter, u"°C")
     T_shoot_opt => 32 ~ preserve(parameter, u"°C")
 
-    shoot_max => 2e4 ~ preserve(parameter, u"kg/ha")
+    shoot_max => 1e4 ~ preserve(parameter, u"kg/ha")
 
     shooting(F, Rf, shoot_max, shoot, WS) => begin
-        (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) 
+        false
+        # (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) 
     end ~ flag
 
     ShD(T_air, T_shoot, T_shoot_opt): shooting_degrees => begin
