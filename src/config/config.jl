@@ -1,16 +1,19 @@
-#=============================================================
-This file contains a number of configurations for convenience.
-=============================================================#
+#====================================================================
+This file contains a number of sample configurations for convenience.
+====================================================================#
 
 include("../morphology/radiation.jl")
 include("../rhizosphere/soil.jl")
 
+# No need to include. step is set to 1u"hr" by default.
 config_Clock = @config(
     :Clock => (
         step = 1u"hr",
     )
 )
 
+# Very important. Determines initial and final dates.
+# Weather data MUST include the date range specified.
 config_Calendar = @config(
     :Calendar => (
         init = ZonedDateTime(2008, 4, 5, tz"Asia/Seoul"),
@@ -18,13 +21,14 @@ config_Calendar = @config(
     )
 )
 
+# Weather data must be included.
 config_Atmosphere = @config(
     :Atmosphere => (
-        CO2 = 350,
         data = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
     )
 )
 
+# Default parameters for GasExchange.
 config_GasExchange_NI = @config(
     :GasExchange => (
         Tp25 = 11.55,
@@ -46,6 +50,7 @@ config_GasExchange_NI = @config(
     )
 )
 
+# GasExchange parameters for endophyte inoculation.
 config_GasExchange_EI = @config(
     :GasExchange => (
         Tp25 = 11.55,
@@ -67,17 +72,18 @@ config_GasExchange_EI = @config(
     )
 )
 
+# 
 config_Model_Eucalyptus_globulus = @config(
     :Model => ( 
         # BiomassPartition
-        FR = 1,
-        pFS2 = 1,
-        pFS20 = 0.15,
+        # FR = 1,
+        # pFS2 = 1,
+        # pFS20 = 0.15,
         aWs = 0.095,
         nWs = 2.4,
-        pRx = 0.8,
-        pRn = 0.25,
-        m0 = 0,
+        # pRx = 0.8,
+        # pRn = 0.25,
+        # m0 = 0,
         coeffCond = 0.05,
 
         # Mortality
@@ -188,12 +194,12 @@ config_coppicing = @config(
 config_Model_Amichev = @config(
     :Model => (
         # BiomassPartition
-        pFS2 = 0.8567,
-        pFS20 = 0.0590,
+        # pFS2 = 0.8567,
+        # pFS20 = 0.0590,
         stemConst = 0.0771,
         stemPower = 2.2704,
-        pRx = 0.34,
-        pRn = 0.13,
+        # pRx = 0.34,
+        # pRn = 0.13,
         gammaF0 = 0,
         gammaF1 = 0,
         tgammaF = 0,
