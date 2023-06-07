@@ -8,26 +8,26 @@ Foliage
     Parameters
     ==========#
     "Initial foliage drymass"
-    iWF ~ preserve(parameter, u"kg/ha")
+    iWF => 1e3 ~ preserve(parameter, u"kg/ha")
 
     # Specific leaf area
     "Specific leaf area at age 0"
-    SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg")
+    SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
     
     "Specfic leaf area for mature leaves"
-    SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg")
+    SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
     
     "Age at which specific leaf area = (SLA0 + SLA1)/2"
-    tSLA => 1 ~ preserve(parameter)
+    tSLA => 1 ~ preserve(parameter) # Amichev
     
     "Maximum litterfall rate"
-    gammaF1 => 0 ~ preserve(parameter)
+    gammaF1 => 0 ~ preserve(parameter) # Amichev
 
     "Literfall rate at t = 0"
-    gammaF0 => 0 ~ preserve(parameter)
+    gammaF0 => 0 ~ preserve(parameter) # Amichev
 
     "Age at which litterfall rate has median value"
-    tgammaF => 0 ~ preserve(parameter)
+    tgammaF => 0 ~ preserve(parameter) # Amichev
 
     "Leaf width"
     leaf_width => begin
@@ -61,7 +61,6 @@ Foliage
         growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF - dSen + dBud
     end ~ track(u"kg/ha/hr")
 
-    # Reset when coppice == true (not sure if it resets in the beginning or end of loop)
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
 
     # Specific leaf area based on stand age (years)

@@ -18,49 +18,49 @@ include("root.jl")
 
     # Branch and bark fraction
     "Branch and bark fraction at age 0"
-    fracBB0 => 0 ~ preserve(parameter)
+    fracBB0 => 0 ~ preserve(parameter) # Amichev
     
     "Branch and bark fraction for mature stands"
-    fracBB1 => 0 ~ preserve(parameter)
+    fracBB1 => 0 ~ preserve(parameter) # Amichev
     
     "Age at which frac BB = (fracBB0 + fracBB1) / 2"
-    tBB => 0 ~ preserve(parameter)
+    tBB => 0 ~ preserve(parameter) # Amichev
     
     # Basic density
     "Minimum basic density (for young trees)"
-    rho0 => 0.358 ~ preserve(parameter, u"kg/m^3")
+    rho0 => 0.358 ~ preserve(parameter, u"kg/m^3") # Amichev
     
     "Maximum basic density (for older trees)"
-    rho1 => 0.358 ~ preserve(parameter, u"kg/m^3")
+    rho1 => 0.358 ~ preserve(parameter, u"kg/m^3") # Amichev
     
     "Age at which rho = (rhoMin + rhoMax) / 2"
-    tRho => 4 ~ preserve(parameter) # 
+    tRho => 4 ~ preserve(parameter) # Sands
     
     # Stem height
     "Constant in the stem height relationship"
-    aH => 0.9740 ~ preserve(parameter)
+    aH => 0.9740 ~ preserve(parameter) # Amichev
     
     "Power of DBH in the stem height relationship"
-    nHB => 0.6816 ~ preserve(parameter)
+    nHB => 0.6816 ~ preserve(parameter) # Amichev
     
     "Power of stocking in the stem height relationship"
-    nHN => 0.1064 ~ preserve(parameter)
+    nHN => 0.1064 ~ preserve(parameter) # Amichev
     
     # Stem volume
     "Constant in the stem volume relationship"
-    aV => 0.0001 ~ preserve(parameter)
+    aV => 0.0001 ~ preserve(parameter) # Amichev
     
     "Power of DBH in the stem volume relationship"
-    nVB => 2.3270 ~ preserve(parameter)
+    nVB => 2.3270 ~ preserve(parameter) # Amichev
     
     "Power of stocking in the stem volume relationship"
-    nVN => 1.0915 ~ preserve(parameter)
+    nVN => 1.0915 ~ preserve(parameter) # Amichev
 
     "Stem mass vs. diameter constant"
-    aWs => 0.0771 ~ preserve(parameter)
+    aWs => 0.0771 ~ preserve(parameter) # Amichev
     
     "Stem mass vs. diameter exponent"
-    nWs => 2.2704 ~ preserve(parameter)
+    nWs => 2.2704 ~ preserve(parameter) # Amichev
     
     #==========
     Stem Volume
