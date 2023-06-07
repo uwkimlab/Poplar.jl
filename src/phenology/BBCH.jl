@@ -5,13 +5,13 @@
         if dormant
             :BBCH00
         elseif budburst
-            :BBCH11
+            :BBCH10
         elseif leafexpansion
-            :BBCH19
+            :BBCH11
         elseif senescent
             :BBCH90
         else
-            :BBCH30
+            :BBCH30 # shoot development
         end
     end ~ track::Symbol
 
@@ -24,7 +24,7 @@
         0.34 0.52 0.14 # BBCH30
         0.34 0.52 0.14 # BBCH90
     ] ~ tabulate(
-        rows=(:BBCH00, :BBCH11, :BBCH19, :BBCH30, :BBCH90),
+        rows=(:BBCH00, :BBCH10, :BBCH11, :BBCH30, :BBCH90),
         columns=(:leaf, :stem, :root),
         parameter
     )
