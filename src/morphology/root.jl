@@ -5,7 +5,7 @@
     =========#
 
     "Initial root drymass"
-    iWR => 5000 ~ preserve(parameter, u"kg/ha")
+    iWR => 3000 ~ preserve(parameter, u"kg/ha")
     
     "Average monthly root turnover rate"
     gammaR => 0.005 ~ preserve(parameter) # Amichev
