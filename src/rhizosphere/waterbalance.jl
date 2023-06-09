@@ -9,13 +9,13 @@ Transpiration
     =========#
 
     "Initial available soil water"
-    iASW => 1 ~ preserve(parameter, u"mm")
+    iASW => 200 ~ preserve(parameter, u"mm")
 
     "Maximum available soil water"
-    maxASW => 1 ~ preserve(parameter, u"mm")
+    maxASW => 200 ~ preserve(parameter, u"mm")
     
     "Minimum available soil water"
-    minASW => 1 ~ preserve(parameter, u"mm")
+    minASW => 0 ~ preserve(parameter, u"mm")
 
     "Irrigation"
     irrigation => 0 ~ preserve(parameter, u"mm/hr")
