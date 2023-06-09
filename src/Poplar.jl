@@ -13,5 +13,9 @@ include("silviculture/silviculture.jl")
 
 @system Model(Atmosphere, Calendar, Morphology, Phenology, Physiology, Rhizosphere, Silviculture, Controller)
 
+weather = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
+
+export weather
 export Model
+
 end
