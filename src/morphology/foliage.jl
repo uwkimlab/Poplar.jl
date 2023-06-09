@@ -63,6 +63,8 @@ Foliage
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
 
+    WF_ton(nounit(WF)) => WF / 1000 ~ track # conversion to metric
+
     # Specific leaf area based on stand age (years)
     SLA(standAge, SLA0, SLA1, tSLA) => begin
         SLA1 + (SLA0 - SLA1) * exp(-log(2) * (standAge / tSLA) ^ 2)

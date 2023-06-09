@@ -20,4 +20,5 @@
     # Reset when coppice == true (not sure if it resets in the beginning or the end of the loop)
     WS_lim(WS, step) => WS / step ~ track(u"kg/ha/hr") 
     WS(dWS) ~ accumulate(u"kg/ha", init=iWS, min=0) # stem drymass
+    WS_ton(nounit(WS)) => WS / 1000 ~ track
 end

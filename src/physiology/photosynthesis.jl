@@ -57,6 +57,10 @@ Photosynthesis
         γ*GPP
     end ~ track(u"kg/ha/hr")
 
+    WUE(NPP, transpiration) => begin
+        NPP / transpiration
+    end ~ track(u"g/L")
+
     # Conversion to mm/hr to match water balance.
     "Canopy transpiration in mm/hr"
     transpiration(ET, w=H2O_weight, d=H2O_density) => begin
