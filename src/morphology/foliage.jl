@@ -8,7 +8,7 @@ Foliage
     Parameters
     ==========#
     "Initial foliage drymass"
-    iWF => 1e3 ~ preserve(parameter, u"kg/ha")
+    iWF => 1000 ~ preserve(parameter, u"kg/ha")
 
     # Specific leaf area
     "Specific leaf area at age 0"
