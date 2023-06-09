@@ -111,6 +111,7 @@ include("root.jl")
 
     "Total weight"
     W(dW) ~ accumulate(u"kg/ha", init=iW, min=0)
+    W_ton(nounit(W)) => W ~ track 
 
     W_lim(W, step) => W / step ~ track(u"kg/ha/hr")
 end

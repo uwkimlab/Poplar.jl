@@ -52,4 +52,5 @@
     
     dWR(growthRoot, rootTurnover, deathRoot, thinning_WR, dShoot) => growthRoot - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
     WR(dWR) ~ accumulate(u"kg/ha", init=iWR, min=0) # root drymass
+    WR_ton(nounit(WR)) => WR / 1000 ~ track
 end
