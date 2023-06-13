@@ -1,7 +1,7 @@
 @system Sun begin
-    lat: latitude => 36u"°" ~ preserve(u"°", parameter)
-    long: longitude => 128u"°" ~ preserve(u"°", parameter)
-    alt: altitude => 20u"m" ~ preserve(u"m", parameter)
+    lat: latitude => 47.66u"°" ~ preserve(u"°", parameter)
+    long: longitude => 122.29u"°" ~ preserve(u"°", parameter)
+    alt: altitude => 30u"m" ~ preserve(u"m", parameter)
     
     τ: transmissivity => 0.5 ~ preserve(parameter) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
 
