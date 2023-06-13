@@ -9,15 +9,15 @@ include("../rhizosphere/soil.jl")
 # Weather data MUST include the date range specified.
 config_Calendar = @config(
     :Calendar => (
-        init = ZonedDateTime(2008, 4, 5, tz"Asia/Seoul"),
-        last = ZonedDateTime(2017, 8, 31, tz"Asia/Seoul"),
+        init = ZonedDateTime(2014, 4, 5, tz"America/Los_Angeles"),
+        last = ZonedDateTime(2021, 12, 31, tz"America/Los_Angeles"),
     )
 )
 
 # Weather data must be included.
 config_Atmosphere = @config(
     :Atmosphere => (
-        data = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul"),
+        data = Poplar.loadwea(Poplar.datapath("CUH.wea"), tz"America/Los_Angeles"),
     )
 )
 

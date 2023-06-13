@@ -3,7 +3,7 @@
     T_dorm: temperature_threshold => 5.94915 ~ preserve(parameter, u"°C")
 
     Rc: chilling_requirement => begin
-        -500
+        -100
         #-149.549
     end ~ preserve(parameter, u"K*d")
 
