@@ -13,6 +13,7 @@ include("silviculture/silviculture.jl")
 
 @system Model(Atmosphere, Calendar, Morphology, Phenology, Physiology, Rhizosphere, Silviculture, Controller)
 
+weather = Poplar.loadwea(Poplar.datapath("2007.wea"), tz"Asia/Seoul")
 CUH = Poplar.loadwea(Poplar.datapath("CUH.wea"), tz"America/Los_Angeles")
 
 export Model
