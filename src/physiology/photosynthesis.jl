@@ -43,21 +43,22 @@ Photosynthesis
     # Empirical transpiration scale factor from original 3PG model
     # to account for water deficit.
     "Gross primary production"
-    GPP(A_gross, w=CH2O_weight, transpScaleFactor) => begin
-        A_gross * w * transpScaleFactor
+    GPP(A_gross, w=CH2O_weight, transpiration_scale_factor): gross_primary_production => begin
+        A_gross * w * transpiration_scale_factor
     end ~ track(u"kg/ha/hr")
 
     # From 3PG model, possibly different for poplars.
     # Appears to be the standard value for most species.
-    "NPP/GPP ratio"
-    γ => 0.47 ~ preserve(parameter) # Amichev
+    "NPP/GPP fraction"
+    γ: NPP_GPP_fraction => 0.47 ~ preserve(parameter) # Amichev
 
     "Net primary production"
-    NPP(γ, GPP) => begin
+    NPP(γ, GPP): net_primary_production => begin
         γ*GPP
     end ~ track(u"kg/ha/hr")
 
-    WUE(NPP, transpiration) => begin
+    "Water use efficiency (productivity)"
+    WUE(NPP, transpiration): water_use_efficiency => begin
         NPP / transpiration
     end ~ track(u"g/L")
 
