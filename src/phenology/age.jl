@@ -4,10 +4,11 @@
     Parameters
     =========#
 
-    "Initial age" # In years. Unreasonable to define initial age in hours.
+    # Initial age in years.
+    "Initial age"
     iAge => 1 ~ preserve(parameter, u"yr") # Initial age 
 
-    # Keeps track of stand age in hours.
+    # Stand age in hours.
     "Stand age (hours)"
     standAgeHour ~ advance(u"hr", init=iAge)
 
