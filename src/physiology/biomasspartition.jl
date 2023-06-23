@@ -51,8 +51,8 @@
     # coeffCond => 0.05 ~ preserve(parameter, u"mbar^-1")
     
     # "Soilwater modifier on root partitioning"
-    # fSW(ASW, maxASW, SWconst, SWpower) => begin
-    #     1 / (1 + ((1 - (ASW / maxASW)) / SWconst) ^ SWpower)
+    # fSW(ASW, ASW_max, SWconst, SWpower) => begin
+    #     1 / (1 + ((1 - (ASW / ASW_max)) / SWconst) ^ SWpower)
     # end ~ track
 
     # "VPD modifier on root partitioning"

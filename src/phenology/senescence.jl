@@ -12,10 +12,10 @@
         (Tk_sen - Tk_air) * (day_length / P_sen)
     end ~ track(when=senescent, u"K")
 
-    rSen => 1 ~ preserve(parameter, u"kg/ha/hr/K")
+    senescence_rate => 1 ~ preserve(parameter, u"kg/ha/hr/K")
 
     # (WIP)
-    dSen(rSen, SD) => rSen * SD ~ track(u"kg/ha/hr")
+    senescence_delta(senescence_rate, SD) => senescence_rate * SD ~ track(u"kg/ha/hr")
 
     # SDD(SD) ~ accumulate(u"K*hr")
 end

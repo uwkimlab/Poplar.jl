@@ -23,8 +23,8 @@
     ========#
 
     "Canopy root mortality rate"
-    deathRoot(WR, mR, mortality, stemNo) => begin
-        mR * mortality * (WR / stemNo)
+    deathRoot(WR, mR, mortality, trees) => begin
+        mR * mortality * (WR / trees)
     end ~ track(u"kg/ha/hr", when=flagMortal)
 
     #=======

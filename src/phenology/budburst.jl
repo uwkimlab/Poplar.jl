@@ -36,13 +36,11 @@
         # min(T_air, T_bud_opt) - T_bud 
     end ~ track(when=budburst, min=0, u"K")
 
-    BDD(BD): budburst_degree_days ~ accumulate(u"K*hr")
-
     dBud_max(WS, step) => WS / step ~ track(u"kg/ha/hr")
 
     # bud growth per hour (WIP).
-    dBud(bud_rate, BD) => bud_rate * BD ~ track(max=dBud_max, u"kg/ha/hr")
+    bud_delta(bud_rate, BD) => bud_rate * BD ~ track(max=dBud_max, u"kg/ha/hr")
 
     # Accumulated bud growth for the year. Resets to 0 every year. Budburst halts when target is met.
-    # bud(dBud) ~ accumulate(reset=senescent, u"kg/ha")
+    # bud(bud_delta) ~ accumulate(reset=senescent, u"kg/ha")
 end
