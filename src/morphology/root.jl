@@ -4,6 +4,12 @@
     Parameters
     =========#
 
+    PCARST
+    PLIGST
+    PLIPST
+    PMINST
+    POAST
+
     "Initial root drymass"
     iWR => 3000 ~ preserve(parameter, u"kg/ha")
     
@@ -16,7 +22,7 @@
 
     # NPP multiplied by root partition in BiomassPartition
     "Canopy root growth rate"
-    growthRoot(NPP, pR) => NPP * pR ~ track(u"kg/ha/hr") # root
+    growth_root(NPP, pR) => NPP * pR ~ track(u"kg/ha/hr") # root
 
     #========
     Mortality
@@ -50,7 +56,7 @@
     Weight
     =====#
     
-    dWR(growthRoot, rootTurnover, deathRoot, thinning_WR, dShoot) => growthRoot - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
+    dWR(growth_root, rootTurnover, deathRoot, thinning_WR, dShoot) => growth_root - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
     WR(dWR) ~ accumulate(u"kg/ha", init=iWR, min=0) # root drymass
     WR_ton(nounit(WR)) => WR / 1000 ~ track
 end

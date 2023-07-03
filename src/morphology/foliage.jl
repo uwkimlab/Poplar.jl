@@ -7,6 +7,13 @@ Foliage
     #=========
     Parameters
     ==========#
+
+    PCARST
+    PLIGST
+    PLIPST
+    PMINST
+    POAST
+
     "Initial foliage drymass"
     iWF => 1000 ~ preserve(parameter, u"kg/ha")
 
@@ -40,7 +47,7 @@ Foliage
     #=====
     =====#
 
-    growthFoliage(NPP, pF) => NPP * pF ~ track(u"kg/ha/hr") # foliage
+    growth_foliage(NPP, pF) => NPP * pF ~ track(u"kg/ha/hr") # foliage
 
     deathFoliage(WF, mF, mortality, trees) => begin
         mF * mortality * (WF / trees)
@@ -63,8 +70,8 @@ Foliage
 
     litterfall(gammaFhour, WF) => gammaFhour * WF ~ track(u"kg/ha/hr")
 
-    dWF(growthFoliage, litterfall, deathFoliage, defoliation, thinning_WF, senescence_delta, bud_delta) => begin
-        growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF - senescence_delta + bud_delta
+    dWF(growth_foliage, litterfall, deathFoliage, defoliation, thinning_WF, senescence_delta, bud_delta) => begin
+        growth_foliage - litterfall - deathFoliage - defoliation - thinning_WF - senescence_delta + bud_delta
     end ~ track(u"kg/ha/hr")
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass

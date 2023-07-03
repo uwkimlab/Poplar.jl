@@ -3,16 +3,23 @@
     Parameters
     =========#
 
+    PCARST
+    PLIGST
+    PLIPST
+    PMINST
+    POAST
+    
+
     "Initial stem drymass"
     iWS => 4000 ~ preserve(parameter, u"kg/ha")
 
-    growthStem(NPP, pS) => NPP * pS ~ track(u"kg/ha/hr") 
+    growth_stem(NPP, pS) => NPP * pS ~ track(u"kg/ha/hr") 
 
     deathStem(WS, mS, mortality, trees) => begin
         mS * mortality * (WS / trees)
     end ~ track(u"kg/ha/hr", when=flagMortal, max=WS_lim)
 
-    dWS(growthStem, deathStem, thinning_WS, bud_delta, coppicing, dShoot) => growthStem - deathStem - thinning_WS - bud_delta - coppicing + dShoot ~ track(u"kg/ha/hr")
+    dWS(growth_stem, deathStem, thinning_WS, bud_delta, coppicing, dShoot) => growth_stem - deathStem - thinning_WS - bud_delta - coppicing + dShoot ~ track(u"kg/ha/hr")
     
     "Average stem mass"
     avStemMass(WS, trees) => WS / trees ~ track(u"kg")
