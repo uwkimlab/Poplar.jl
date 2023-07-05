@@ -8,11 +8,11 @@ Foliage
     Parameters
     ==========#
 
-    PCARST
-    PLIGST
-    PLIPST
-    PMINST
-    POAST
+    carbohydrate_leaf ~ preserve(parameter)
+    lignin_leaf ~ preserve(parameter)
+    lipid_leaf ~ preserve(parameter)
+    mineral_leaf ~ preserve(parameter)
+    organic_leaf ~ preserve(parameter)
 
     "Initial foliage drymass"
     iWF => 1000 ~ preserve(parameter, u"kg/ha")

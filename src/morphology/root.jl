@@ -4,11 +4,11 @@
     Parameters
     =========#
 
-    PCARST
-    PLIGST
-    PLIPST
-    PMINST
-    POAST
+    carbohydrate_root ~ preserve(parameter)
+    lignin_root ~ preserve(parameter)
+    lipid_root ~ preserve(parameter)
+    mineral_root ~ preserve(parameter)
+    organic_root ~ preserve(parameter)
 
     "Initial root drymass"
     iWR => 3000 ~ preserve(parameter, u"kg/ha")

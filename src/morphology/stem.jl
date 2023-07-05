@@ -3,12 +3,11 @@
     Parameters
     =========#
 
-    PCARST
-    PLIGST
-    PLIPST
-    PMINST
-    POAST
-    
+    carbohydrate_stem ~ preserve(parameter)
+    lignin_stem ~ preserve(parameter)
+    lipid_stem ~ preserve(parameter)
+    mineral_stem ~ preserve(parameter)
+    organic_stem ~ preserve(parameter)
 
     "Initial stem drymass"
     iWS => 4000 ~ preserve(parameter, u"kg/ha")
