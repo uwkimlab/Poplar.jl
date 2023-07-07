@@ -14,10 +14,25 @@
         NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
     end
 
+    # DEMAND
+    C_demand(GPP) => GPP ~ track
+
+
+
     # N demand for reproduction.
     # Reproduction is not a part of the model at the moment
     # so I am setting it as 0.
     NDMREP => 0 ~ preserve
+
+    AGRVG => begin
+        AGRLF * FRLF + AGRRT * FRRT + AGRSTEM * FRSTM + AGRSTR
+    end ~ track
+
+    AGRVG2 => begin
+        AGRVG + (FRLF * PROLFI + FRRT * PRORTI + FRSTM * PROSTI)
+    end ~ track
+
+    NDMVEG = 
 
     # N required for vegetative growth.
     # CDMVEG / AGRVG2 is for conversion of CH2O mass to vegetative tissue mass.
@@ -51,16 +66,14 @@
         PGAVL - CDMREP
     end(min=0)
 
-    CNOLD/RNO3C*0.16
+    question_mark => CNOLD / RNO3C * 0.16 ~ track
 
     # Nitrogen demand for old tissue. Not sure where the value 0.16 comes from.
     NDMOLD(WTLF, SLDOT, WCRLF, PROLFR) => begin
         max(0, (WTLF - SLFDOR - WCRLF) * PROLFT * 0.16 - WTNST) +
         max(0, (STMWT - SDDOT - WCRST) * PROSTR * 0.16 - WTNST) +
         max(0, (STRWT - SSRDOT - WCRSR) * PROSSR * 0.16 - WTNSR)
-    end
-
-    NDM
+    end(max=question_mark)
 
     # Total nitrogen demand.
     NDMTOT(NDMREP, NDMVEG, NDMOLD) => begin
@@ -79,116 +92,35 @@
     # specific leaf area factor?
     # TPHFAC()
 
-    # Potential NH4 availability factor from CROPGRO.
-    # Not sure why 0.04 and below is 0. Potentially unnecessary.
-    NH4_factor(NH4) => begin
-        f = 1 - exp(-0.08 * NH4)
-        f < 0.04 ? 0 : f
-    end ~ track(max=1)
 
-    # Poptential NO3 availability factor from CROPGRO.
-    # Not sure why 0.04 and belo is 0. Potentially unnecessary.
-    NO3_factor(NO3) => begin
-        f = 1 - exp(-0.08 * NH4)
-        f < 0.04 ? 0 : f
-    end ~ track(max=1) # Not sure why 0.04 and below is 0.
 
-    # Relative drought factor from CROPGRO.
-    # Not sure why minimum is 0.1.
-    drought_factor(ASW, min_ASW, field_capacity) => begin
-        if ASW > field_capacity
-            1.0 - (ASW - field_capacity) / (max_ASW - field_capacity)
-        else
-            (ASW - min_ASW) / (field_capacity - min_ASW)
-        end
-    end ~ track(min=0.1) 
 
-    # Nitrogen uptake conversion factor.
-    # Essentially how much kg/ha of nitrogen for mg/cm of nitrogen (root) 
-    N_uptake_factor(RLV, drought_factor, soil_depth) => begin
-        RLV * sqrt(drought_factor) * soil_depth
-    end ~ track
+    # NUPTAK #############################
 
-    # Nitrate uptake per unit root length
-    NO3_per_length ~ preserve(parameter)
 
-    # Ammonium uptake per unit root length
-    NO4_per_length ~ preserve(parameter)
-
-    # Nitrate uptake
-    NO3_uptake(N_uptake_factor, NO3_factor, RTNO3) => begin
-        N_uptake_factor * NO3_factor * RTNO3
-    end(min=0)
-
-    # Ammonium uptake
-    NH4_uptake(N_uptake_factor, NH4_factor, RTNH4) => begin
-        N_uptake_factor * NH4_factor * RTNH4
-    end(min=0)
-
-    # Total nitrogen uptake in a day
-    N_uptake(NO3_up, NH4_up) => begin
-        NO3_up + NH4_up
-    end
-
-    # Total crop N demand. 
-    N_demand(N_demand_veg, N_demand_old#=, N_demand_seed, N_demand_rep=#)
-
-    # Demand vs. uptake fraction.
-    # Max set to 1 as nitrogen uptake cannot be greater than what is available.
-    N_uptake_fraction(N_demand, N_uptake) => begin
-        N_demand / N_uptake
-    end ~ track(max=1)
-
-    # Actual NO3 uptake based on N uptake fraction.
-    NO3_up(NO3_uptake, N_uptake_fraction) => begin
-        NO3_uptake * N_uptake_fraction
-    end ~ track(max=NO3_up_max)
-
-    # Actual NO3 uptake based on N uptake fraction.
-    NH4_up(NH4_uptake, N_uptake_fraction) => begin
-        NO3_uptake * N_uptake_fraction
-    end ~ track(max=NH4_up_max)
-
-    # Amount of NO3 that stays in soil
-    NO3_min(KG2PPM) => 0.25 / KG2PPM ~ preserve(parameter)
-
-    # Minimum NH4 uptake from soil
-    NO3_up_max(NO3_soil, NO3_min) => NO3 - NO3_min ~ preserve(parameter)
-
-    # Amount of NH4 that stays in soil
-    NH4_min(KG2PPM) => 0.5 / KG2PPM
-
-    # Maximum NH4 uptake from soil
-    NH4_up_max(NH4_soil, NH4_min) => NH4 - NH4_min ~ preserve(parameter)
-
-    # Total extractable ammonium in soil
-    NH4_soil
-
-    # Total extractable nitrate in soil
-    NO3_soil
 
     # VEGGR
 
-    # 
     N_supply(N_fixation, N_uptake, N_mined) => begin
-        N_fixation + N_uptake + N_mined
+        N_fixation + N_up + N_mined
     end ~ track
 
     N_stress(N_supply, N_demand_new, N_stress_factor) => begin
         N_supply / (N_demand_new * N_stress_factor)
     end ~ track
+    
 
-    N_fraction_leaf_max() ~ track
+    N_fraction_leaf_max => 0 ~ preserve(parameter)
 
-    N_fraction_stem_max
+    N_fraction_stem_max => 0 ~ preserve(parameter)
 
-    N_fraction_root_max
+    N_fraction_root_max => 0 ~ preserve(parameter)
 
-    N_fraction_leaf_min
+    N_fraction_leaf_min => 0 ~ preserve(paramter)
 
-    N_fraction_stem_min
+    N_fraction_stem_min => 0 ~ preserve(parameter)
 
-    N_fraction_root_min
+    N_fraction_root_min => 0 ~ preserve(parameter)
 
 
     N_demand_leaf_max(growth_leaf, N_fraction_leaf_max)  ~ track
@@ -203,24 +135,59 @@
 
     N_demand_root_min(growth_root, N_fraction_root_min)
 
+    N_stressed(N_ratio) => N_ratio < 1 ~ flag
 
     N_ratio(N_available, N_growth) => N_available / N_growth
 
     growth_foliage2(growth_foliage, N_ratio) => growth_follage * N_ratio
 
-    ch2o_per_growth ~ preserve(parameter)
+    protein_leaf_growth
+    protein_leaf_max
+
+    protein_stem_growth
+    protein_stem_max
+
+    protein_root_growth
+    protein_root_max
+
+    ch2o_per_growth => begin
+        if N_stressed
+             AGRLF * pF * (1 - (protein_leaf_growth - protein_leaf_max)/(1 - protein_leaf_max)) +
+            AGRSTM * pS * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max)) +
+             AGRRT * pR * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max))
+        else
+            AGRLF * pF + AGRSTM * pS + AGRRT * pR
+    end ~ preserve(parameter)
+
 
     growth_demand(GPP, CH2O_per_vegetative) => begin
         GPP / CH2O_per_growth
     end ~ track # CH2O to Vegetative mass conversion
 
-    # growth_foliage(growth_demand * GPP * partition)
+    growth_demand_leaf(growth_demand, pF) ~ growth_demand * pF ~ track
 
-    AGRVG(
+    growth_demand_stem(growth_demand, pS) ~ growth_demand * pS ~ track
 
-    PGAVL: total available ch2o available for growth & respiration
+    growth_demand_root(growth_demand, pR) ~ growth_demand * pR ~ track
 
-    protein_leaf(N_growth_leaf, )
+    N_demand_min(N_demand_leaf_min, N_demand_stem_min, N_demand_root_min) => begin
+        N_demand_leaf_min + N_demand_stem_min + N_demand_root_min
+    end
+
+    N_ratio(N_available, N_up) => N_available / N_up ~ track(min=0, max=1)
+
+    growth_leaf(growth_demand_leaf, N_ratio) => growth_demand_leaf * N_ratio ~ track
+
+    growth_stem(growth_demand_stem, N_ratio) => growth_demand_stem * N_ratio ~ track
+
+    growth_root(growth_demand_root, N_ratio) => growth_demand_root * N_ratio ~ track
+
+
+    # PGAVL: total available ch2o available for growth & respiration
+
+    protein_leaf(N_growth_leaf, ) => N_avaiable * 
+    protein_stem(N_growth_stem, )
+    protein_root(N_growth_root, )
 
     # MOBIL
 
@@ -241,7 +208,4 @@
     N_mobilized_root(N_mined_R, N_available_root)
 
     N_mobilized_stem(N_mined_R, N_available_stem)
-
-
-
 end
