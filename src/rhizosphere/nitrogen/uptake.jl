@@ -1,19 +1,51 @@
+# N_demand_total is required.
 @system NitrogenUptake begin
+
+    
+
+    # scale down uptake if not enough CH2O
+    CH2O_uptake
+
+    # PARAMETERS
+
+    # Nitrate uptake per unit root length
+    NO3_per_length ~ preserve(parameter)
+
+    # Ammonium uptake per unit root length
+    NO4_per_length ~ preserve(parameter)
+
+
+    RNO3C ~ preserve
+
+    RNH4C ~ preserve
+
+    # I have no idea what BD is
+    FAC => 10 / (BD * DLAYR) ~ preserve
+
+    NO3_extractable(NO3_soil, FAC) => NO3_soil / FAC ~ track
+
+    NH4_extractable(NH4_soil, FAC) => NH4_soil / FAC ~ track
+
+    # The N_senescence should go into N_demand calculation in the first place?
+    N_demand_crop(N_demand_total, N_senescence) => begin
+        N_demand_total - N_senescence * 10 # Why * 10?
+    end(max=N_uptake_total)
+
     # Potential NH4 availability factor from CROPGRO.
-    # Not sure why 0.04 and below is 0. Potentially unnecessary.
+    # Not sure why 0.04 and below is 0.
     NH4_factor(NH4) => begin
         f = 1 - exp(-0.08 * NH4)
         f < 0.04 ? 0 : f
     end ~ track(max=1)
 
     # Poptential NO3 availability factor from CROPGRO.
-    # Not sure why 0.04 and belo is 0. Potentially unnecessary.
+    # Not sure why 0.04 and below is 0.
     NO3_factor(NO3) => begin
         f = 1 - exp(-0.08 * NH4)
         f < 0.04 ? 0 : f
-    end ~ track(max=1) # Not sure why 0.04 and below is 0.
+    end ~ track(max=1)
 
-    # Relative drought factor from CROPGRO.
+    # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
     # Not sure why minimum is 0.1.
     drought_factor(ASW, min_ASW, field_capacity) => begin
         if ASW > field_capacity
@@ -24,34 +56,35 @@
     end ~ track(min=0, max=1) 
 
     # Nitrogen uptake conversion factor.
-    # Essentially how much kg/ha of nitrogen for mg/cm of nitrogen (root) 
-    N_uptake_factor(RLV, drought_factor, soil_depth) => begin
+    # How much kg/ha of nitrogen for mg/cm of nitrogen (root)?
+    N_uptake_conversion_factor(RLV, drought_factor, soil_depth) => begin
         RLV * sqrt(drought_factor) * soil_depth
     end ~ track
 
-    # Nitrate uptake per unit root length
-    NO3_per_length ~ preserve(parameter)
-
-    # Ammonium uptake per unit root length
-    NO4_per_length ~ preserve(parameter)
-
-    # Nitrate uptake
-    NO3_uptake_potential(N_uptake_factor, NO3_factor, RTNO3) => begin
-        N_uptake_factor * NO3_factor * RTNO3
+    # Nitrate uptake potential
+    NO3_uptake_potential(N_uptake_conversion_factor, NO3_factor, RTNO3) => begin
+        N_uptake_conversion_factor * NO3_factor * RTNO3
     end(min=0)
 
-    # Ammonium uptake
-    NH4_uptake_potential(N_uptake_factor, NH4_factor, RTNH4) => begin
-        N_uptake_factor * NH4_factor * RTNH4
+    # Ammonium uptake potential
+    NH4_uptake_potential(N_uptake_conversion_factor, NH4_factor, RTNH4) => begin
+        N_uptake_conversion_factor * NH4_factor * RTNH4
     end(min=0)
 
-    # Total nitrogen uptake in a day
+    # Total nitrogen uptake potential in a day
     N_uptake_potential(NO3_uptake_potential, NH4_uptake_potential) => begin
         NO3_uptake_potential + NH4_uptake_potential
     end
 
-    # Total crop N demand. 
-    N_demand(N_demand_veg, N_demand_old#= ,N_demand_rep=#)
+    NO3_respiration_cost(NO3_uptake_potential) => begin
+        (NO3_uptake_potential/10) / 0.16 * RNO3C
+        # Why divide by 10?
+    end
+
+    NH4_respiration_cost(NH4_uptake_potential) => begin
+        (NH4_uptake_potential/10) / 0.16 * RNH4C
+        # Why divide by 10?
+    end
 
     # Demand vs. uptake fraction.
     # Max set to 1 as nitrogen uptake cannot be greater than what is available.
@@ -65,7 +98,7 @@
     end ~ track(max=NO3_up_max)
 
     # Actual NO3 uptake based on N uptake fraction.
-    NH4_up(NH4_uptake_potential, N_uptake_fraction) => begin
+    NH4_uptake(NH4_uptake_potential, N_uptake_fraction) => begin
         NH4_uptake_potential * N_uptake_fraction
     end ~ track(max=NH4_up_max)
 
@@ -86,4 +119,10 @@
 
     # Total extractable nitrate in soil
     NO3_soil
+
+
+    N_uptake_total => begin
+        NO3_uptake + NH4_uptake
+    end
+    
 end
