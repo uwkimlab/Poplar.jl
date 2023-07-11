@@ -1,6 +1,4 @@
 @system NitrogenDemand begin
-        # NITROGEN DEMAND CALCULATION
-
     # Nitrogen mobilization rate. Not sure what the numerical values represent.
     # NMOBR is mining rate as a fraction of the maximum rate, NMOBMX
     NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
@@ -23,7 +21,7 @@
     # is not included in the model currently.
     C_demand_veg(GPP) => GPP ~ track
 
-    
+
 
     # N demand for reproduction.
     # Reproduction is not a part of the model at the moment
@@ -82,9 +80,6 @@
     end(max=question_mark)
 
     # Total nitrogen demand.
-    NDMTOT(NDMREP, NDMVEG, NDMOLD) => begin
-        NDMREP + NDMVEG + NDMOLD
-    end
 
     # Maximum fraction of N to leaf
     leaf_N_fraction_max
@@ -97,4 +92,36 @@
 
     # specific leaf area factor?
     # TPHFAC()
+
+    # Curvature factor (K value) for exponential function limiting N_demand_old when GPP is low.
+    KCOLD()
+
+    # CHO required for uptake and reduction of N to fully refill old tissue N (g[CH2O] / m2 / d)
+    CHOPRO(N_demand_old, RNO3C) => begin
+        N_demand_old * RNO3C * 6.25 # Not sure where the 6.25 comes from
+    end
+
+    # Fraction of max potential NDMOLD allowed to be met given
+    # today's level of CDMVEG.  Prevents refilling old tissue
+    # without allowing any new growth due to low PG.
+    FROLDA(CDMVEG, CHOPRO, KCOLD) => begin
+        1 - exp(-KCOLD * (C_demand_veg / CHOPRO))
+    end
+
+    C_demand_old(CHOPRO, FROLDA) => begin
+        FROLDA * FROLDA
+    end
+
+    N_demand_old(FROLDA, N_demand_old) => begin
+        FROLDA * N_demand_old
+    end
+
+    N_demand(N_demand_veg, N_demand_old#=, N_demand_rep=#) => begin
+        N_demand_veg + N_demand_old#= + N_demand_rep=#
+    end
+
+    C_demand(C_demand_veg, N_demand_old, RNO3C#=, C_demand_rep=#) => begin
+        C_demand_veg + N_demand_old * RNO3C / 0.16#= + C_demand_rep=#
+        # Average nitrogen content for protein is 16%
+    end
 end

@@ -1,6 +1,5 @@
 """
 `WaterBalance` keeps track of soil water balance.
-Transpiration
 """
 @system WaterBalance begin
 
