@@ -4,10 +4,17 @@
     Parameters
     =========#
 
+    carbohydrate_root ~ preserve(parameter)
+    lignin_root ~ preserve(parameter)
+    lipid_root ~ preserve(parameter)
+    mineral_root ~ preserve(parameter)
+    organic_root ~ preserve(parameter)
+    protein_root ~ preserve(parameter)
+
     "Initial root drymass"
     iWR => 3000 ~ preserve(parameter, u"kg/ha")
     
-    "Average monthly root turnover rate"
+    "Average monthly root turnover rate (fraction of root biomass)"
     gammaR => 0.005 ~ preserve(parameter) # Amichev
 
     #=====
@@ -16,7 +23,7 @@
 
     # NPP multiplied by root partition in BiomassPartition
     "Canopy root growth rate"
-    growthRoot(NPP, pR) => NPP * pR ~ track(u"kg/ha/hr") # root
+    growth_root(NPP, partition_root) => NPP * partition_root ~ track(u"kg/ha/hr") # root
 
     #========
     Mortality
@@ -50,7 +57,7 @@
     Weight
     =====#
     
-    dWR(growthRoot, rootTurnover, deathRoot, thinning_WR, dShoot) => growthRoot - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
+    dWR(growth_root, rootTurnover, deathRoot, thinning_WR, dShoot) => growth_root - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
     WR(dWR) ~ accumulate(u"kg/ha", init=iWR, min=0) # root drymass
     WR_ton(nounit(WR)) => WR / 1000 ~ track
 end
