@@ -9,6 +9,7 @@
     lipid_root ~ preserve(parameter)
     mineral_root ~ preserve(parameter)
     organic_root ~ preserve(parameter)
+    protein_root ~ preserve(parameter)
 
     "Initial root drymass"
     iWR => 3000 ~ preserve(parameter, u"kg/ha")
@@ -22,7 +23,7 @@
 
     # NPP multiplied by root partition in BiomassPartition
     "Canopy root growth rate"
-    growth_root(NPP, pR) => NPP * pR ~ track(u"kg/ha/hr") # root
+    growth_root(NPP, partition_root) => NPP * partition_root ~ track(u"kg/ha/hr") # root
 
     #========
     Mortality

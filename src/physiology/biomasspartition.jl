@@ -1,25 +1,25 @@
 @system BiomassPartition begin
 
     "Root partitioning proportion"
-    pR(BBCH_stage, BBCH_table) => begin
+    partition_root(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].root
         # (pRx * pRn) / (pRn + (pRx - pRn) * fPhysiology * m1) 
     end ~ track # root partition
 
     "Stem partitioning proportion"
-    pS(BBCH_stage, BBCH_table) => begin
+    partition_stem(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].stem
-        # (1 - pR) / (1 + pFS)
+        # (1 - partition_root) / (1 + pFS)
     end ~ track # stem partition
 
     "Foliage paritioning proportion"
-    pF(BBCH_stage, BBCH_table) => begin
+    partition_foliage(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].leaf
-        # 1 - pR - pS # foliage partition
-        # (1 - pR) / (1 + (1 / pFS))
+        # 1 - partition_root - partition_stem # foliage partition
+        # (1 - partition_root) / (1 + (1 / pFS))
     end ~ track
 
-    # IGNORE ENTIRE CODE BELOW. OBSOLETE AFTER INCLUSION OF CARBON PARTITIONING TABLE.
+    # Obsolete code from 3PG below.
     
     #===========
      Parameters

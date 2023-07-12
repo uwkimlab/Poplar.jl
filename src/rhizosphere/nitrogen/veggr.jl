@@ -50,11 +50,11 @@
 
     ch2o_per_growth => begin
         if N_stressed
-             AGRLF * pF * (1 - (protein_leaf_growth - protein_leaf_max)/(1 - protein_leaf_max)) +
-            AGRSTM * pS * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max)) +
-             AGRRT * pR * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max))
+             CH2O_req_leaf * partition_foliage * (1 - (protein_leaf_growth - protein_leaf_max)/(1 - protein_leaf_max)) +
+            AGRSTM * partition_stem * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max)) +
+             CH2O_req_root * partition_root * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max))
         else
-            AGRLF * pF + AGRSTM * pS + AGRRT * pR
+            CH2O_req_leaf * partition_foliage + AGRSTM * partition_stem + CH2O_req_root * partition_root
     end ~ preserve(parameter)
 
 
@@ -62,11 +62,11 @@
         GPP / CH2O_per_growth
     end ~ track # CH2O to Vegetative mass conversion
 
-    growth_demand_leaf(growth_demand, pF) ~ growth_demand * pF ~ track
+    growth_demand_leaf(growth_demand, partition_foliage) ~ growth_demand * partition_foliage ~ track
 
-    growth_demand_stem(growth_demand, pS) ~ growth_demand * pS ~ track
+    growth_demand_stem(growth_demand, partition_stem) ~ growth_demand * partition_stem ~ track
 
-    growth_demand_root(growth_demand, pR) ~ growth_demand * pR ~ track
+    growth_demand_root(growth_demand, partition_root) ~ growth_demand * partition_root ~ track
 
     N_demand_min(N_demand_leaf_min, N_demand_stem_min, N_demand_root_min) => begin
         N_demand_leaf_min + N_demand_stem_min + N_demand_root_min
@@ -81,7 +81,7 @@
     growth_root(growth_demand_root, N_ratio) => growth_demand_root * N_ratio ~ track
 
 
-    # PGAVL: total available ch2o available for growth & respiration
+    # C_available: total available ch2o available for growth & respiration
 
     protein_leaf(N_growth_leaf, ) => N_avaiable * 
     protein_stem(N_growth_stem, )

@@ -104,8 +104,8 @@
     # Demand vs. uptake fraction.
     # Max set to 1 as nitrogen uptake cannot be greater than what is available.
     "Fraction of available CH2O to potential CH2O cost"
-    N_respiration_fraction(GPP, NO3_respiration_cost_potential, NH4_respiration_cost_potential) => begin
-        GPP / (NO3_respiration_cost_potential + NH4_respiration_cost_potential)
+    N_respiration_fraction(C_available, NO3_respiration_cost_potential, NH4_respiration_cost_potential) => begin
+        C_available / (NO3_respiration_cost_potential + NH4_respiration_cost_potential)
     end ~ track
 
     # Calculate coefficient for reducing N uptake
