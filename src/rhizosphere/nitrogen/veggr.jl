@@ -14,7 +14,7 @@
 
     N_fraction_root_max => 0 ~ preserve(parameter)
 
-    N_fraction_leaf_min => 0 ~ preserve(paramter)
+    N_fraction_leaf_min => 0 ~ preserve(parameter)
 
     N_fraction_stem_min => 0 ~ preserve(parameter)
 
@@ -27,26 +27,26 @@
 
     N_demand_root_max(growth_root, N_fraction_root_max) ~ track
 
-    N_demand_leaf_min(growth_leaf, N_fraction_leaf_min)
+    # N_demand_leaf_min(growth_leaf, N_fraction_leaf_min)
 
-    N_demand_stem_min(growth_stem, N_fraction_stem_min)
+    # N_demand_stem_min(growth_stem, N_fraction_stem_min)
 
-    N_demand_root_min(growth_root, N_fraction_root_min)
+    # N_demand_root_min(growth_root, N_fraction_root_min)
 
-    N_stressed(N_ratio) => N_ratio < 1 ~ flag
+    # N_stressed(N_ratio) => N_ratio < 1 ~ flag
 
-    N_ratio(N_available, N_growth) => N_available / N_growth
+    # N_ratio(N_available, N_growth) => N_available / N_growth
 
-    growth_foliage2(growth_foliage, N_ratio) => growth_follage * N_ratio
+    # growth_foliage2(growth_foliage, N_ratio) => growth_follage * N_ratio
 
-    protein_leaf_growth
-    protein_leaf_max
+    # protein_leaf_growth
+    # protein_leaf_max
 
-    protein_stem_growth
-    protein_stem_max
+    # protein_stem_growth
+    # protein_stem_max
 
-    protein_root_growth
-    protein_root_max
+    # protein_root_growth
+    # protein_root_max
 
     ch2o_per_growth => begin
         if N_stressed
@@ -55,6 +55,7 @@
              CH2O_req_root * partition_root * (1 - (protein_stem_growth - protein_stem_max)/(1 - protein_stem_max))
         else
             CH2O_req_leaf * partition_foliage + AGRSTM * partition_stem + CH2O_req_root * partition_root
+        end
     end ~ preserve(parameter)
 
 
@@ -72,7 +73,7 @@
         N_demand_leaf_min + N_demand_stem_min + N_demand_root_min
     end
 
-    N_ratio(N_available, N_up) => N_available / N_up ~ track(min=0, max=1)
+    N_ratio(N_available, N_up) => N_available / N_up ~ track(min=0, max=1) ~ track
 
     growth_leaf(growth_demand_leaf, N_ratio) => growth_demand_leaf * N_ratio ~ track
 
@@ -83,7 +84,7 @@
 
     # C_available: total available ch2o available for growth & respiration
 
-    protein_leaf(N_growth_leaf, ) => N_avaiable * 
-    protein_stem(N_growth_stem, )
-    protein_root(N_growth_root, )
+    # protein_leaf(N_growth_leaf, ) => N_avaiable * 
+    # protein_stem(N_growth_stem, )
+    # protein_root(N_growth_root, )
 end

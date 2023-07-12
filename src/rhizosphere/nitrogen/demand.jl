@@ -91,14 +91,14 @@
     # calculation. In CROPGRO, nitrogen content is higher in the tissue during later stages
     # of the reproductive cycle.
 
-    # "Nitrogen content in leaves (fraction)"
-    # NVSTL(PROLFR) => PROLFR * 0.16 ~ track
+    "Nitrogen content in leaves (fraction)"
+    NVSTL(PROLFR) => PROLFR * 0.16 ~ track
 
-    # "Nitrogen content in stem (fraction)"
-    # NVSTS(PROSTR) => PROSTR * 0.16 ~ track
+    "Nitrogen content in stem (fraction)"
+    NVSTS(PROSTR) => PROSTR * 0.16 ~ track
 
-    # "Nitrogen content in root (fraction)"
-    # NVSTR(PRORTR) => PRORTR * 0.16 ~ track
+    "Nitrogen content in root (fraction)"
+    NVSTR(PRORTR) => PRORTR * 0.16 ~ track
 
     N_demand_old_max(CNOLD, RNO3C) => CNOLD / RNO3C * 16 ~ track
 
