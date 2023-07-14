@@ -35,7 +35,7 @@
     end ~ track
 
     # NDMREP is 0 currently so NDMNEW is the same as NDMVEG.
-    NDMNEW(NDMREP, NDMVEG) => NDMREP + NDMVEG ~ track
+    N_demand_new(N_demand_rep, N_demand_veg) => N_demand_rep + N_demand_veg ~ track
 
     N_demand_old_max(CNOLD, RNO3C) => CNOLD / RNO3C * 16 ~ track
 
