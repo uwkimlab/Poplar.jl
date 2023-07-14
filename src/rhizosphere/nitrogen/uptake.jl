@@ -1,38 +1,43 @@
 # N_demand_total is required.
 @system NitrogenUptake begin
 
-    # PARAMETERS
+    "Nitrate uptake per unit root length (mg[N]/cm[root])"
+    NO3_per_root_length => 0.075 ~ preserve(parameter)
 
-    # Nitrate uptake per unit root length
-    NO3_per_root_length ~ preserve(parameter)
-
-    # Ammonium uptake per unit root length
-    NO4_per_root_length ~ preserve(parameter)
+    "Ammonium uptake per unit root length (mg[N]/cm[root])"
+    NO4_per_root_length => 0.075 ~ preserve(parameter)
 
     "CH2O required for protein synthesis when source of N is nitrate uptake"
-    RNO3C => 2.556 ~ preserve
+    RNO3C => 2.556 ~ preserve # Value from CROPGRO DSSAT
 
-    "CH2O required for protein synthesis when sourjce of N is ammonim uptake"
-    RNH4C => 2.556 ~ preserve
+    "CH2O required for protein synthesis when source of N is ammonim uptake"
+    RNH4C => 2.556 ~ preserve # Value from CROPGRO DSSAT
 
     bulk_density
 
     soil_layer_thickness
 
-    # Conversion factor to switch from kg [N] / ha to ug [N] / g [soil] for soil layer L 
-    N_conversion_factor => 10 / (bulk_density * soil_layer_thickness) ~ preserve
+    "Conversion factor from kg[N]/ha to g[N]/µg[soil] for soil layer"
+    N_conversion_factor => begin
+        10 / (bulk_density * soil_layer_thickness) # Not sure where the 10 comes from...
+    end ~ preserve
 
-    "Extractable nitrate in soil"
-    NO3_extractable(NO3_soil, FAC) => NO3_soil / FAC ~ track
+    "Total extractable nitrate N in soil layer"
+    NO3_extractable(NO3_soil, N_conversion_factor) => NO3_soil / N_conversion_factor ~ track
 
-    "Extractable ammonium in soil"
-    NH4_extractable(NH4_soil, FAC) => NH4_soil / FAC ~ track
+    "Total extractable ammonium N in soil layer"
+    NH4_extractable(NH4_soil, N_conversion_factor) => NH4_soil / N_conversion_factor ~ track
 
+############################# THIS SHOULD NOT BE HERE
     # The N_senescence should go into N_demand calculation in the first place?
     "N_demand_crop"
     N_demand_crop(N_demand_total, N_senescence) => begin
         N_demand_total - N_senescence * 10 # Why * 10?
     end(max=N_uptake_total)
+
+    #=
+    Potential nitrogen uptake based solely on soil nitrogen availability
+    =#
 
     # Potential NH4 availability factor from CROPGRO.
     # Not sure why 0.04 and below is 0.
@@ -77,7 +82,7 @@
     NH4_min(N_conversion_factor) => 0.5 / N_conversion_factor ~ preserve
 
     "Maximum NH4 uptake from soil"
-    NH4_uptake_max(NH4_extractable, NH4_min) => NH4_extractable - NH4_min ~ preserve(parameter)
+    NH4_uptake_max(NH4_extractable, NH4_min) => NH4_extractable - NH4_min ~ preserve(min=0)
 
     "Potential nitrate (NO3) uptake from soil"
     NO3_uptake_potential(N_uptake_conversion_factor, NO3_factor, RTNO3) => begin
@@ -88,6 +93,10 @@
     NH4_uptake_potential(N_uptake_conversion_factor, NH4_factor, RTNH4) => begin
         N_uptake_conversion_factor * NH4_factor * NH4_per_root_length
     end(min=0, max=NH4_uptake_max)
+
+    #=
+    Respiration cost for potential uptake
+    =#
 
     "Potential respiration cost of nitrate (NO3) uptake"
     NO3_respiration_cost_potential(NO3_uptake_potential) => begin
@@ -101,31 +110,31 @@
         # Why divide by 10?
     end
 
-    # Demand vs. uptake fraction.
-    # Max set to 1 as nitrogen uptake cannot be greater than what is available.
+    #=
+    Actual nitrogen uptake based on limiting factors
+    =#
+
     "Fraction of available CH2O to potential CH2O cost"
     N_respiration_fraction(C_available, NO3_respiration_cost_potential, NH4_respiration_cost_potential) => begin
         C_available / (NO3_respiration_cost_potential + NH4_respiration_cost_potential)
     end ~ track
 
-    # Calculate coefficient for reducing N uptake
     "Fraction of demand to maximum uptake given CH2O avaiability"
     N_demand_fraction(N_respiration_fraction) => begin
         N_demand / (NO3_uptake_potential + NH4_uptake_potential)
     end ~ track
 
+    ""
     N_uptake_fraction(N_respiration_fraction, N_demand_fraction) => begin
         min(N_respiration_fraction, N_demand_fraction)
     end ~ track(max=1)
 
-    # Actual NO3 uptake based on N uptake fraction.
-    "Final nitrate (NO3) uptake given demand and available CH2O"
+    "Total nitrate (NO3) uptake"
     NO3_uptake(NO3_uptake_potential, N_uptake_fraction) => begin
         NO3_uptake_potential * N_uptake_fraction
     end ~ track(max=NO3_up_max)
 
-    # Actual NO3 uptake based on N uptake fraction.
-    "Final ammonium (NH4) uptake given demand and available CH2O"
+    "Total ammonium (NH4) uptake"
     NH4_uptake(NH4_uptake_potential, N_respiration_fraction, N_demand_fraction) => begin
         NH4_uptake_potential * N_respiration_fraction * N_demand_fraction
     end ~ track(max=NH4_up_max)

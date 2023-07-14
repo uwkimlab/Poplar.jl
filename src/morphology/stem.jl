@@ -1,4 +1,21 @@
 @system Stem begin
+
+    #==========
+    Composition
+    ==========#
+    
+    "Maximum protein composition in stems during growth with
+    luxurious supply of N (g[protein]/g[stem])"
+    PROSTI => 0.194 ~ preserve(parameter)
+
+    "Normal growth protein composition in stems during growth
+    (g[protein]/g[stem)"
+    PROSTG => 0.145 ~ preserve(parameter)
+
+    "Minimum stem protein composition after N mining
+    (g[protein]/g[stem])"
+    PROSTF => 0.035 ~ preserve(parameter)
+
     #=========
     Parameters
     =========#

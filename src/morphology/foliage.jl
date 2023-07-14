@@ -4,6 +4,23 @@ include("radiation.jl")
 Foliage 
 """
 @system Foliage(Radiation) begin
+
+    #==========
+    Composition
+    ==========#
+
+    "Maximum protein composition in leaves during growth with
+    luxurious supply of N (g[protein]/g[leaf])"
+    PROLFI => 0.372 ~ preserve(parameter)
+
+    "Normal growth protein composition in leaves during growth
+    (g[protein]/g[leaf)"
+    PROLFG => 0.291 ~ preserve(parameter)
+
+    "Minimum leaf protein composition after N mining
+    (g[protein]/g[leaf])"
+    PROLFF => 0.112 ~ preserve(parameter)
+
     #=========
     Parameters
     ==========#

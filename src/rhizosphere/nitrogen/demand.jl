@@ -1,48 +1,4 @@
 @system NitrogenDemand begin
-    # I don't know why this is here it should be in nitrogen mobilization?
-    # Nitrogen mobilization rate. Not sure what the numerical values represent.
-    # NMOBR is mining rate as a fraction of the maximum rate, NMOBMX
-    # NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
-    #     NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) *
-    #     (1.0 + 0.3 * (1.0 - NSTRES)) * (NVSMOB + (1 - NVSMOB) *
-    #     max(XPOD, DXR57^2))
-    # end ~ track
-
-    # # Potential nitrogen mined. Nitrogen mobilization rate * N mined from each organ.
-    # # Get rid of shell?
-    # NMINEP(NMOBR, WNRLF, WNRST, WNRRT, WNRSH) => begin
-    #     NMOBR * (WNRLF + WNRST + WNRRT + WNRSH)
-    # end
-
-    PROLFI ~ preserve(parameter)
-    PROLFG ~ preserve(parameter)
-    PROSTI ~ preserve(parameter)
-    PROSTG ~ preserve(parameter)
-    PRORTI ~ preserve(parameter)
-    PRORTG ~ preserve(parameter)
-
-    "Maximum fraction of nitrogen for growing leaf tissue"
-    FNINL(PROLFI) => PROLFI * 0.16
-    "Minimum fraction of nitrogen for growing leaf tissue"
-    FNINLG(PROLFG) => PROLFG * 0.16
-
-    "Maximum fraction of nitrogen for growing stem tissue"
-    FNINS(PROSTI) => PROSTI * 0.16
-    "Minimum fraction of nitrogen for growing stem tissue"
-    FNINSG(PROSTG) => PROSTG * 0.16
-
-    "Maximum fraction of nitrogen for growing root tissue"
-    FNINR(PRORTI) => PRORTI * 0.16
-    "Minimum fraction of nitrogen for growing root tissue"
-    FNINRG(PRORTG) => PRORTG * 0.16
-                       
-    # C_demand_rep => 0 ~ preserve
-
-    # CAVTOT => 0 ~ preserve
-
-    # Entire C_available will be dedicated to vegetative tissue because
-    # there is no reproductive demand in the current model.
-    C_demand_veg(C_available) => C_available ~ track
 
     # N demand for reproduction.
     # Reproduction is not a part of the model at the moment
@@ -69,22 +25,73 @@
         CH2O_req_root * partition_root)
     end ~ track
 
+    C_demand_veg_p(GPP) # C demand might need to get reduced based on CHO available for nitrogen
+    
     # N required for vegetative growth.
     # CDMVEG / AGRVG2 is for conversion of CH2O mass to vegetative tissue mass.
     # 
-    NDMVEG(CDMVEG, AGRVG2, FRML, FNINL, FRSTM, FNINS, FRRT, FNINR) => begin
-        (CDMVEG / AGRVG2) * (FRLF * FNINL + FRSTM * FNINS + FRRT * FNINR)
+    N_demand_veg_p(C_demand_VEG, CH2O_req_veg, FRLF, FNINL, FRSTM, FNINS, FRRT, FNINR) => begin
+        (C_demand_veg / CH2O_req_veg) * (FRLF * FNINL + FRSTM * FNINS + FRRT * FNINR)
     end ~ track
 
     # NDMREP is 0 currently so NDMNEW is the same as NDMVEG.
     NDMNEW(NDMREP, NDMVEG) => NDMREP + NDMVEG ~ track
 
+    N_demand_old_max(CNOLD, RNO3C) => CNOLD / RNO3C * 16 ~ track
+
+    # Nitrogen demand for old tissue. Not sure where the value 0.16 comes from.
+    N_demand_old_p(WTLF, SLDOT, WCRLF, PROLFR) => begin
+        max(0, (WF - SLDOT - WCRLF) * PROLFT * 0.16 - WTNST) +
+        max(0, (WS - SDDOT - WCRST) * PROSTR * 0.16 - WTNST) +
+        max(0, (WR - SSRDOT - WCRSR) * PROSSR * 0.16 - WTNSR)
+    end(max=N_demand_old_max)
+
     # Available CH2O after reproductive growth. There is no reproductive growth currently,
     # so all of C_available
     CNOLD(C_available, C_demand_rep) => C_available - C_demand_rep ~ track(min=0)
 
-    # Minimum leaf protein composition after N mining.
-    PROLFF
+    "CHO required for uptake and reduction of N to fully refill old N tissue"
+    CHOPRO(N_demand_veg_p, RNO3C) => begin
+        NDMOLD * 6.25 * RNO3C # Not sure where 6.25 comes from...
+    end ~ track(u"g/m^2/d")
+
+    "Fraction of max potential N demand "
+    FROLDA(KCOLD, C_demand_veg_p, CHOPRO) => begin
+        1 - exp(-KCOLD * (C_demand_veg_p / CHOPRO))
+    end
+
+    ""
+    C_demand_old_p(CHOPRO, FROLDA) => begin
+        CHOPRO * FROLDA
+    end
+
+    N_demand_old(FROLDA, N_demand_old_p) => begin
+        FROLDA * N_demand_old_p
+    end
+
+    C_demand_old(NDMOLD, RNO3C) => begin
+        N_demand_old * RNO3C / 0.16
+    end # Final C demand based on final N demand
+
+    C_demand_veg(C_demand_veg_p, C_demand_old_p) => begin
+        C_demand_veg_p - C_demand_old_p
+    end
+
+    N_demand_veg(C_demand_veg, CH2O_req_veg) => begin
+        (C_demand / CH2O_req_veg) * (FRLF*FNINL + FRSTM * FNINS + FRRT * FNINR + FRSTR * FNINSR)
+    end
+
+    N_demand_new(N_demand_rep, N_demand_veg) => begin
+        N_demand_rep + N_demand_veg
+    end
+    
+    N_demand(N_demand_veg, N_demand_old, N_demand_rep) => begin
+        N_demand_veg + N_demand_old + N_demand_rep
+    end
+
+    C_demand(C_demand_rep, C_demand_veg, C_demand_old) => begin
+        C_demand_rep + C_demand_veg + C_demand_old
+    end 
 
     # CROPGRO has two different calculations based on phenological phase.
     # This model does not include reproductive phase at the moment and only uses one
@@ -99,15 +106,6 @@
 
     "Nitrogen content in root (fraction)"
     NVSTR(PRORTR) => PRORTR * 0.16 ~ track
-
-    N_demand_old_max(CNOLD, RNO3C) => CNOLD / RNO3C * 16 ~ track
-
-    # Nitrogen demand for old tissue. Not sure where the value 0.16 comes from.
-    NDMOLD(WTLF, SLDOT, WCRLF, PROLFR) => begin
-        max(0, (WF - SLDOT - WCRLF) * PROLFT * 0.16 - WTNST) +
-        max(0, (WS - SDDOT - WCRST) * PROSTR * 0.16 - WTNST) +
-        max(0, (WR - SSRDOT - WCRSR) * PROSSR * 0.16 - WTNSR)
-    end(max=N_demand_old_max)
 
     # Curvature factor (K value) for exponential function limiting N_demand_old when C_available is low.
     KCOLD => 0.01 ~ preserve(parameter) # DSSAT CROPGRO perennial

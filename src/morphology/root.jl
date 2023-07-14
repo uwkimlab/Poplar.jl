@@ -1,5 +1,21 @@
 @system Root begin
 
+    #==========
+    Composition
+    ==========#
+
+    "Maximum protein composition in roots during growth with
+    luxurious supply of N (g[protein]/g[root])"
+    PRORTI => 0.092 ~ preserve(parameter)
+
+    "Normal growth protein composition in roots during growth
+    (g[protein]/g[root])"
+    PRORTG => 0.064 ~ preserve(parameter)
+
+    "Minimum root protein composition after N mining
+    (g[protein]/g[root])"
+    PRORTF => 0.056 ~ preserve(parameter)
+
     #=========
     Parameters
     =========#
