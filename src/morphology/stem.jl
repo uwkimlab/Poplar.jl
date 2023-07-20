@@ -16,21 +16,20 @@
     (g[protein]/g[stem])"
     PROSTF => 0.035 ~ preserve(parameter)
 
+    "Maximum N required for stem growth"
+    FNINS(PROSTI) => PROSTI * 0.16 ~ preserve
+    
+    "Minimum N required for stem growth"
+    FNINSG(PROSTG) => PROSTG * 0.16 ~ preserve
+
     #=========
     Parameters
     =========#
 
-    carbohydrate_stem ~ preserve(parameter)
-    lignin_stem ~ preserve(parameter)
-    lipid_stem ~ preserve(parameter)
-    mineral_stem ~ preserve(parameter)
-    organic_stem ~ preserve(parameter)
-    protein_stem ~ preserve(parameter)
-
     "Initial stem drymass"
     iWS => 4000 ~ preserve(parameter, u"kg/ha")
 
-    growth_stem(NPP, partition_stem) => NPP * partition_stem ~ track(u"kg/ha/hr") 
+    # growth_stem(NPP, partition_stem) => NPP * partition_stem ~ track(u"kg/ha/hr") 
 
     deathStem(WS, mS, mortality, trees) => begin
         mS * mortality * (WS / trees)

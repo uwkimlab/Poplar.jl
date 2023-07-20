@@ -52,10 +52,10 @@ Photosynthesis
     "NPP/GPP fraction"
     γ: NPP_GPP_fraction => 0.47 ~ preserve(parameter) # Amichev
 
-    # Total available CH2O for growth & respiration
-    C_available(GPP, CMINEP) => GPP + CMINEP ~ track
+    "Total available CH2O for growth & respiration"
+    C_available(GPP#=, CMINEP=#) => GPP#= + CMINEP=# ~ track(u"g/m^2/hr")
 
-    "Net primary production"
+    # "Net primary production"
     NPP(γ, GPP): net_primary_production => begin
         γ*GPP
     end ~ track(u"kg/ha/hr")
@@ -65,13 +65,11 @@ Photosynthesis
         NPP / transpiration
     end ~ track(u"g/L")
 
-    # Conversion to mm/hr to match water balance.
     "Canopy transpiration in mm/hr"
     transpiration(ET, w=H2O_weight, d=H2O_density) => begin
         ET * w / d
-    end ~ track(u"mm/hr")
+    end ~ track(u"mm/hr") # Conversion to mm/hr to match water balance.
 
-    # Overall canopy conductance, not used in any calculations.
     "Canopy conductance"
     conductance(gs_sun=sunlit_gasexchange.gs, LAI_sunlit, gs_sh=shaded_gasexchange.gs, LAI_shaded, LAI) => begin
         #HACK ensure 0 when one of either LAI is 0, i.e., night
@@ -79,5 +77,5 @@ Photosynthesis
         c = ((gs_sun * LAI_sunlit) + (gs_sh * LAI_shaded)) / LAI
         #c = max(zero(c), c)
         # iszero(LAI) ? zero(c) : c
-    end ~ track(u"mol/m^2/s/bar")
+    end ~ track(u"mol/m^2/s/bar") # Overall canopy conductance, not used in any calculations.
 end

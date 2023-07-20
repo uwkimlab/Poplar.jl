@@ -1,5 +1,5 @@
 ""
-@system NitrogenMobilization begin
+@system Mobilization begin
 
     "Maximum C pool mobilization rate (g[CH2O]/m^2/d)"
     C_mobilization_rate_max ~ preserve(parameter, u"g/m^2/d")
@@ -11,18 +11,48 @@
     Calculate potential N mobilitation for the day
     =#
 
-    DRPP(CSDVAR, CLDVAR, THVAR, DAYL) => curve("inl", CSDVAR, CLDVAR, RHVAR, DAYL) ~ track
-    TNTFAC(T_air) => curve("lin", 3, 25, 33, 45, T_air) ~ track 
+    THVAR => 1 ~ preserve(parameter) 
+
+    PPSEN => 0.2 ~ preserve(parameter)
+
+    CSDVAR => 0 ~ preserve(parameter)
+
+    CLDVAR(PPSEN, CSDVAR, THVAR) => begin
+        if PPSEN >= 0
+            CSDVAR + (1 - THVAR) / max(PPSEN, 0.000001)
+        elseif PPSEN < 0
+            CSDVAR + (1 - THVAR) / min(PPSEN, -0.000001)
+        end
+    end
+
+    # Photoperiod days per day (?)
+    DRPP(CSDVAR, CLDVAR, THVAR, DAYL) => curve("inl", CSDVAR, CLDVAR, THVAR, DAYL) ~ track
+
+    # Thermal hours per hour
+    TNTFAC(T_air) => curve("lin", 3, 25, 33, 45, T_air) ~ track
+
+    # Photo-thermal days per day
     TDUMX(TNTFAC, DRPP) => TNTFAC * DRPP
+
+    NVSMOB => 1 ~ preserve(parameter)
+    NMOBMX => 0.08 ~ preserve(parameter)
+
+    FTHR = CURV(CTMP(6), TB(1), TO1(1), TO2(1), T_air)
+
+    TNTFAC = FTHR
 
     # I don't know why this is here it should be in nitrogen mobilization?
     # Nitrogen mobilization rate. Not sure what the numerical values represent.
     # NMOBR is mining rate as a fraction of the maximum rate, NMOBMX
     NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
-        NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) *
-        (1.0 + 0.3 * (1.0 - NSTRES)) * (NVSMOB + (1 - NVSMOB) *
-        max(XPOD, DXR57^2))
+        NVSMOB * NMOBMX * TDUMX
+        # For late reproductive phase
+        # NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) *
+        # (1.0 + 0.3 * (1.0 - NSTRES)) * (NVSMOB + (1 - NVSMOB) *
+        # max(XPOD, DXR57^2))
     end ~ track
+
+    WNRLF()
 
     "Potential mobile N available from leaf (g[N]/m^2)"
     NMINELF(NMOBR, WNRLF) => NMOBR * WNRLF ~ track
@@ -122,7 +152,19 @@
         CMOBSR * (DTX + DXR57) * (WCRSR - STRWT * PCHOSRF)
     end
 
+    LFSNMOB(SLMDOT, PCNL, SENNLV) => begin
+        LMDOT * (PCNL/100 - 
+        (SENNLV * (PCNL / 100 - PROLFF*0.16) + PROLFF*0.16)) 
+        + LTSEN * (PCNL / 100 - PROLFF * 0.16)
+    end
 
+    STSNMOB() => begin
+        SSMDOT * (PCNST/100 - 
+        (SENNSV * (PCNST / 100 - PROSTF*0.16) + PROSTF*0.16)) 
+        + STLTSEN * (PCNST / 100 - PROSTF * 0.16)
+    end
+
+    SRSNMOB() => begin
 
     # IF (PLME .EQ. 'T' .AND. YRPLT .EQ. YRDOY) THEN
     #     K = TSELC(2)

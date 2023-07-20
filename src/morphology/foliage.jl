@@ -21,16 +21,15 @@ Foliage
     (g[protein]/g[leaf])"
     PROLFF => 0.112 ~ preserve(parameter)
 
+    "Maximum N required for leaf growth"
+    FNINL(PROLFI) => PROLFI * 0.16 ~ preserve
+
+    "Minimum N required for leaf growth"
+    FNINLG(PROLFG) => PROLFG * 0.16 ~ preserve
+
     #=========
     Parameters
     ==========#
-
-    carbohydrate_leaf ~ preserve(parameter)
-    lignin_leaf ~ preserve(parameter)
-    lipid_leaf ~ preserve(parameter)
-    mineral_leaf ~ preserve(parameter)
-    organic_leaf ~ preserve(parameter)
-    protein_leaf ~ preserve(parameter)
 
     "Initial foliage drymass"
     iWF => 1000 ~ preserve(parameter, u"kg/ha")
@@ -65,7 +64,7 @@ Foliage
     #=====
     =====#
 
-    growth_foliage(NPP, partition_foliage) => NPP * partition_foliage ~ track(u"kg/ha/hr") # foliage
+    # growth_foliage(NPP, partition_foliage) => NPP * partition_foliage ~ track(u"kg/ha/hr") # foliage
 
     deathFoliage(WF, mF, mortality, trees) => begin
         mF * mortality * (WF / trees)

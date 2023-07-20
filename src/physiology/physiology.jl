@@ -1,12 +1,13 @@
 include("biomasspartition.jl")
 include("demand.jl")
-include("mobilization")
+# include("mobilization.jl")
 include("mortality.jl")
 include("photosynthesis.jl")
+include("respiration.jl")
 include("uptake.jl")
 include("veggr.jl")
 
 """
 Physiology encompassses all physiology-related systems as mix-ins.
 """
-@system Physiology(BiomassPartition, Mortality, Photosynthesis)
+@system Physiology(BiomassPartition, Demand, Mortality, Photosynthesis, Respiration, Uptake, Veggr)
