@@ -138,4 +138,6 @@
     N_uptake(NO3_uptake, NH4_uptake) => begin
         (NO3_uptake + NH4_uptake) / u"hr"
     end ~ track(u"g/m^2/hr")
+
+    N_uptake_tot(N_uptake) ~ accumulate(u"g/m^2")
 end
