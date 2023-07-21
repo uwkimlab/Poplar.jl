@@ -84,7 +84,7 @@
 
     N_demand_new(#=N_demand_rep, =#N_demand_veg) => begin
         #=N_demand_rep =#+ N_demand_veg
-    end ~ track(min=0.0000000001, u"g/m^2/hr")
+    end ~ track(u"g/m^2/hr")
     
     N_demand(N_demand_veg, N_demand_old#=, N_demand_rep=#) => begin
         N_demand_veg + N_demand_old#= + N_demand_rep=#

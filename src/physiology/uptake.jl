@@ -111,13 +111,21 @@
 
     "Fraction of available CH2O to potential CH2O cost"
     N_respiration_fraction(C_available, NO3_respiration_cost_potential, NH4_respiration_cost_potential) => begin
-        C_available * u"hr" / (NO3_respiration_cost_potential + NH4_respiration_cost_potential)
-    end ~ track(min=0.000001) # nounit
+        if (NO3_respiration_cost_potential + NH4_respiration_cost_potential) <= 0u"g/m^2"
+            0
+        else
+            C_available * u"hr" / (NO3_respiration_cost_potential + NH4_respiration_cost_potential)
+        end
+    end ~ track # nounit
 
     "Fraction of demand to maximum uptake given CH2O avaiability"
     N_demand_fraction(N_demand, NO3_uptake_potential, NH4_uptake_potential) => begin
-        N_demand * u"hr" / (NO3_uptake_potential + NH4_uptake_potential)
-    end ~ track(min=0.000001)
+        if (NO3_uptake_potential + NH4_uptake_potential) <= 0u"g/m^2"
+            0
+        else
+            N_demand * u"hr" / (NO3_uptake_potential + NH4_uptake_potential)
+        end
+    end ~ track
 
     ""
     N_uptake_fraction(N_respiration_fraction, N_demand_fraction) => begin
@@ -130,8 +138,8 @@
     end ~ track(max=NO3_uptake_max, u"g/m^2") # nounit
 
     "Total ammonium (NH4) uptake"
-    NH4_uptake(NH4_uptake_potential, N_respiration_fraction, N_demand_fraction) => begin
-        NH4_uptake_potential * N_respiration_fraction * N_demand_fraction
+    NH4_uptake(NH4_uptake_potential, N_uptake_fraction) => begin
+        NH4_uptake_potential * N_uptake_fraction
     end ~ track(max=NH4_uptake_max, u"g/m^2")
 
     "Total nitrogen uptake"

@@ -6,9 +6,12 @@
     N_stress_factor => 0.7 ~ preserve(parameter)
 
     N_stress(N_supply, N_demand_new, N_stress_factor) => begin
+        if (N_demand_new * N_stress_factor) == 0
+            1
+        else
         # if N_supply < N_stress_factor * N_demand_new && N_demand_new > 0u"g/m^2/hr"
             N_supply / (N_demand_new * N_stress_factor)
-        # end    
+        end    
     end ~ track(max=1)
 
     AGRVG_p(AGRLF, AGRSTM, AGRRT, partition_foliage, partition_stem, partition_root) => begin
@@ -60,7 +63,13 @@
     end ~ track(u"g/m^2/hr")
 
     "Ratio of available N to minimum N required for vegetative growth"
-    NRATIO(N_supply, N_min) => N_supply / N_min ~ track(max=1)
+    NRATIO(N_supply, N_min) => begin
+        if N_min == 0u"g/m^2/hr"
+            0
+        else
+            N_supply / N_min
+        end
+    end ~ track(max=1)
 
     "Leaf growth rate adjusted for nitrogen deficiency"
     growth_foliage(growth_foliage_potential, NRATIO) => begin
