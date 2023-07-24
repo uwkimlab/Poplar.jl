@@ -25,6 +25,8 @@
     "Maximum propotion of rainfall evaporated from canopy"
     interception_max => 0.15 ~ preserve(parameter) # Sands
 
+    field_capacity(ASW_max) => 0.5 * ASW_max ~ preserve(u"mm")
+
     "Proportion of rain intercepted"
     interception(LAI, interception_max, LAI_interception_max) => begin
         (LAI_interception_max == 0) ? (interception_max) : (interception_max * min(1, LAI / LAI_interception_max))

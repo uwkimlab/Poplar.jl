@@ -1,15 +1,31 @@
 @system Root begin
 
+    #==========
+    Composition
+    ==========#
+
+    "Maximum protein composition in roots during growth with
+    luxurious supply of N (g[protein]/g[root])"
+    PRORTI => 0.092 ~ preserve(parameter)
+
+    "Normal growth protein composition in roots during growth
+    (g[protein]/g[root])"
+    PRORTG => 0.064 ~ preserve(parameter)
+
+    "Minimum root protein composition after N mining
+    (g[protein]/g[root])"
+    PRORTF => 0.056 ~ preserve(parameter)
+
+    "Maximum N required for root growth"
+    FNINR(PRORTI) => PRORTI * 0.16 ~ preserve
+
+    "Minimum N required for root growth"
+    FNINRG(PRORTG) => PRORTG * 0.16 ~ preserve
+
     #=========
     Parameters
     =========#
 
-    carbohydrate_root ~ preserve(parameter)
-    lignin_root ~ preserve(parameter)
-    lipid_root ~ preserve(parameter)
-    mineral_root ~ preserve(parameter)
-    organic_root ~ preserve(parameter)
-    protein_root ~ preserve(parameter)
 
     "Initial root drymass"
     iWR => 3000 ~ preserve(parameter, u"kg/ha")
@@ -22,8 +38,8 @@
     =====#
 
     # NPP multiplied by root partition in BiomassPartition
-    "Canopy root growth rate"
-    growth_root(NPP, partition_root) => NPP * partition_root ~ track(u"kg/ha/hr") # root
+    # "Canopy root growth rate"
+    # growth_root(NPP, partition_root) => NPP * partition_root ~ track(u"kg/ha/hr") # root
 
     #========
     Mortality
@@ -57,7 +73,11 @@
     Weight
     =====#
     
+    RFAC1 => 7500 ~ preserve(parameter, u"cm/g")
+
     dWR(growth_root, rootTurnover, deathRoot, thinning_WR, dShoot) => growth_root - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
     WR(dWR) ~ accumulate(u"kg/ha", init=iWR, min=0) # root drymass
     WR_ton(nounit(WR)) => WR / 1000 ~ track
+
+    RLV(RFAC1, WR, soil_depth) => WR / soil_depth * RFAC1 ~ track(u"cm/cm^3")
 end

@@ -7,8 +7,6 @@ Tree.
 """
 @system Tree(Foliage, Stem, Root) begin
 
-    flag_canopy(trees_init) => trees_init > 1 ~ flag
-
     #=========
     Parameters
     =========#
@@ -17,7 +15,7 @@ Tree.
     iW(iWS, iWF, iWR) => iWS + iWF + iWR ~ preserve(u"kg/ha")
 
     "Initial plant count"
-    trees_init => 1 ~ preserve(parameter, u"ha^-1")
+    trees_init => 1000 ~ preserve(parameter, u"ha^-1")
 
     "Branch and bark fraction at age 0"
     fracBB0 => 0 ~ preserve(parameter) # Amichev
