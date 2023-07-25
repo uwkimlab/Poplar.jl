@@ -22,6 +22,13 @@
     "Minimum N required for root growth"
     FNINRG(PRORTG) => PRORTG * 0.16 ~ preserve
 
+    PCNRT(WTNRT, WRTI) => WTNRT / WRTI ~ track(u"percent")
+
+    "Mobile CH2O concentration of root"
+    PCHORTF => 0.020 ~ preserve(parameter)
+
+
+    
     #=========
     Parameters
     =========#

@@ -18,4 +18,5 @@
     senescence_delta(senescence_rate, SD) => senescence_rate * SD ~ track(u"kg/ha/hr")
 
     # SDD(SD) ~ accumulate(u"K*hr")
+
 end

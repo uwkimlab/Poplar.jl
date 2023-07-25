@@ -46,10 +46,6 @@
     # NMOBR is mining rate as a fraction of the maximum rate, NMOBMX
     NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
         NVSMOB * NMOBMX * TDUMX
-        # For late reproductive phase
-        # NMOBMX * TDUMX2 * (1.0 + 0.5*(1.0 - SWFAC)) *
-        # (1.0 + 0.3 * (1.0 - NSTRES)) * (NVSMOB + (1 - NVSMOB) *
-        # max(XPOD, DXR57^2))
     end ~ track
 
     WNRLF()
@@ -136,22 +132,6 @@
     C mobilization
     =#
 
-    CMINELF => begin
-        CMOBMX * (DTX + DXR57) * (WCRLF - WRLF * PCHOLFF)
-    end
-
-    CMINEST => begin
-        CMOBMX * (DTX + DXR57) * (WCRST - STMWT * PCHOSTF)
-    end
-
-    CMINERT => begin
-        CMOBX * (DTX * DXR457) * PPMFAC * (WCRRT - RTWT * PCHORTF)
-    end
-
-    CMINESR => begin
-        CMOBSR * (DTX + DXR57) * (WCRSR - STRWT * PCHOSRF)
-    end
-
     LFSNMOB(SLMDOT, PCNL, SENNLV) => begin
         LMDOT * (PCNL/100 - 
         (SENNLV * (PCNL / 100 - PROLFF*0.16) + PROLFF*0.16)) 
@@ -172,5 +152,112 @@
     #     PHZACC(2) = FT(2) * SDAGE
     #   ENDIF
 
-    TNTFAC
+    RTSEN => 0.008 ~ preserve(parameter)
+    SRSEN => 0.009 ~ preserve(parameter)
+    LFSEN => 0.01 ~ preserve(parameter)
+
+    DTX => curve(linear, 3, 25, 33, 45, T_air)
+
+    # Root length senesced?
+    RLSEN(RLV, RTSEN, DTX) => RLV * RTSEN * DTX ~ track
+
+    SRMDOT(RLSEN, RFAC) => RLSEN / RFAC ~ track(u"g/m^2")
+
+    SSRMDOT => 
+
+    SLMDOT => WTLF * LFSEN * DTX
+
+    SSMDOTmin => 0.1 * STMWT
+    SSMDOT => SLMDOT * PORPT ~ track(min=SSMDOTmin)
+
+    # leaf mob natural senescence
+    LFSNMOB(SLMDOT, PCNL, SENNLV, PROLFF, LTSEN) => begin
+        SLMDOT * (PCNL/100 - (SENNLV * (PCNL / 100 - PROLFF * 0.16) + PROLFF * 0.16))+
+        LTSEN * (PCNL / 100 - PROLFF * 0.16)
+    end ~ track
+
+    STSNMOB(SSMDOT, PCNST, SENNSV, PCNST, PROSTF, STLFSEN) => begin
+        SSMDOT * (PCNST / 100 - (SENNSV * (PCNST / 100 - PROSTF * 0.16) + PROSTF * 0.16)) +
+        STLTSEN * (PCNST / 100 - PROSTF * 0.16)
+    end ~ track
+
+    RTSNMOB(SRMDOT, PCNRT, SENNRV, PRORTF) => begin
+        SRMDOT * (PCNRT / 100 - (SENNRV * (PCNRT / 100 - PRORTF*0.16) + PRORTF*0.16))
+    end ~ track
+
+    SRSNMOB(SSRMDOT, PCNSR, SENNSRV, PCNSR, PROSRF) => begin
+        SSRMDOT * (PCNSR / 100 - (SENNSRV * (PCNSR / 100 - PROSRF*0.16) + PROSRF*0.16))
+    end ~ track
+
+    NMINELF => NMOBR * WNRLF ~ track
+    LFNMINE => LFSNMOB + NMINELF ~ track
+    LFSNMOB => LFNMINE ~ track
+
+    NMINEST => NMOBR * WNRST ~ track
+    STNMINE => STSNMOB + NMINEST ~ track
+    STSNMOB => STNMINE ~ track
+
+    NMINERT => NMOBR * PPMFAC * WNRRT
+    RTNMINE => RTSNMOB + NMINERT
+    RTSNMOB => RTNMINE
+
+    NMINESR => NMOBSR * WNRSR
+    SRNMINE => SRSNMOB + NMINESR
+    SRSNMOB => SRNMINE
+
+    TSNMOB(LFSNMOB, STSNMOB, RTSNMOB, SRSNMOB) => begin
+        LFSNMOB + STSNMOB + SRSNMOB + RTSNMOB
+    end ~ track
+
+    "Mobile CH2O contentration of leaf"
+    PCHOLFF => 0.004 ~ preserve(parameter)
+
+    "Potential mobile CH2O available from leaf"
+    CMINELF(CMOBX, DTX, WCRLF, WF, PCHOLFF) => begin
+        CMOBMX * DTX * (WCRLF - WF * PCHOLFF)
+    end ~ track(u"g/m^2/hr")
+
+    "Potential mobile CH2O available from stem"
+    CMINEST(CMOBX, DTX, WCRST, WS, PCHOSTF) => begin
+        CMOBMX * DTX * (WCRST - WS * PCHOSTF)
+    end ~ track(u"g/m^2/hr")
+
+    "Potential mobile CH2O available from root"
+    CMINERT(CMOBX, DTX, WCRRT, WR, PCHORTF) => begin
+        CMOBX * DTX * PPMFAC * (WCRRT - WR * PCHORTF)
+    end ~ track(u"g/m^2/hr")
+
+    "Potential mobile CH2O available from storage"
+    CMINESR(CMOBX, DTX, WCRSR, ) => begin
+        CMOBSR * DTX * (WCRSR - WSR * PCHOSRF)
+    end ~ track(u"g/m^2/hr")
+
+    "N available for mobilization from foliage above lower limit of mining"
+    WNRLF(WTNLF, PROLFF, WF, WCRLF) => begin
+        WTNLF - PROLFF * 0.16 * (WF - WCRLF)
+    end ~ track(min=0, u"g/m^2")
+
+    "N available for mobilization from stem above lower limit of mining"
+    WNRST(WTNST, PROSTF, WS, WCRST) => begin
+        WTNST - PROSTF * 0.16 * (WS - WCRST)
+    end ~ track(min=0, u"g/m^2")
+
+    "N available for mobilization from root above lower limit of mining"
+    WNRRT(WTNRT, PRORTF, WR, WCRRT) => begin
+        WTNRT - PRORTF * 0.16 * (WR - WCRRT)
+    end ~ track(min=0, u"g/m^2")
+
+    "N available for mobilization from storage above lower limit of mining"
+    WNRSR(WTNSR, PROSRF, WSR, WCRSR) => begin
+        WTNST - PROSRF * 0.16 * (WSR - WCRSR)
+    end ~ track(min=0, u"g/m^2")
+
+    "Fraction of new root growth that is mobile C"
+    ALPHR => 0.08 ~ preserve(parameter)
+
+    "Fraction of new stem growth that is mobile C"
+    ALPHS => 0.08 ~ preserve(parameter)
+
+    "Fraction of new storage growth that is mobile C"
+    ALPHSR => 0.2 ~ preserve(parameter)
 end

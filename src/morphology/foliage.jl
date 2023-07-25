@@ -27,6 +27,21 @@ Foliage
     "Minimum N required for leaf growth"
     FNINLG(PROLFG) => PROLFG * 0.16 ~ preserve
 
+    "Fraction of new leaf growth that is mobile C"
+    ALPHL => 0.04 ~ preserve(parameter)
+
+    "Mass of N in leaves"
+    WTNLF(NLDOT) ~ accumulate(init=0, u"g/m^2")
+
+    "Mass of CH2O reserves in leaves"
+    WCRLF(ALPHL, WF) => ALPHL * WF ~ track(u"g/m^2")
+
+    "Percent N in plant components"
+    PCNL => WTNLF / WF ~ track(u"g/m^2")
+
+    "Mobile CH2O contentration of leaf"
+    PCHOLFF => 0.004 ~ preserve(parameter)
+
     #=========
     Parameters
     ==========#

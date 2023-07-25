@@ -5,7 +5,7 @@
     "Respiration required for carbohydrate"
     RCH2O => 1.242 ~ preserve(parameter)
 
-    "Respiration required for "
+    "Respiration required for lipid"
     RLIP => 3.106 ~ preserve(parameter)
     RLIG => 2.174 ~ preserve(parameter)
     ROA => 0.929 ~ preserve(parameter)
