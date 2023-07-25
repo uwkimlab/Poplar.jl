@@ -36,8 +36,8 @@ Foliage
     "Mass of CH2O reserves in leaves"
     WCRLF(ALPHL, WF) => ALPHL * WF ~ track(u"g/m^2")
 
-    "Percent N in plant components"
-    PCNL => WTNLF / WF ~ track(u"g/m^2")
+    "Percent N in foliage"
+    PCNL(WTNLF, WF) => WTNLF / WF ~ track(u"percent")
 
     "Mobile CH2O contentration of leaf"
     PCHOLFF => 0.004 ~ preserve(parameter)

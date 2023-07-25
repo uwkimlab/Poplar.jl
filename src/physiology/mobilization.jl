@@ -189,28 +189,30 @@
         SSRMDOT * (PCNSR / 100 - (SENNSRV * (PCNSR / 100 - PROSRF*0.16) + PROSRF*0.16))
     end ~ track
 
-    NMINELF => NMOBR * WNRLF ~ track
-    LFNMINE => LFSNMOB + NMINELF ~ track
-    LFSNMOB => LFNMINE ~ track
+    "Potential mobile N available from leaf"
+    NMINELF(NMOBR, WNRLF) => NMOBR * WNRLF ~ track
+    ""
+    LFNMINE(LFSNMOB, NMINELF) => LFSNMOB + NMINELF ~ track
 
-    NMINEST => NMOBR * WNRST ~ track
-    STNMINE => STSNMOB + NMINEST ~ track
-    STSNMOB => STNMINE ~ track
+    "Potential mobile N available from stem"
+    NMINEST(NMOBR, WNRST) => NMOBR * WNRST ~ track
+    ""
+    STNMINE(STSNMOB, NMINEST) => STSNMOB + NMINEST ~ track
 
-    NMINERT => NMOBR * PPMFAC * WNRRT
-    RTNMINE => RTSNMOB + NMINERT
-    RTSNMOB => RTNMINE
+    "Potential mobile N available from root"
+    NMINERT(NMOBR, PPMFAC, WNRRT) => NMOBR * PPMFAC * WNRRT ~ track
+    ""
+    RTNMINE(RTSNMOB, NMINERT) => RTSNMOB + NMINERT ~ track
 
-    NMINESR => NMOBSR * WNRSR
-    SRNMINE => SRSNMOB + NMINESR
-    SRSNMOB => SRNMINE
-
-    TSNMOB(LFSNMOB, STSNMOB, RTSNMOB, SRSNMOB) => begin
-        LFSNMOB + STSNMOB + SRSNMOB + RTSNMOB
-    end ~ track
-
-    "Mobile CH2O contentration of leaf"
-    PCHOLFF => 0.004 ~ preserve(parameter)
+    "Potential mobile N available from storage"
+    NMINESR(NMOBSR, WNRSR) => NMOBSR * WNRSR ~ track
+    ""
+    SRNMINE(SRSNMOB, NMINESR) => SRSNMOB + NMINESR ~ track
+ 
+    "Total plant N movilized from tissue lost to natural and low-light senescence"
+    TSNMOB(LFNMINE, STNMINE, RTNMINE, SRNMINE) => begin
+        LFNMINE + STSNMINE + SRNMINE + RTNMINE
+    end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from leaf"
     CMINELF(CMOBX, DTX, WCRLF, WF, PCHOLFF) => begin
@@ -251,13 +253,4 @@
     WNRSR(WTNSR, PROSRF, WSR, WCRSR) => begin
         WTNST - PROSRF * 0.16 * (WSR - WCRSR)
     end ~ track(min=0, u"g/m^2")
-
-    "Fraction of new root growth that is mobile C"
-    ALPHR => 0.08 ~ preserve(parameter)
-
-    "Fraction of new stem growth that is mobile C"
-    ALPHS => 0.08 ~ preserve(parameter)
-
-    "Fraction of new storage growth that is mobile C"
-    ALPHSR => 0.2 ~ preserve(parameter)
 end

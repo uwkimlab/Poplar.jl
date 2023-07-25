@@ -22,10 +22,14 @@
     "Minimum N required for stem growth"
     FNINSG(PROSTG) => PROSTG * 0.16 ~ preserve
 
-    PCNST = WRNST / WSTI ~ track(u"percent")
+    "Percent N in stem"
+    PCNST(WTNST, WS) = WTNST / WS ~ track(u"percent")
 
     "Mobile CH2O contentration of stem"
     PCHOSTF => 0.008 ~ preserve(parameter)
+
+    "Fraction of new stem growth that is mobile C"
+    ALPHS => 0.08 ~ preserve(parameter)
 
     #=========
     Parameters

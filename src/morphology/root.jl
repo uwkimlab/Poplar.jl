@@ -27,7 +27,8 @@
     "Mobile CH2O concentration of root"
     PCHORTF => 0.020 ~ preserve(parameter)
 
-
+    "Fraction of new root growth that is mobile C"
+    ALPHR => 0.08 ~ preserve(parameter)
     
     #=========
     Parameters

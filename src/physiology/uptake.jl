@@ -59,7 +59,7 @@
         if ASW > field_capacity
             2.0 - (ASW - field_capacity) / (ASW_max - field_capacity)
         else
-            2*((ASW - ASW_min) / (field_capacity - ASW_min))
+            2 * ((ASW - ASW_min) / (field_capacity - ASW_min))
         end
     end ~ track(min=0, max=1) 
 
