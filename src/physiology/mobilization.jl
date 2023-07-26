@@ -82,7 +82,7 @@
     "Nitrogen mining rate"
     NMOBR(NVSMOB, NMOBMX, TDUMX) => begin
         NVSMOB * NMOBMX * TDUMX
-    end ~ track
+    end ~ track(u"hr^-1")
 
     "Potential mobile N available from leaf (g[N]/m^2)"
     NMINELF(NMOBR, WNRLF) => NMOBR * WNRLF ~ track(u"g/m^2/hr")
