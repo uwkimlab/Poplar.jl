@@ -1,11 +1,10 @@
 include("foliage.jl")
 include("stem.jl")
 include("root.jl")
+include("storage.jl")
 
-"""
-Tree.
-"""
-@system Tree(Foliage, Stem, Root) begin
+"Tree"
+@system Tree(Foliage, Stem, Root, Storage) begin
 
     #=========
     Parameters
@@ -104,7 +103,7 @@ Tree.
     "Mean volume increment per hectare"
     MAI(standVol, stand_age) => ((stand_age > 0) ? (standVol / stand_age) : 0) ~ track(u"m^3/ha")
 
-    trees_delta(mortality, thinning) => -mortality - thinning ~ track(u"ha^-1/hr")
+    trees_delta(#=mortality, =#thinning) => #=-mortality=# - thinning ~ track(u"ha^-1/hr")
     
     trees(trees_delta) ~ accumulate(init=trees_init, u"ha^-1")
 

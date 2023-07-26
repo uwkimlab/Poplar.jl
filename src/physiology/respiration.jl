@@ -62,6 +62,8 @@
         PMINRT*RMIN + PCARRT*RCH2O
     end ~ preserve(parameter)
 
+    
+
     "Respiration required for protein synthesis"
     RPROAV(RFIXN) => begin
         RFIXN
