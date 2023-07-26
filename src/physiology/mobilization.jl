@@ -80,7 +80,7 @@
     CMOBMX => 1 - (1 - 0.055) ^ (1/24) ~ preserve(u"hr^-1", parameter)
 
     "Nitrogen mining rate"
-    NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
+    NMOBR(NVSMOB, NMOBMX, TDUMX) => begin
         NVSMOB * NMOBMX * TDUMX
     end ~ track
 
