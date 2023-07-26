@@ -65,7 +65,7 @@
     DRPP(CSDVAR, CLDVAR, THVAR, nounit(day_length)) => curve("inl", 1, CSDVAR, CLDVAR, THVAR, day_length) ~ track
 
     "Thermal factor (between 0 and 1)"
-    TNTFAC(T_air) => curve("lin", 3, 25, 33, 45, T_air) ~ track
+    TNTFAC(nounit(T_air)) => curve("lin", 3, 25, 33, 45, T_air) ~ track
 
     "Photo-thermal factor"
     TDUMX(TNTFAC, DRPP) => TNTFAC * DRPP ~ track
