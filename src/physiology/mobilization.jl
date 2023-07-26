@@ -90,6 +90,9 @@
     "Potential mobile N available from stem (g[N]/m^2)"
     NMINEST(NMOBR, WNRST) =>  NMOBR * WNRST ~ track(u"g/m^2/hr")
 
+    # FIX
+    PPMFAC => 1 ~ preserve(parameter)
+
     "Potential mobile N available from root (g[N]/m^2)"
     NMINERT(NMOBR, PPMFAC, WNRRT) => NMOBR * PPMFAC * WNRRT ~ track(u"g/m^2/hr")
 
