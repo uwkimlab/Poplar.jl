@@ -5,7 +5,7 @@
     N from natural senescence
     ========================#
 
-    SENNLF => 1 ~ preserve
+    SENNLV => 1 ~ preserve
 
     "Nitrogen mobilized from natural leaf senescence"
     LFSNMOB(senescence_leaf, PCNL, SENNLV, PROLFF, LTSEN) => begin
@@ -13,7 +13,7 @@
         LTSEN * (PCNL / 100 - PROLFF * 0.16)
     end ~ track(u"g/m^2/hr")
 
-    SENNST => 1 ~ preserve
+    SENNSV => 1 ~ preserve
 
     "Nitrogen mobilized from natural stem senescence"
     STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, PROSTF, STLFSEN) => begin
