@@ -17,15 +17,15 @@
 
     # Carbon partitioning table corresponding to BBCH stages.
     BBCH_table => [
-      # leaf stem root
-        0.00 0.00 0.00 # BBCH00
-        0.90 0.05 0.05 # BBCH11
-        0.90 0.05 0.05 # BBCH19
-        0.20 0.50 0.30 # BBCH30
-        0.00 0.67 0.33 # BBCH90
+      # leaf stem root stor
+        0.00 0.00 0.00 0.00 # BBCH00
+        0.90 0.05 0.05 0.00 # BBCH11
+        0.90 0.05 0.05 0.00 # BBCH19
+        0.20 0.50 0.30 0.00 # BBCH30
+        0.00 0.67 0.33 0.00 # BBCH90
     ] ~ tabulate(
         rows=(:BBCH00, :BBCH10, :BBCH11, :BBCH30, :BBCH90),
-        columns=(:leaf, :stem, :root),
+        columns=(:leaf, :stem, :root, :storage),
         parameter
     )
 end

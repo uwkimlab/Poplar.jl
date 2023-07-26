@@ -1,12 +1,12 @@
 @system Veggr begin
-    N_supply(#=N_fixation, =#N_uptake#=, N_mined=#) => begin
-        #=N_fixation + =#N_uptake#= + N_mined=#
+    N_supply(#=N_fixation, =#N_uptake, N_mined) => begin
+        #=N_fixation + =#N_uptake + N_mined
     end ~ track(u"g/m^2/hr")
 
     N_stress_factor => 0.7 ~ preserve(parameter)
 
     N_stress(N_supply, N_demand_new, N_stress_factor) => begin
-        if (N_demand_new * N_stress_factor) == 0
+        if (N_demand_new * N_stress_factor) == 0u"g/m^2/hr"
             1
         else
         # if N_supply < N_stress_factor * N_demand_new && N_demand_new > 0u"g/m^2/hr"
@@ -14,17 +14,19 @@
         end    
     end ~ track(max=1)
 
-    AGRVG_p(AGRLF, AGRSTM, AGRRT, partition_foliage, partition_stem, partition_root) => begin
+    "Potential CH2O required for vegetative tissue (stoichiometry and respiration)"
+    AGRVG(AGRLF, AGRSTM, AGRRT, partition_foliage, partition_stem, partition_root) => begin
         (AGRLF * partition_foliage +
         AGRSTM * partition_stem +
         AGRRT * partition_root)
     end ~ track(u"g/g")
 
-    growth_demand(C_available, AGRVG_p) => begin
-        C_available / AGRVG_p
+    "Demand for vegetative growth"
+    growth_demand(C_available, AGRVG) => begin
+        C_available / AGRVG
     end ~ track(u"g/m^2/hr")
 
-    "Dry weight growth rate of new leaf tissue including N but not C reserves"
+    "Potential foliage growth rate"
     growth_foliage_potential(partition_foliage, growth_demand) => partition_foliage * growth_demand ~ track(u"g/m^2/hr")
 
     "Potential growth rate stem"
@@ -36,28 +38,35 @@
     # "Potential Growth rate storage organ"
     # growth_storage_potential(partition_storage, growth_demand) => partition_storage  * growth_demand ~ track(u"g/m^2/hr")
 
-    "Maximum N leaf"
+    "Maximum N required for leaf growth"
     N_foliage_max(growth_foliage_potential, FNINL) => growth_foliage_potential * FNINL ~ track(u"g/m^2/hr")
-    "Maximum N stem"
+
+    "Maximum N required for stem growth"
     N_stem_max(growth_stem_potential, FNINS) => growth_stem_potential * FNINS ~ track(u"g/m^2/hr")
-    "Maximum N root"
+
+    "Maximum N required for root growth"
     N_root_max(growth_root_potential, FNINR) => growth_root_potential * FNINR ~ track(u"g/m^2/hr")
-    # "Maximum N storage"
-    # N_storage_max(growth_foliage_potential, FNINSR) => growth_storage_potential * FNINSR ~ track(u"g/m^2/hr")
-    "Maximum N vegetative"
-    N_max(N_foliage_max, N_stem_max, N_root_max#=, N_storage_max=#) => begin
-        N_foliage_max + N_stem_max + N_root_max#= + N_storage_max=#
+
+    "Maximum N requiried for storage growth"
+    N_storage_max(growth_foliage_potential, FNINSR) => growth_storage_potential * FNINSR ~ track(u"g/m^2/hr")
+
+    "Maximum N required for vegetative growth"
+    N_max(N_foliage_max, N_stem_max, N_root_max, N_storage_max) => begin
+        N_foliage_max + N_stem_max + N_root_max + N_storage_max
     end ~ track(u"g/m^2/hr")
 
-    "Minimum N leaf"
+    "Minimum N required for leaf growth"
     N_foliage_min(growth_foliage_potential, FNINLG) => growth_foliage_potential * FNINLG ~ track(u"g/m^2/hr")
-    "Minimum N stem"
+
+    "Minimum N required for stem growth"
     N_stem_min(growth_stem_potential, FNINSG) => growth_stem_potential * FNINSG ~ track(u"g/m^2/hr")
-    "Minimum N root"
+
+    "Minimum N requred for root growth"
     N_root_min(growth_root_potential, FNINRG) => growth_root_potential * FNINRG ~ track(u"g/m^2/hr")
     # "Minimum N storage"
     # N_storage_min(growth_foliage_potential, FNINSRG) => growth_storage_potential * FNINSRG ~ track(u"g/m^2/hr")
-    "Minimum N vegetative"
+
+    "Minimum N required for vegetative growth"
     N_min(N_foliage_min, N_stem_min, N_root_min#=, N_storage_min=#) => begin
         N_foliage_min + N_stem_min + N_root_min#= + N_storage_min=#
     end ~ track(u"g/m^2/hr")
@@ -98,7 +107,7 @@
         # end
     end ~ track(u"g/m^2/hr")
 
-    "N for leaf growth"
+    "Actual N required for leaf growth"
     NGRLF(N_supply, N_min, N_foliage_min, NRATIO, growth_foliage, growth_demand) => begin
         if N_supply < N_min
             N_foliage_min * NRATIO
@@ -107,7 +116,7 @@
         end
     end ~ track(max=N_foliage_max, u"g/m^2/hr")
     
-    "N for stem growth"
+    "Actual N required for stem growth"
     NGRST(N_supply, N_min, N_stem_min, NRATIO, growth_stem, growth_demand) => begin
         if N_supply < N_min
             N_stem_min * NRATIO
@@ -116,6 +125,7 @@
         end
     end ~ track(max=N_stem_max, u"g/m^2/hr")
 
+    "Actual N required for root growth"
     NGRRT(N_supply, N_min, N_root_min, NRATIO, growth_root, growth_demand) => begin
         if N_supply < N_min
             N_root_min * NRATIO
@@ -124,15 +134,55 @@
         end
     end ~ track(max=N_root_max, u"g/m^2/hr")
 
-    # NGRSR(N_supply, N_min, N_storage_min, NRATIO, growth_storage, growth_demand) => begin
-    #     if N_supply < N_min
-    #         N_stem_min * NRATIO
-    #     else
-    #         N_supply * (growth_storage / growth_demand)
-    #     end
-    # end ~ track(max=N_storage_max, u"g/m^2/hr")
+    "Actual N required for storage"
+    NGRSR(N_supply, N_min, N_storage_min, NRATIO, growth_storage, growth_demand) => begin
+        if N_supply < N_min
+            N_stem_min * NRATIO
+        else
+            N_supply * (growth_storage / growth_demand)
+        end
+    end ~ track(max=N_storage_max, u"g/m^2/hr")
 
-    N_growth(NGRLF, NGRST, NGRRT#=, NGRSR=#) => NGRLF + NGRST + NGRRT#= + NGRSR =#~ track(u"g/m^2/hr")
+    "Protein fraction for new leaf growth"
+    PROLFT(NGRLF, growth_foliage) => begin
+        if growth_foliage == 0u"g/m^2/hr"
+            0
+        else
+            NGRLF * (1 / 0.16) / growth_foliage
+        end
+    end ~ track
+
+    "Protein fraction for new stem growth"
+    PROSTT(NGRST, growth_stem) => begin
+        if growth_stem == 0u"g/m^2/hr"
+            0
+        else
+            NGRST * (1 / 0.16) / growth_stem
+        end
+    end ~ track
+
+    "Protein fraction for new root growth"
+    PRORTT(NGRRT, growth_root) => begin
+        if growth_root == 0u"g/m^2/hr"
+            0
+        else
+            NGRRT * (1 / 0.16) / growth_root
+        end
+    end ~ track
+
+    "Proten fraction for new storage growth"
+    PROSRT(NGRSR, growth_storage) => begin
+        if growth_storage == 0u"g/m^2/hr"
+            0
+        else
+            NGRSR * (1 / 0.16) / growth_storage
+    end ~ track
+
+    PGLEFT(C_available, growth_foliage, growth_stem, growth_root, growth_storage, AGRVG3) => begin
+        C_available - (growth_foliage + growth_stem + growth_root + growth_storage) * AGRVG3
+    end
+
+    N_growth(NGRLF, NGRST, NGRRT, NGRSR) => NGRLF + NGRST + NGRRT + NGRSR ~ track(u"g/m^2/hr")
 
     N_total(N_growth) ~ accumulate(init=0, u"g/m^2")
 

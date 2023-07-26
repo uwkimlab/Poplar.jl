@@ -33,8 +33,14 @@ Foliage
     "Mass of N in leaves"
     WTNLF(NLDOT) ~ accumulate(init=0, u"g/m^2")
 
+    WCRLDT
+
     "Mass of CH2O reserves in leaves"
+    WCRLF(WCRLDT) ~ accumulate(u"g/m^2")
     WCRLF(ALPHL, WF) => ALPHL * WF ~ track(u"g/m^2")
+
+    "Percent CH2O in foliage"
+    RHOL(WCRLF, WF) => WCRLF / WF ~ track(u"percent")
 
     "Percent N in foliage"
     PCNL(WTNLF, WF) => WTNLF / WF ~ track(u"percent")

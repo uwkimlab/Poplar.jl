@@ -11,12 +11,16 @@
     Calculate potential N mobilitation for the day
     =#
 
+    "Minimum relative rate of reproductive development under long days and optimal temperature"
     THVAR => 1 ~ preserve(parameter) 
 
+    "Sensitivity to photoperiod; Slope of the relative rate of development for day lengths above CSDVAR (1/hr)"
     PPSEN => 0.2 ~ preserve(parameter)
 
+    "Critical daylength above which development rate decreases (prior to flowering)"
     CSDVAR => 0 ~ preserve(parameter)
 
+    "Critical daylength above which development rate remains at min value (prior to flowering) (hours)"
     CLDVAR(PPSEN, CSDVAR, THVAR) => begin
         if PPSEN >= 0
             CSDVAR + (1 - THVAR) / max(PPSEN, 0.000001)
@@ -25,30 +29,28 @@
         end
     end
 
-    # Photoperiod days per day (?)
+    "Photoperiod days which occur in a real day (photoperiod days / day)"
     DRPP(CSDVAR, CLDVAR, THVAR, DAYL) => curve("inl", CSDVAR, CLDVAR, THVAR, DAYL) ~ track
 
-    # Thermal hours per hour
+    "Thermal time that occurs in a single real day based on early reproductive development temperature function (thermal days / day)"
     TNTFAC(T_air) => curve("lin", 3, 25, 33, 45, T_air) ~ track
 
-    # Photo-thermal days per day
+    "Photo-thermal time that occurs in a real day based on early reproductive development temperature function"
     TDUMX(TNTFAC, DRPP) => TNTFAC * DRPP
 
+    "Relative rate of N mining during vegetative stage to that in reproductive stage"
     NVSMOB => 1 ~ preserve(parameter)
+
+    "Maximum fraction of N which can be mobilized in a day"
     NMOBMX => 0.08 ~ preserve(parameter)
-
-    FTHR = CURV(CTMP(6), TB(1), TO1(1), TO2(1), T_air)
-
-    TNTFAC = FTHR
 
     # I don't know why this is here it should be in nitrogen mobilization?
     # Nitrogen mobilization rate. Not sure what the numerical values represent.
     # NMOBR is mining rate as a fraction of the maximum rate, NMOBMX
+    "Stage dependent N mining rate"
     NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
         NVSMOB * NMOBMX * TDUMX
     end ~ track
-
-    WNRLF()
 
     "Potential mobile N available from leaf (g[N]/m^2)"
     NMINELF(NMOBR, WNRLF) => NMOBR * WNRLF ~ track
