@@ -34,7 +34,8 @@
         growth_stem_N - STNMINE - STOFF + NADST
     end ~ track(u"g/m^2/hr")
 
-    STOFF => 0 ~ preserve(u"g/m^2/hr")
+    
+    NSOFF => 0 ~ preserve(u"g/m^2/hr")
 
     N_stem(N_stem_delta) ~ accumulate(init=0, u"g/m^2")
 

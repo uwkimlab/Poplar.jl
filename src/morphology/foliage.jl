@@ -34,7 +34,8 @@ Foliage.
         growth_foliage_N - LFNMINE - NLOFF + NADLF
     end ~ track(u"g/m^2/hr")
 
-    NLOFF => 0 ~ preserve(u"g/m^2/hr")
+    "Leaf N loss per hour"
+    NLOFF => 0 ~ track(u"g/m^2/hr")
 
     "Mass of N in leaves"
     N_foliage(N_foliage_delta) ~ accumulate(init=N_foliage_init, u"g/m^2")

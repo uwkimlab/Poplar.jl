@@ -7,18 +7,22 @@
 
     SENNLV => 1 ~ preserve
 
+    # LTSEN(DTX, XLAI, LCMP, TCMP) => begin
+    #     DTX * (XLAI - LCMP) / TCMP
+    # end
+
     "Nitrogen mobilized from natural leaf senescence"
-    LFSNMOB(senescence_leaf, PCNL, SENNLV, PROLFF, LTSEN) => begin
-        senescence_leaf * (PCNL/100 - (SENNLV * (PCNL / 100 - PROLFF * 0.16) + PROLFF * 0.16))+
-        LTSEN * (PCNL / 100 - PROLFF * 0.16)
+    LFSNMOB(senescence_leaf, PCNL, SENNLV, PROLFF#=, LTSEN=#) => begin
+        senescence_leaf * (PCNL/100 - (SENNLV * (PCNL / 100 - PROLFF * 0.16) + PROLFF * 0.16))
+        # LTSEN * (PCNL / 100 - PROLFF * 0.16)
     end ~ track(u"g/m^2/hr")
 
     SENNSV => 1 ~ preserve
 
     "Nitrogen mobilized from natural stem senescence"
-    STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, PROSTF, STLFSEN) => begin
-        senescence_stem * (PCNST / 100 - (SENNSV * (PCNST / 100 - PROSTF * 0.16) + PROSTF * 0.16)) +
-        STLTSEN * (PCNST / 100 - PROSTF * 0.16)
+    STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, PROSTF#=, STLFSEN=#) => begin
+        senescence_stem * (PCNST / 100 - (SENNSV * (PCNST / 100 - PROSTF * 0.16) + PROSTF * 0.16))
+        #STLTSEN * (PCNST / 100 - PROSTF * 0.16)
     end ~ track(u"g/m^2/hr")
 
     SENNRV => 1 ~ preserve
