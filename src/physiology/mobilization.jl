@@ -74,7 +74,10 @@
     NVSMOB => 1 ~ preserve(parameter)
 
     "Maximum fraction of N which can be mobilized in an HOUR"
-    NMOBMX => 1 - (1 - 0.08) ^ (1/24) ~ preserve(parameter)
+    NMOBMX => 1 - (1 - 0.08) ^ (1/24) ~ preserve(u"hr^-1", parameter)
+
+    "Maximum fraction of C which can be mobilzed in an HOUR"
+    CMOBMX => 1 - (1 - 0.055) ^ (1/24) ~ preserve(u"hr^-1", parameter)
 
     "Nitrogen mining rate"
     NMOBR(NVSMOD, NMOBMX, TDUMX) => begin
@@ -130,23 +133,24 @@
     ==========================#
 
     "Potential mobile CH2O available from leaf"
-    CMINELF(CMOBX, DTX, WCRLF, WF, PCHOLFF) => begin
+    CMINELF(CMOBMX, DTX, WCRLF, WF, PCHOLFF) => begin
         CMOBMX * DTX * (WCRLF - WF * PCHOLFF)
     end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from stem"
-    CMINEST(CMOBX, DTX, WCRST, WS, PCHOSTF) => begin
+    CMINEST(CMOBMX, DTX, WCRST, WS, PCHOSTF) => begin
         CMOBMX * DTX * (WCRST - WS * PCHOSTF)
     end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from root"
-    CMINERT(CMOBX, DTX, WCRRT, WR, PCHORTF) => begin
-        CMOBX * DTX * PPMFAC * (WCRRT - WR * PCHORTF)
+    CMINERT(CMOBMX, DTX, WCRRT, WR, PCHORTF) => begin
+        CMOBMX * DTX * PPMFAC * (WCRRT - WR * PCHORTF)
     end ~ track(u"g/m^2/hr")
 
+    # FIX
     "Potential mobile CH2O available from storage"
-    CMINESR(CMOBX, DTX, WCRSR, WSR, PCHOSRF) => begin
-        CMOBSR * DTX * (WCRSR - WSR * PCHOSRF)
+    CMINESR(CMOBMX, DTX, WCRSR, WSR, PCHOSRF) => begin
+        CMOBMX * DTX * (WCRSR - WSR * PCHOSRF)
     end ~ track(u"g/m^2/hr")
 
     # LFSENWT(SENRTE, NMINELF) => SENRTE * NMINELF / 0.16 ~ track(max=WTLF)
