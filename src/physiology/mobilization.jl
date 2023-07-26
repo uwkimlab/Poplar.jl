@@ -146,7 +146,7 @@
     end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from root"
-    CMINERT(CMOBMX, DTX, WCRRT, WR, PCHORTF) => begin
+    CMINERT(CMOBMX, DTX, WCRRT, WR, PCHORTF, PPMFAC) => begin
         CMOBMX * DTX * PPMFAC * (WCRRT - WR * PCHORTF)
     end ~ track(u"g/m^2/hr")
 
