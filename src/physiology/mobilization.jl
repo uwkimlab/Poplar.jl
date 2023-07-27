@@ -9,6 +9,12 @@
     N-mobilization senescence. Value of 1 equates to all of the N mobilized."
     SENNLV => 1 ~ preserve
 
+    SENNSV => 1 ~ preserve
+
+    SENNRV => 1 ~ preserve
+
+    SENNSRV => 1 ~ preserve
+
     # LTSEN(DTX, XLAI, LCMP, TCMP) => begin
     #     DTX * (XLAI - LCMP) / TCMP
     # end
@@ -20,29 +26,23 @@
         # LTSEN refers to further senescence specific to leaves exposed to low-light
         # I was considering using the LAI_shaded variable to calculate this value.
         # Currently not implemented.
-    end ~ track(u"g/m^2/hr")
-
-    SENNSV => 1 ~ preserve
+    end ~ track(u"g/m^2/hr", min=0)
 
     "Nitrogen mobilized from natural stem senescence"
     STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, PROSTF#=, STLFSEN=#) => begin
         senescence_stem * (PCNST / 100 - (SENNSV * (PCNST / 100 - PROSTF * 0.16) + PROSTF * 0.16))
         # STLTSEN * (PCNST / 100 - PROSTF * 0.16)
-    end ~ track(u"g/m^2/hr")
-
-    SENNRV => 1 ~ preserve
+    end ~ track(u"g/m^2/hr", min=0)
     
     "Nitrogen mobilized from natural root senescence"
     RTSNMOB(senescence_root, PCNRT, SENNRV, PRORTF) => begin
         senescence_root * (PCNRT / 100 - (SENNRV * (PCNRT / 100 - PRORTF*0.16) + PRORTF*0.16))
-    end ~ track(u"g/m^2/hr")
-
-    SENNSRV => 1 ~ preserve
+    end ~ track(u"g/m^2/hr", min=0)
 
     "Nitrogen mobillized from natural storage senescence"
     SRSNMOB(senescence_storage, PCNSR, SENNSRV, PCNSR, PROSRF) => begin
-        senescence_storage * (PCNSR / 100 - (SENNSRV * (PCNSR / 100 - PROSRF*0.16) + PROSRF*0.16))
-    end ~ track(u"g/m^2/hr")
+        senescence_storage * (PCNSR / 100 - (SENNSRV * (PCNSR / 100 - PROSRF * 0.16) + PROSRF * 0.16))
+    end ~ track(u"g/m^2/hr", min=0)
 
     #======================
     N mined from old tissue
@@ -154,7 +154,7 @@
         CMOBMX * DTX * PPMFAC * (WCRRT - WR * PCHORTF)
     end ~ track(u"g/m^2/hr")
 
-    # FIX
+    # FIX NEED TO USE CMOBSR FOR CALCULATION INSTEAD OF CMOBMX
     "Potential mobile CH2O available from storage"
     CMINESR(CMOBMX, DTX, WCRSR, WSR, PCHOSRF) => begin
         CMOBMX * DTX * (WCRSR - WSR * PCHOSRF)
@@ -170,11 +170,11 @@
     # I assume that there is no N mobilization occuring due to this senescence."
 
     "Factor by which protein mined from leaves each day is multiplied to determine LEAF senescence. (g(leaf) / g(protein loss))"
-    SENRTE => 1 ~ preserve(parameter)
+    SENRTE => 0.8 ~ preserve(parameter)
 
-    # LFSENWT(SENRTE, NMINELF) => SENRTE * NMINELF / 0.16 ~ track(max=)
+    LFSENWT(SENRTE, NMINELF) => SENRTE * NMINELF / 0.16 ~ track(u"g/m^2/hr")
     
-    # STSENWT(LFSENWT, petiole_to_leaf) => LFSENWT * petiole_to_leaf ~ track
+    STSENWT(LFSENWT, petiole_to_leaf) => LFSENWT * petiole_to_leaf ~ track(u"g/m^2/hr")
 
     # N_mined_actual(N_demand_new, N_uptake, N_mined_potential) => begin
     #     if N_demand_new - N_uptake > 1.e5 && N_mined_potential > 1.e4
@@ -198,17 +198,4 @@
     # C mobilization
     # =#
 
-    # LFSNMOB(senescence_leaf, PCNL, SENNLV) => begin
-    #     LMDOT * (PCNL/100 - 
-    #     (SENNLV * (PCNL / 100 - PROLFF*0.16) + PROLFF*0.16)) 
-    #     + LTSEN * (PCNL / 100 - PROLFF * 0.16)
-    # end
-
-    # STSNMOB() => begin
-    #     senescence_stem * (PCNST/100 - 
-    #     (SENNSV * (PCNST / 100 - PROSTF*0.16) + PROSTF*0.16)) 
-    #     + STLTSEN * (PCNST / 100 - PROSTF * 0.16)
-    # end
-
-    # SRSNMOB() => begin
 end

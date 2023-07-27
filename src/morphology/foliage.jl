@@ -42,7 +42,7 @@ Foliage.
         N_foliage - PROLFF * 0.16 * (WF - WCRLF)
     end ~ track(min=0, u"g/m^2")
 
-    WCRLDT(growth_foliage, ALPHL, CMINELF, CLOFF) => begin
+    WCRLDT(growth_foliage, ALPHL, CMINELF, CLOFF, CADLF) => begin
         growth_foliage*ALPHL - CMINELF - CLOFF + CADLF
     end ~ track(u"g/m^2/hr")
 
@@ -146,4 +146,5 @@ Foliage.
 
     # Leaf Area Index
     LAI(WF, SLA) => WF * SLA ~ track
+    # LAI => 1 ~ preserve(parameter)
 end

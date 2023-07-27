@@ -7,8 +7,6 @@
     FNINSR(PROSRI) => PROSRI * 0.16 ~ preserve
     FNINSRG(PROSRG) => PROSRG * 0.16 ~ preserve
 
-    PCNSR(N_storage, WSR) => N_storage / WSR ~ track(u"percent")
-
     "Mobile CH2O concentration of storage"
     PCHOSRF => 0.040 ~ preserve(parameter)
 
@@ -18,11 +16,11 @@
     N_storage_init(iWSR, PROSRG) => iWSR * PROSRG * 0.16 ~ preserve(u"g/m^2")
 
     N_storage_delta(growth_storage_N, SRNMINE, NSROFF, NADSR) => begin
-        growth_storage - SRNMINE - NSROFF + NADSR
+        growth_storage_N - SRNMINE - NSROFF + NADSR
     end ~ track(u"g/m^2/hr")
 
-    NSROFF => 0 ~ preserve(u"g/m^2/hr")
-    CSROFF => 0 ~ preserve(u"g/m^2/hr")
+    # NSROFF => 0 ~ preserve(u"g/m^2/hr")
+    # CSROFF => 0 ~ preserve(u"g/m^2/hr")
 
     N_storage(N_storage_delta) ~ accumulate(u"g/m^2", init=N_storage_init)
 
@@ -47,9 +45,9 @@
     PCNSR(N_storage, WSR) => N_storage / WSR ~ track(u"percent")
 
     "Percent CH2O in storage"
-    RHOSR(WCRSR, WSR) => WCRLSR / WSR ~ track(u"percent")
+    RHOSR(WCRSR, WSR) => WCRSR / WSR ~ track(u"percent")
 
-    iWSR => 0 ~ preserve(u"kg/ha", parameter)
+    iWSR => 200 ~ preserve(u"kg/ha", parameter)
     dWSR(growth_storage, senescence_storage) => growth_storage - senescence_storage ~ track(u"kg/ha/hr")
-    WSR(dWSR) ~ accumulate(u"kg/ha", init=0, min=0)
+    WSR(dWSR) ~ accumulate(u"kg/ha", init=iWSR, min=0)
 end

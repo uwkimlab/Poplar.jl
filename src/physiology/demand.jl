@@ -92,6 +92,8 @@
         N_demand_veg + N_demand_old
     end ~ track(u"g/m^2/hr")
 
+    N_demand2(N_demand) ~ track(u"kg/ha/hr")
+
     C_demand(C_demand_veg, C_demand_old) => begin
         C_demand_veg + C_demand_old
     end ~ track(u"g/m^2/hr")

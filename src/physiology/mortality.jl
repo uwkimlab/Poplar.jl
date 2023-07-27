@@ -42,9 +42,10 @@ Mortality
     senescence_storage(WSR, SRSEN, DTX) => WSR * SRSEN * DTX ~ track(u"g/m^2/hr")
 
     "Leaf N loss per HOUR"
-    NLOFF(senescence_leaf) => begin
+    NLOFF(senescence_leaf, SENNLV, PCNL, PROLFF, LFSENWT) => begin
+        senescence_leaf *
         (SENNLV * (PCNL - PROLFF * 0.16) + PROLFF * 0.16) +
-        (LFSENWT) + PROLFF * 0.16
+        (LFSENWT) * PROLFF * 0.16
         # (SLNDOT + WLIDOT + WLFDOT) * PCNL
         # water stress + pest + freezing
     end ~ track(u"g/m^2/hr")
@@ -53,14 +54,48 @@ Mortality
     SENCLV => 1 ~ preserve(parameter)
 
     "CH2O loss from leaves per HOUR"
-    CLOFF(senescence_leaf, LFSENWT) => begin
+    CLOFF(senescence_leaf, LFSENWT, SENCLV, RHOL, PCHOLFF) => begin
         (senescence_leaf + LFSENWT) *
         (SENCLV * (RHOL - PCHOLFF) + PCHOLFF)
         #(SLNDOT + WLIDOT + WLFDOT) * RHOL
     end ~ track(u"g/m^2/hr")
 
+    NSOFF(senescence_stem, SENNSV, PCNST, PROSTF, STSENWT) => begin
+        senescence_stem *
+        (SENNSV * (PCNST - PROSTF * 0.16) + PROSTF * 0.16) +
+        (STSENWT) * PROSTF * 0.16
+    end ~ track(u"g/m^2/hr")
 
+    SENCSV => 1 ~ preserve(parameter)
 
+    CSOFF(senescence_stem, STSENWT, SENCSV, RHOS, PCHOSTF) => begin
+        (senescence_stem + STSENWT) *
+        (SENCSV * (RHOS - PCHOSTF) + PCHOSTF)
+     end ~ track(u"g/m^2/hr")
+
+    NROFF(senescence_root, SENNRV, PCNRT, PRORTF) => begin
+        senescence_root *
+        (SENNRV * (PCNRT - PRORTF * 0.16) + PRORTF * 0.16)
+    end ~ track(u"g/m^2/hr")
+
+    SENCRV => 1 ~ preserve(parameter)
+
+    CROFF(senescence_root, SENCRV, RHOR, PCHORTF) => begin
+        senescence_root *
+        (SENCRV * (RHOR - PCHORTF) + PCHORTF)
+    end ~ track(u"g/m^2/hr")
+
+    NSROFF(senescence_storage, SENNSRV, PCNSR, PROSRF) => begin
+        senescence_storage *
+        (SENNSRV * (PCNSR - PROSRF * 0.16) + PROSRF * 0.16)
+    end ~ track(u"g/m^2/hr")
+
+    SENCSRV => 1 ~ preserve(parameter)
+
+    CSROFF(senescence_storage, SENCSRV, RHOSR, PCHOSRF) => begin
+        senescence_storage *
+        (SENCSRV * (RHOSR - PCHOSRF) + PCHOSRF)
+    end ~ track(u"g/m^2/hr")
 
     #=========
     Parameters

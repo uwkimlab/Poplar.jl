@@ -19,9 +19,6 @@
     "Minimum N required for stem growth"
     FNINSG(PROSTG) => PROSTG * 0.16 ~ preserve
 
-    "Percent N in stem"
-    PCNST(N_stem, WS) => N_stem / WS ~ track(u"percent")
-
     "Mobile CH2O contentration of stem"
     PCHOSTF => 0.008 ~ preserve(parameter)
 
@@ -31,7 +28,7 @@
     N_stem_init(iWS, PROSTG) => iWS * PROSTG * 0.16 ~ preserve(u"g/m^2")
 
     N_stem_delta(growth_stem_N, STNMINE, NSOFF, NADST) => begin
-        growth_stem_N - STNMINE - STOFF + NADST
+        growth_stem_N - STNMINE - NSOFF + NADST
     end ~ track(u"g/m^2/hr")
 
     N_stem(N_stem_delta) ~ accumulate(init=0, u"g/m^2")
@@ -41,8 +38,8 @@
         N_stem - PROSTF * 0.16 * (WS - WCRST)
     end ~ track(min=0, u"g/m^2")
 
-    WCRSDT(growth_stem, ALPHS, CMINEST, CSOFF) => begin
-        growth_stem * ALPHS - CMINEST - CSOFF + CADLF
+    WCRSDT(growth_stem, ALPHS, CMINEST, CSOFF, CADST) => begin
+        growth_stem * ALPHS - CMINEST - CSOFF + CADST
     end ~ track(u"g/m^2/hr")
 
     WCRSTi(ALPHS, WS) => ALPHS * WS ~ preserve(u"g/m^2")
@@ -54,7 +51,7 @@
     CADST => 0 ~ track(u"g/m^2/hr")
 
     "Percent N in stem"
-    PCNS(N_stem, WS) => N_stem / WS ~ track(u"percent")
+    PCNST(N_stem, WS) => N_stem / WS ~ track(u"percent")
 
     "Percent CH2O in stem"
     RHOS(WCRST, WS) => WCRST / WS ~ track(u"percent")

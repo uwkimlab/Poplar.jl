@@ -19,8 +19,6 @@
     "Minimum N required for root growth"
     FNINRG(PRORTG) => PRORTG * 0.16 ~ preserve
 
-    PCNRT(N_root, WR) => N_root / WR ~ track(u"percent")
-
     "Mobile CH2O concentration of root"
     PCHORTF => 0.020 ~ preserve(parameter)
 
@@ -33,8 +31,8 @@
         growth_root_N - RTNMINE - NROFF + NADRT
     end ~ track(u"g/m^2/hr")
 
-    NROFF => 0 ~ preserve(u"g/m^2/hr")
-    CROFF => 0 ~ preserve(u"g/m^2/hr")
+    # NROFF => 0 ~ preserve(u"g/m^2/hr")
+    # CROFF => 0 ~ preserve(u"g/m^2/hr")
 
     N_root(N_root_delta) ~ accumulate(u"g/m^2", init=N_root_init)
 
@@ -57,7 +55,7 @@
     CADRT => 0 ~ track(u"g/m^2/hr")
 
     "Percent N in root"
-    PCNR(N_root, WR) => N_root / WR ~ track(u"percent")
+    PCNRT(N_root, WR) => N_root / WR ~ track(u"percent")
 
     "Percent CH2O in root"
     RHOR(WCRRT, WR) => WCRRT / WR ~ track(u"percent")
