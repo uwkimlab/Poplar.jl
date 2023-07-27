@@ -34,9 +34,6 @@
         growth_stem_N - STNMINE - STOFF + NADST
     end ~ track(u"g/m^2/hr")
 
-    
-    NSOFF => 0 ~ preserve(u"g/m^2/hr")
-
     N_stem(N_stem_delta) ~ accumulate(init=0, u"g/m^2")
 
     "N available for mobilization from stem above lower limit of mining"
@@ -55,6 +52,12 @@
     NADST => 0 ~ track(u"g/m^2/hr")
 
     CADST => 0 ~ track(u"g/m^2/hr")
+
+    "Percent N in stem"
+    PCNS(N_stem, WS) => N_stem / WS ~ track(u"percent")
+
+    "Percent CH2O in stem"
+    RHOS(WCRST, WS) => WCRST / WS ~ track(u"percent")
 
     #=========
     Parameters

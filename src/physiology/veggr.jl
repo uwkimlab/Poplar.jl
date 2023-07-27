@@ -1,6 +1,6 @@
 @system Veggr begin
-    N_supply(N_uptake, N_mined#=, N_fixation=#) => begin
-        N_uptake + N_mined#= + N_fixation=#
+    N_supply(N_uptake, N_mobilized#=, N_fixation=#) => begin
+        N_uptake + N_mobilized#= + N_fixation=#
     end ~ track(u"g/m^2/hr")
 
     N_stress_factor => 0.7 ~ preserve(parameter)
@@ -48,7 +48,7 @@
     growth_root_N_max(growth_root_potential, FNINR) => growth_root_potential * FNINR ~ track(u"g/m^2/hr")
 
     "Maximum N requiried for storage growth"
-    growth_storage_N_max(growth_foliage_potential, FNINSR) => growth_storage_potential * FNINSR ~ track(u"g/m^2/hr")
+    growth_storage_N_max(growth_storage_potential, FNINSR) => growth_storage_potential * FNINSR ~ track(u"g/m^2/hr")
 
     "Maximum N required for vegetative growth"
     growth_N_max(growth_foliage_N_max, growth_stem_N_max, growth_root_N_max, growth_storage_N_max) => begin

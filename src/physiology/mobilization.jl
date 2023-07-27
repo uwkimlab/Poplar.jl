@@ -5,6 +5,8 @@
     N from natural senescence
     ========================#
 
+    "Proportion of actual N mobilized from leaves lost to natural, low-light, and
+    N-mobilization senescence. Value of 1 equates to all of the N mobilized."
     SENNLV => 1 ~ preserve
 
     # LTSEN(DTX, XLAI, LCMP, TCMP) => begin
@@ -15,6 +17,9 @@
     LFSNMOB(senescence_leaf, PCNL, SENNLV, PROLFF#=, LTSEN=#) => begin
         senescence_leaf * (PCNL/100 - (SENNLV * (PCNL / 100 - PROLFF * 0.16) + PROLFF * 0.16))
         # LTSEN * (PCNL / 100 - PROLFF * 0.16)
+        # LTSEN refers to further senescence specific to leaves exposed to low-light
+        # I was considering using the LAI_shaded variable to calculate this value.
+        # Currently not implemented.
     end ~ track(u"g/m^2/hr")
 
     SENNSV => 1 ~ preserve
@@ -22,7 +27,7 @@
     "Nitrogen mobilized from natural stem senescence"
     STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, PROSTF#=, STLFSEN=#) => begin
         senescence_stem * (PCNST / 100 - (SENNSV * (PCNST / 100 - PROSTF * 0.16) + PROSTF * 0.16))
-        #STLTSEN * (PCNST / 100 - PROSTF * 0.16)
+        # STLTSEN * (PCNST / 100 - PROSTF * 0.16)
     end ~ track(u"g/m^2/hr")
 
     SENNRV => 1 ~ preserve
@@ -115,7 +120,6 @@
     "Maximum potential N mobilization from storage"
     SRNMINE(SRSNMOB, NMINESR) => SRSNMOB + NMINESR ~ track(u"g/m^2/hr")
 
-
     # "Potential whole-plant N mobilization from storage (g[N]/m^2/d)"
     # NMINEP(LFNMINE, STNMINE, RTNMINE, SRNMINE) => begin
     #     LFNMINE + STNMINE + RTNMINE + SRNMINE
@@ -127,7 +131,7 @@
     # end ~ track(u"g/m^2/hr")
 
     "Total plant N mobilized from tissues lost to natural and low-light senescence"
-    C_mobilized(LFNMINE, STNMINE, SRNMINE, RTNMINE) => begin
+    N_mobilized(LFNMINE, STNMINE, SRNMINE, RTNMINE) => begin
         LFNMINE + STNMINE + SRNMINE + RTNMINE
     end ~ track(u"g/m^2/hr")
 
@@ -156,9 +160,21 @@
         CMOBMX * DTX * (WCRSR - WSR * PCHOSRF)
     end ~ track(u"g/m^2/hr")
 
-    # LFSENWT(SENRTE, NMINELF) => SENRTE * NMINELF / 0.16 ~ track(max=WTLF)
+    C_mobilized(CMINELF, CMINEST, CMINERT, CMINESR) => begin
+        CMINELF + CMINEST + CMINERT + CMINESR
+    end ~ track(u"g/m^2/hr")
+
+
+    # "Leaf senescence due to mobilization (?).
+    # It appears that leaf senescence occurs as a result of N mobilization as well.
+    # I assume that there is no N mobilization occuring due to this senescence."
+
+    "Factor by which protein mined from leaves each day is multiplied to determine LEAF senescence. (g(leaf) / g(protein loss))"
+    SENRTE => 1 ~ preserve(parameter)
+
+    # LFSENWT(SENRTE, NMINELF) => SENRTE * NMINELF / 0.16 ~ track(max=)
     
-    # STSENWT(LFSENWT, PORPT) => LFSENWT * PORPT ~ track
+    # STSENWT(LFSENWT, petiole_to_leaf) => LFSENWT * petiole_to_leaf ~ track
 
     # N_mined_actual(N_demand_new, N_uptake, N_mined_potential) => begin
     #     if N_demand_new - N_uptake > 1.e5 && N_mined_potential > 1.e4
@@ -195,31 +211,4 @@
     # end
 
     # SRSNMOB() => begin
-
-
-
-    # "Potential mobile N available from leaf"
-    # NMINELF(NMOBR, WNRLF) => NMOBR * WNRLF ~ track
-    # ""
-    # LFNMINE(LFSNMOB, NMINELF) => LFSNMOB + NMINELF ~ track
-
-    # "Potential mobile N available from stem"
-    # NMINEST(NMOBR, WNRST) => NMOBR * WNRST ~ track
-    # ""
-    # STNMINE(STSNMOB, NMINEST) => STSNMOB + NMINEST ~ track
-
-    # "Potential mobile N available from root"
-    # NMINERT(NMOBR, PPMFAC, WNRRT) => NMOBR * PPMFAC * WNRRT ~ track
-    # ""
-    # RTNMINE(RTSNMOB, NMINERT) => RTSNMOB + NMINERT ~ track
-
-    # "Potential mobile N available from storage"
-    # NMINESR(NMOBSR, WNRSR) => NMOBSR * WNRSR ~ track
-    # ""
-    # SRNMINE(SRSNMOB, NMINESR) => SRSNMOB + NMINESR ~ track
- 
-    # "Total plant N movilized from tissue lost to natural and low-light senescence"
-    # TSNMOB(LFNMINE, STNMINE, RTNMINE, SRNMINE) => begin
-    #     LFNMINE + STSNMINE + SRNMINE + RTNMINE
-    # end ~ track(u"g/m^2/hr")
 end

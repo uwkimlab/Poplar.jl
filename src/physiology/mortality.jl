@@ -7,38 +7,60 @@ Mortality
     Natural Senescence
     =================#
 
-    "Maximum rate of natural leaf senescence per physiological day"
+    "Fraction of existing leaf senesced per HOUR"
     LFSEN => 1 - (1 - 0.01)^(1/24) ~ preserve(u"hr^-1", parameter)
 
-    "Fraction of existing root length that can be senesced per HOUR"
+    "Fraction of existing root length senesced per HOUR"
     RTSEN => 1 - (1 - 0.008)^(1/24) ~ preserve(u"hr^-1", parameter)
 
-    "Proportion of cumulative storage weight lost per day"
+    "Fraction of existing storage senesced per HOUR"
     SRSEN => 1 - (1 - 0.009)^(1/24) ~ preserve(u"hr^-1", parameter)
 
-    "Thermal factor (?)"
+    "Ratio of petiole to leaf weight"
+    petiole_to_leaf => 0.27 ~ preserve(parameter)
+
+    "Thermal factor (between 0 and 1)"
     DTX(nounit(T_air)) => curve("lin", 3, 25, 33, 45, T_air) ~ track
+
+    "Root length denstiy senesced (cm/cm^3)"
+    RLSEN(RLV, RTSEN, DTX) => RLV * RTSEN * DTX ~ track(u"cm/cm^3/hr")
 
     "Hourly leaf senescence"
     senescence_leaf(WF, LFSEN, DTX) => WF * LFSEN * DTX ~ track(u"g/m^2/hr")
 
     "Maximum hourly stem senescence"
-    SSMDOT_max(WS) => 0.1 * WS / u"hr" ~ track(u"g/m^2/hr")
+    senescence_stem_max(WS) => 0.1 * WS / u"hr" ~ track(u"g/m^2/hr")
 
-    "ratio of petiole to leaf weight"
-    PORPT => 0.27 ~ preserve(parameter)
-
-    "Hourly stem senescence"
-    senescence_stem(senescence_leaf, PORPT) => senescence_leaf * PORPT ~ track(u"g/m^2/hr", max=SSMDOT_max)
-
-    "Root length denstiy senesced (cm/cm^3)"
-    RLSEN(RLV, RTSEN, DTX) => RLV * RTSEN * DTX ~ track(u"cm/cm^3/hr")
+    "Hourly stem senescence. Appears to be related to leaf senescence rate.
+    Not sure if this behavior is applicable to a woody species like poplar"
+    senescence_stem(senescence_leaf, petiole_to_leaf) => senescence_leaf * petiole_to_leaf ~ track(u"g/m^2/hr", max=senescence_stem_max)
 
     "Hourly root senescence"
     senescence_root(RLSEN, RFAC, soil_depth) => RLSEN * soil_depth / RFAC ~ track(u"g/m^2/hr")
 
     "Hourly storage senescence"
     senescence_storage(WSR, SRSEN, DTX) => WSR * SRSEN * DTX ~ track(u"g/m^2/hr")
+
+    "Leaf N loss per HOUR"
+    NLOFF(senescence_leaf) => begin
+        (SENNLV * (PCNL - PROLFF * 0.16) + PROLFF * 0.16) +
+        (LFSENWT) + PROLFF * 0.16
+        # (SLNDOT + WLIDOT + WLFDOT) * PCNL
+        # water stress + pest + freezing
+    end ~ track(u"g/m^2/hr")
+
+    "Proportion used to calculate..."
+    SENCLV => 1 ~ preserve(parameter)
+
+    "CH2O loss from leaves per HOUR"
+    CLOFF(senescence_leaf, LFSENWT) => begin
+        (senescence_leaf + LFSENWT) *
+        (SENCLV * (RHOL - PCHOLFF) + PCHOLFF)
+        #(SLNDOT + WLIDOT + WLFDOT) * RHOL
+    end ~ track(u"g/m^2/hr")
+
+
+
 
     #=========
     Parameters

@@ -41,7 +41,13 @@
 
     NADSR => 0 ~ track(u"g/m^2/hr")
 
-    CADRT => 0 ~ track(u"g/m^2/hr")
+    CADSR => 0 ~ track(u"g/m^2/hr")
+
+    "Percent N in storage"
+    PCNSR(N_storage, WSR) => N_storage / WSR ~ track(u"percent")
+
+    "Percent CH2O in storage"
+    RHOSR(WCRSR, WSR) => WCRLSR / WSR ~ track(u"percent")
 
     iWSR => 0 ~ preserve(u"kg/ha", parameter)
     dWSR(growth_storage, senescence_storage) => growth_storage - senescence_storage ~ track(u"kg/ha/hr")

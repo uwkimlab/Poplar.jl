@@ -34,9 +34,6 @@ Foliage.
         growth_foliage_N - LFNMINE - NLOFF + NADLF
     end ~ track(u"g/m^2/hr")
 
-    "Leaf N loss per hour"
-    NLOFF => 0 ~ track(u"g/m^2/hr")
-
     "Mass of N in leaves"
     N_foliage(N_foliage_delta) ~ accumulate(init=N_foliage_init, u"g/m^2")
 
@@ -59,6 +56,9 @@ Foliage.
 
     "Percent N in foliage"
     PCNL(N_foliage, WF) => N_foliage / WF ~ track(u"percent")
+
+    "Percent CH2O in foliage"
+    RHOL(WCRLF, WF) => WCRLF/ WF ~ track(u"percent")
 
     "Mobile CH2O contentration of leaf"
     PCHOLFF => 0.004 ~ preserve(parameter)
@@ -131,8 +131,8 @@ Foliage.
 
     litterfall(gammaFhour, WF) => gammaFhour * WF ~ track(u"kg/ha/hr")
 
-    dWF(growth_foliage, litterfall, #=deathFoliage,=# defoliation, thinning_WF, senescence_delta, bud_delta, senescence_foliage) => begin
-        growth_foliage - litterfall #=- deathFoliage=# - defoliation - thinning_WF - senescence_delta + bud_delta - senescence_foliage
+    dWF(growth_foliage, litterfall, #=deathFoliage,=# defoliation, thinning_WF, senescence_delta, bud_delta, senescence_leaf) => begin
+        growth_foliage - litterfall #=- deathFoliage=# - defoliation - thinning_WF - senescence_delta + bud_delta - senescence_leaf
     end ~ track(u"kg/ha/hr")
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass

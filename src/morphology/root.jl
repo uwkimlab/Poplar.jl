@@ -56,6 +56,12 @@
 
     CADRT => 0 ~ track(u"g/m^2/hr")
 
+    "Percent N in root"
+    PCNR(N_root, WR) => N_root / WR ~ track(u"percent")
+
+    "Percent CH2O in root"
+    RHOR(WCRRT, WR) => WCRRT / WR ~ track(u"percent")
+
     #=========
     Parameters
     =========#
