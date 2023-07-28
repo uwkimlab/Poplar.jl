@@ -95,7 +95,7 @@
     "Potential mobile N available from stem (g[N]/m^2)"
     NMINEST(NMOBR, WNRST) =>  NMOBR * WNRST ~ track(u"g/m^2/hr")
 
-    # FIX
+    "Reduction in mobilization from storage organ due to photoperiod induced dormancy (?)"
     PPMFAC => 1 ~ preserve(parameter)
 
     "Potential mobile N available from root (g[N]/m^2)"
