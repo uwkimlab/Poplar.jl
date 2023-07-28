@@ -5,27 +5,27 @@
     ==========#
     
     "Maximum protein composition in stems during growth with luxurious supply of N (g[protein]/g[stem])"
-    PROSTI => 0.194 ~ preserve(parameter)
+    protein_stem_max => 0.194 ~ preserve(parameter)
 
     "Normal growth protein composition in stems during growth (g[protein]/g[stem)"
-    PROSTG => 0.145 ~ preserve(parameter)
+    protein_stem_normal => 0.145 ~ preserve(parameter)
 
     "Minimum stem protein composition after N mining  (g[protein]/g[stem])"
-    PROSTF => 0.035 ~ preserve(parameter)
+    protein_stem_min => 0.035 ~ preserve(parameter)
 
     "Maximum N required for stem growth"
-    FNINS(PROSTI) => PROSTI * 0.16 ~ preserve
+    N_stem_max(protein_stem_max) => protein_stem_max * 0.16 ~ preserve
     
     "Minimum N required for stem growth"
-    FNINSG(PROSTG) => PROSTG * 0.16 ~ preserve
+    N_stem_min(protein_stem_normal) => protein_stem_normal * 0.16 ~ preserve
 
     "Mobile CH2O contentration of stem"
     PCHOSTF => 0.008 ~ preserve(parameter)
 
     "Fraction of new stem growth that is mobile C"
-    ALPHS => 0.08 ~ preserve(parameter)
+    C_mobile_stem => 0.08 ~ preserve(parameter)
 
-    N_stem_init(iWS, PROSTG) => iWS * PROSTG * 0.16 ~ preserve(u"g/m^2")
+    N_stem_init(iWS, protein_stem_normal) => iWS * protein_stem_normal * 0.16 ~ preserve(u"g/m^2")
 
     N_stem_delta(growth_stem_N, STNMINE, NSOFF, NADST) => begin
         growth_stem_N - STNMINE - NSOFF + NADST
@@ -34,17 +34,17 @@
     N_stem(N_stem_delta) ~ accumulate(init=0, u"g/m^2")
 
     "N available for mobilization from stem above lower limit of mining"
-    WNRST(N_stem, PROSTF, WS, WCRST) => begin
-        N_stem - PROSTF * 0.16 * (WS - WCRST)
+    WNRST(N_stem, protein_stem_min, WS, C_net_stem) => begin
+        N_stem - protein_stem_min * 0.16 * (WS - C_net_stem)
     end ~ track(min=0, u"g/m^2")
 
-    WCRSDT(growth_stem, ALPHS, CMINEST, CSOFF, CADST) => begin
-        growth_stem * ALPHS - CMINEST - CSOFF + CADST
+    C_net_stem_Δ(growth_stem, C_mobile_stem, CMINEST, CSOFF, CADST) => begin
+        growth_stem * C_mobile_stem - CMINEST - CSOFF + CADST
     end ~ track(u"g/m^2/hr")
 
-    WCRSTi(ALPHS, WS) => ALPHS * WS ~ preserve(u"g/m^2")
+    C_net_stem_init(C_mobile_stem, WS) => C_mobile_stem * WS ~ preserve(u"g/m^2")
 
-    WCRST(WCRSDT) ~ accumulate(u"g/m^2", init=WCRSTi)
+    C_net_stem(C_net_stem_Δ) ~ accumulate(u"g/m^2", init=C_net_stem_init)
 
     NADST => 0 ~ track(u"g/m^2/hr")
 
@@ -54,7 +54,7 @@
     PCNST(N_stem, WS) => N_stem / WS ~ track(u"percent")
 
     "Percent CH2O in stem"
-    RHOS(WCRST, WS) => WCRST / WS ~ track(u"percent")
+    RHOS(C_net_stem, WS) => C_net_stem / WS ~ track(u"percent")
 
     #=========
     Parameters

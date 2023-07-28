@@ -23,7 +23,7 @@
     PCHORTF => 0.020 ~ preserve(parameter)
 
     "Fraction of new root growth that is mobile C"
-    ALPHR => 0.08 ~ preserve(parameter)
+    C_mobile_root => 0.08 ~ preserve(parameter)
 
     N_root_init(iWR, protein_root_normal) => iWR * protein_root_normal * 0.16 ~ preserve(u"g/m^2")
 
@@ -37,18 +37,18 @@
     N_root(N_root_delta) ~ accumulate(u"g/m^2", init=N_root_init)
 
     "N available for mobilization from root above lower limit of mining"
-    WNRRT(N_root, protein_root_min, WR, WCRRT) => begin
-        N_root - protein_root_min * 0.16 * (WR - WCRRT)
+    WNRRT(N_root, protein_root_min, WR, C_net_root) => begin
+        N_root - protein_root_min * 0.16 * (WR - C_net_root)
     end ~ track(min=0, u"g/m^2")
     
-    WCRRDT(growth_root, ALPHR, CMINERT, CROFF, CADRT) => begin
-        growth_root * ALPHR - CMINERT - CROFF + CADRT
+    C_net_root_Δ(growth_root, C_mobile_root, CMINERT, CROFF, CADRT) => begin
+        growth_root * C_mobile_root - CMINERT - CROFF + CADRT
     end ~ track(u"g/m^2/hr")
 
-    WCRRTi(ALPHR, WR) => ALPHR * WR ~ preserve(u"g/m^2")
+    C_net_root_init(C_mobile_root, WR) => C_mobile_root * WR ~ preserve(u"g/m^2")
 
     "Mass of CH2O reserves in leaves"
-    WCRRT(WCRRDT) ~ accumulate(u"g/m^2", init=WCRRTi)
+    C_net_root(C_net_root_Δ) ~ accumulate(u"g/m^2", init=C_net_root_init)
 
     NADRT => 0 ~ track(u"g/m^2/hr")
 
@@ -58,7 +58,7 @@
     PCNRT(N_root, WR) => N_root / WR ~ track(u"percent")
 
     "Percent CH2O in root"
-    RHOR(WCRRT, WR) => WCRRT / WR ~ track(u"percent")
+    RHOR(C_net_root, WR) => C_net_root / WR ~ track(u"percent")
 
     #=========
     Parameters

@@ -29,9 +29,9 @@
     end ~ track(u"g/m^2/hr", min=0)
 
     "Nitrogen mobilized from natural stem senescence"
-    STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, PROSTF#=, STLFSEN=#) => begin
-        senescence_stem * (PCNST / 100 - (SENNSV * (PCNST / 100 - PROSTF * 0.16) + PROSTF * 0.16))
-        # STLTSEN * (PCNST / 100 - PROSTF * 0.16)
+    STSNMOB(senescence_stem, PCNST, SENNSV, PCNST, protein_stem_min#=, STLFSEN=#) => begin
+        senescence_stem * (PCNST / 100 - (SENNSV * (PCNST / 100 - protein_stem_min * 0.16) + protein_stem_min * 0.16))
+        # STLTSEN * (PCNST / 100 - protein_stem_min * 0.16)
     end ~ track(u"g/m^2/hr", min=0)
     
     "Nitrogen mobilized from natural root senescence"
@@ -145,13 +145,13 @@
     end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from stem"
-    CMINEST(CMOBMX, DTX, WCRST, WS, PCHOSTF) => begin
-        CMOBMX * DTX * (WCRST - WS * PCHOSTF)
+    CMINEST(CMOBMX, DTX, C_net_stem, WS, PCHOSTF) => begin
+        CMOBMX * DTX * (C_net_stem - WS * PCHOSTF)
     end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from root"
-    CMINERT(CMOBMX, DTX, WCRRT, WR, PCHORTF, PPMFAC) => begin
-        CMOBMX * DTX * PPMFAC * (WCRRT - WR * PCHORTF)
+    CMINERT(CMOBMX, DTX, C_net_root, WR, PCHORTF, PPMFAC) => begin
+        CMOBMX * DTX * PPMFAC * (C_net_root - WR * PCHORTF)
     end ~ track(u"g/m^2/hr")
 
     # FIX NEED TO USE CMOBSR FOR CALCULATION INSTEAD OF CMOBMX

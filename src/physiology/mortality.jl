@@ -60,10 +60,10 @@ Mortality
         #(SLNDOT + WLIDOT + WLFDOT) * RHOL
     end ~ track(u"g/m^2/hr")
 
-    NSOFF(senescence_stem, SENNSV, PCNST, PROSTF, STSENWT) => begin
+    NSOFF(senescence_stem, SENNSV, PCNST, protein_stem_min, STSENWT) => begin
         senescence_stem *
-        (SENNSV * (PCNST - PROSTF * 0.16) + PROSTF * 0.16) +
-        (STSENWT) * PROSTF * 0.16
+        (SENNSV * (PCNST - protein_stem_min * 0.16) + protein_stem_min * 0.16) +
+        (STSENWT) * protein_stem_min * 0.16
     end ~ track(u"g/m^2/hr")
 
     SENCSV => 1 ~ preserve(parameter)

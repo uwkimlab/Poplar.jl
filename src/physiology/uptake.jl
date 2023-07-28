@@ -43,14 +43,14 @@
 
     "Potential NH4 availability factor"
     NH4_factor(nounit(NH4)) => begin
-        f = 1 - exp(-0.08/24 * NH4) # Potential NH4 availability factor from CROPGRO.
+        f = 1 - exp(-0.08 * NH4) # Potential NH4 availability factor from CROPGRO.
         # f < 0.04 ? 0 : f         # Not sure why 0.04 and below is 0.
         f
     end ~ track(max=1)
 
     "Potential NO3 availability factor"
     NO3_factor(nounit(NO3)) => begin
-        f = 1 - exp(-0.08/24 * NO3) # Poptential NO3 availability factor from CROPGRO.
+        f = 1 - exp(-0.08 * NO3) # Potential NO3 availability factor from CROPGRO.
         # f < 0.04 ? 0 : f         # Not sure why 0.04 and below is 0. Also not sure what -0.08 represents
         f
     end ~ track(max=1)
