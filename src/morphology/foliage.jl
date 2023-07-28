@@ -10,24 +10,25 @@ Foliage.
     ==========#
 
     "Maximum protein composition in leaves during growth with luxurious supply of N (g[protein]/g[leaf])"
-    PROLFI => 0.372 ~ preserve(parameter)
+    protein_leaf_max => 0.372 ~ preserve(parameter)
 
     "Normal growth protein composition in leaves during growth (g[protein]/g[leaf)"
-    PROLFG => 0.291 ~ preserve(parameter)
+    protein_leaf_normal => 0.291 ~ preserve(parameter)
 
     "Minimum leaf protein composition after N mining (g[protein]/g[leaf])"
-    PROLFF => 0.112 ~ preserve(parameter)
+    protein_leaf_min => 0.112 ~ preserve(parameter)
 
     "Maximum N required for leaf growth"
-    FNINL(PROLFI) => PROLFI * 0.16 ~ preserve
+    N_leaf_max(protein_leaf_max) => protein_leaf_max * 0.16 ~ preserve
 
-    "Minimum N required for leaf growth"
-    FNINLG(PROLFG) => PROLFG * 0.16 ~ preserve
+    "Minimum N required for leaf growth.
+    This means that technically the 'normal' amount of protein is required for growth."
+    N_leaf_min(protein_leaf_normal) => protein_leaf_normal * 0.16 ~ preserve
 
     "Fraction of new leaf growth that is mobile C"
-    ALPHL => 0.04 ~ preserve(parameter)
+    C_mobile_leaf => 0.04 ~ preserve(parameter)
 
-    N_foliage_init(iWF, PROLFG) => iWF * PROLFG * 0.16 ~ preserve(u"g/m^2")
+    N_foliage_init(iWF, protein_leaf_normal) => iWF * protein_leaf_normal * 0.16 ~ preserve(u"g/m^2")
 
     "N foliage delta"
     N_foliage_delta(growth_foliage_N, LFNMINE, NLOFF, NADLF) => begin
@@ -38,27 +39,27 @@ Foliage.
     N_foliage(N_foliage_delta) ~ accumulate(init=N_foliage_init, u"g/m^2")
 
     "N available for mobilization from foliage above lower limit of mining"
-    WNRLF(N_foliage, PROLFF, WF, WCRLF) => begin
-        N_foliage - PROLFF * 0.16 * (WF - WCRLF)
+    WNRLF(N_foliage, protein_leaf_min, WF, C_net_leaf) => begin
+        N_foliage - protein_leaf_min * 0.16 * (WF - C_net_leaf)
     end ~ track(min=0, u"g/m^2")
 
-    WCRLDT(growth_foliage, ALPHL, CMINELF, CLOFF, CADLF) => begin
-        growth_foliage*ALPHL - CMINELF - CLOFF + CADLF
+    C_net_leaf_Δ(growth_foliage, C_mobile_leaf, CMINELF, CLOFF, CADLF) => begin
+        growth_foliage*C_mobile_leaf - CMINELF - CLOFF + CADLF
     end ~ track(u"g/m^2/hr")
 
-    WCRLFi(ALPHL, WF) => ALPHL * WF ~ preserve(u"g/m^2")
+    C_net_leaf_init(C_mobile_leaf, WF) => C_mobile_leaf * WF ~ preserve(u"g/m^2")
 
     "Mass of CH2O reserves in leaves"
-    WCRLF(WCRLDT) ~ accumulate(u"g/m^2", init=WCRLFi)
+    C_net_leaf(C_net_leaf_Δ) ~ accumulate(u"g/m^2", init=C_net_leaf_init)
 
     # "Percent CH2O in foliage"
-    # RHOL(WCRLF, WF) => WCRLF / WF ~ track(u"percent")
+    # RHOL(C_net_leaf, WF) => C_net_leaf / WF ~ track(u"percent")
 
     "Percent N in foliage"
     PCNL(N_foliage, WF) => N_foliage / WF ~ track(u"percent")
 
     "Percent CH2O in foliage"
-    RHOL(WCRLF, WF) => WCRLF/ WF ~ track(u"percent")
+    RHOL(C_net_leaf, WF) => C_net_leaf/ WF ~ track(u"percent")
 
     "Mobile CH2O contentration of leaf"
     PCHOLFF => 0.004 ~ preserve(parameter)

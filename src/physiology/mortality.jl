@@ -42,10 +42,10 @@ Mortality
     senescence_storage(WSR, SRSEN, DTX) => WSR * SRSEN * DTX ~ track(u"g/m^2/hr")
 
     "Leaf N loss per HOUR"
-    NLOFF(senescence_leaf, SENNLV, PCNL, PROLFF, LFSENWT) => begin
+    NLOFF(senescence_leaf, SENNLV, PCNL, protein_leaf_min, LFSENWT) => begin
         senescence_leaf *
-        (SENNLV * (PCNL - PROLFF * 0.16) + PROLFF * 0.16) +
-        (LFSENWT) * PROLFF * 0.16
+        (SENNLV * (PCNL - protein_leaf_min * 0.16) + protein_leaf_min * 0.16) +
+        (LFSENWT) * protein_leaf_min * 0.16
         # (SLNDOT + WLIDOT + WLFDOT) * PCNL
         # water stress + pest + freezing
     end ~ track(u"g/m^2/hr")
@@ -73,9 +73,9 @@ Mortality
         (SENCSV * (RHOS - PCHOSTF) + PCHOSTF)
      end ~ track(u"g/m^2/hr")
 
-    NROFF(senescence_root, SENNRV, PCNRT, PRORTF) => begin
+    NROFF(senescence_root, SENNRV, PCNRT, protein_root_min) => begin
         senescence_root *
-        (SENNRV * (PCNRT - PRORTF * 0.16) + PRORTF * 0.16)
+        (SENNRV * (PCNRT - protein_root_min * 0.16) + protein_root_min * 0.16)
     end ~ track(u"g/m^2/hr")
 
     SENCRV => 1 ~ preserve(parameter)

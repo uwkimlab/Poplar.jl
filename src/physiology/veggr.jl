@@ -39,13 +39,13 @@
     growth_storage_potential(partition_storage, growth_demand) => partition_storage  * growth_demand ~ track(u"g/m^2/hr")
 
     "Maximum N required for leaf growth"
-    growth_foliage_N_max(growth_foliage_potential, FNINL) => growth_foliage_potential * FNINL ~ track(u"g/m^2/hr")
+    growth_foliage_N_max(growth_foliage_potential, N_leaf_max) => growth_foliage_potential * N_leaf_max ~ track(u"g/m^2/hr")
 
     "Maximum N required for stem growth"
     growth_stem_N_max(growth_stem_potential, FNINS) => growth_stem_potential * FNINS ~ track(u"g/m^2/hr")
 
     "Maximum N required for root growth"
-    growth_root_N_max(growth_root_potential, FNINR) => growth_root_potential * FNINR ~ track(u"g/m^2/hr")
+    growth_root_N_max(growth_root_potential, N_root_max) => growth_root_potential * N_root_max ~ track(u"g/m^2/hr")
 
     "Maximum N requiried for storage growth"
     growth_storage_N_max(growth_storage_potential, FNINSR) => growth_storage_potential * FNINSR ~ track(u"g/m^2/hr")
@@ -56,13 +56,13 @@
     end ~ track(u"g/m^2/hr")
 
     "Minimum N required for leaf growth"
-    growth_foliage_N_min(growth_foliage_potential, FNINLG) => growth_foliage_potential * FNINLG ~ track(u"g/m^2/hr")
+    growth_foliage_N_min(growth_foliage_potential, N_leaf_min) => growth_foliage_potential * N_leaf_min ~ track(u"g/m^2/hr")
 
     "Minimum N required for stem growth"
     growth_stem_N_min(growth_stem_potential, FNINSG) => growth_stem_potential * FNINSG ~ track(u"g/m^2/hr")
 
     "Minimum N requred for root growth"
-    growth_root_N_min(growth_root_potential, FNINRG) => growth_root_potential * FNINRG ~ track(u"g/m^2/hr")
+    growth_root_N_min(growth_root_potential, N_root_min) => growth_root_potential * N_root_min ~ track(u"g/m^2/hr")
 
     "Minimum N storage"
     growth_storage_N_min(growth_storage_potential, FNINSRG) => growth_storage_potential * FNINSRG ~ track(u"g/m^2/hr")

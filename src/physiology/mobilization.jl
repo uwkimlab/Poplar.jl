@@ -20,9 +20,9 @@
     # end
 
     "Nitrogen mobilized from natural leaf senescence"
-    LFSNMOB(senescence_leaf, PCNL, SENNLV, PROLFF#=, LTSEN=#) => begin
-        senescence_leaf * (PCNL/100 - (SENNLV * (PCNL / 100 - PROLFF * 0.16) + PROLFF * 0.16))
-        # LTSEN * (PCNL / 100 - PROLFF * 0.16)
+    LFSNMOB(senescence_leaf, PCNL, SENNLV, protein_leaf_min#=, LTSEN=#) => begin
+        senescence_leaf * (PCNL/100 - (SENNLV * (PCNL / 100 - protein_leaf_min * 0.16) + protein_leaf_min * 0.16))
+        # LTSEN * (PCNL / 100 - protein_leaf_min * 0.16)
         # LTSEN refers to further senescence specific to leaves exposed to low-light
         # I was considering using the LAI_shaded variable to calculate this value.
         # Currently not implemented.
@@ -35,8 +35,8 @@
     end ~ track(u"g/m^2/hr", min=0)
     
     "Nitrogen mobilized from natural root senescence"
-    RTSNMOB(senescence_root, PCNRT, SENNRV, PRORTF) => begin
-        senescence_root * (PCNRT / 100 - (SENNRV * (PCNRT / 100 - PRORTF*0.16) + PRORTF*0.16))
+    RTSNMOB(senescence_root, PCNRT, SENNRV, protein_root_min) => begin
+        senescence_root * (PCNRT / 100 - (SENNRV * (PCNRT / 100 - protein_root_min*0.16) + protein_root_min*0.16))
     end ~ track(u"g/m^2/hr", min=0)
 
     "Nitrogen mobillized from natural storage senescence"
@@ -140,8 +140,8 @@
     ==========================#
 
     "Potential mobile CH2O available from leaf"
-    CMINELF(CMOBMX, DTX, WCRLF, WF, PCHOLFF) => begin
-        CMOBMX * DTX * (WCRLF - WF * PCHOLFF)
+    CMINELF(CMOBMX, DTX, C_net_leaf, WF, PCHOLFF) => begin
+        CMOBMX * DTX * (C_net_leaf - WF * PCHOLFF)
     end ~ track(u"g/m^2/hr")
 
     "Potential mobile CH2O available from stem"

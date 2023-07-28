@@ -1,11 +1,11 @@
 @system Demand begin
 
     "Mass of CH2O required for protein in vegetative tissue growth"
-    CH2O_for_protein(RPROAV, partition_foliage, PROLFI, partition_stem, PROSTI, partition_root, PRORTI) => begin
+    CH2O_for_protein(RPROAV, partition_foliage, protein_leaf_max, partition_stem, PROSTI, partition_root, protein_root_max) => begin
         RPROAV *
-       (partition_foliage * PROLFI +
+       (partition_foliage * protein_leaf_max +
         partition_stem * PROSTI +
-        partition_root * PRORTI)
+        partition_root * protein_root_max)
     end ~ track(u"g/g")
 
     "Mass of CH2O required for vegetative tissue growth including stoichiometry and respiration (at N saturation)"
@@ -22,8 +22,8 @@
     # N required for vegetative growth.
     # CDMVEG / AGRVG2 is for conversion of CH2O mass to vegetative tissue mass.
     "Nitrogen demand for vegetative growth"
-    N_demand_veg_p(C_demand_veg_p, CH2O_for_veg_protein, partition_foliage, FNINL, partition_stem, FNINS, partition_root, FNINR) => begin
-        (C_demand_veg_p / CH2O_for_veg_protein) * (partition_foliage * FNINL + partition_stem * FNINS + partition_root * FNINR)
+    N_demand_veg_p(C_demand_veg_p, CH2O_for_veg_protein, partition_foliage, N_leaf_max, partition_stem, FNINS, partition_root, N_root_max) => begin
+        (C_demand_veg_p / CH2O_for_veg_protein) * (partition_foliage * N_leaf_max + partition_stem * FNINS + partition_root * N_root_max)
     end ~ track(u"g/m^2/hr")
 
     # NDMREP is 0 currently so NDMNEW is the same as NDMVEG.
@@ -39,7 +39,7 @@
     "N demand for old tissue"
     N_demand_old_p(N_demand_old_max) => begin
         N_demand_old_max
-        # max(0, (WF - SLDOT - WCRLF) * PROLFT * 0.16 - N_stem) +
+        # max(0, (WF - SLDOT - C_net_leaf) * PROLFT * 0.16 - N_stem) +
         # max(0, (WS - SDDOT - WCRST) * PROSTR * 0.16 - N_stem) +
         # max(0, (WR - SSRDOT - WCRSR) * PROSSR * 0.16 - N_storage)
     end ~ track(max=N_demand_old_max, u"g/m^2/hr")
@@ -80,8 +80,8 @@
         C_demand_veg_p - C_demand_old_p
     end ~ track(u"g/m^2/hr")
 
-    N_demand_veg(C_demand_veg, CH2O_for_veg_protein, partition_foliage, FNINL, partition_stem, FNINS, partition_root, FNINR) => begin
-        (C_demand_veg / CH2O_for_veg_protein) * (partition_foliage*FNINL + partition_stem * FNINS + partition_root * FNINR#= + FRSTR * FNINSR=#)
+    N_demand_veg(C_demand_veg, CH2O_for_veg_protein, partition_foliage, N_leaf_max, partition_stem, FNINS, partition_root, N_root_max) => begin
+        (C_demand_veg / CH2O_for_veg_protein) * (partition_foliage*N_leaf_max + partition_stem * FNINS + partition_root * N_root_max#= + FRSTR * FNINSR=#)
     end ~ track(u"g/m^2/hr")
 
     N_demand_new(N_demand_veg) => begin
