@@ -53,7 +53,7 @@ Photosynthesis
     γ: NPP_GPP_fraction => 0.47 ~ preserve(parameter) # Amichev
 
     "Total available CH2O for growth & respiration"
-    C_available(GPP#=, CMINEP=#) => GPP#= + CMINEP=# ~ track(u"g/m^2/hr")
+    C_available(GPP, C_mobilized) => GPP + C_mobilized ~ track(u"g/m^2/hr")
 
     # "Net primary production"
     NPP(γ, GPP): net_primary_production => begin

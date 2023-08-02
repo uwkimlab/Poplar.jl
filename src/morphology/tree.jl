@@ -1,11 +1,10 @@
 include("foliage.jl")
 include("stem.jl")
 include("root.jl")
+include("storage.jl")
 
-"""
-Tree.
-"""
-@system Tree(Foliage, Stem, Root) begin
+"Tree system"
+@system Tree(Foliage, Stem, Root, Storage) begin
 
     #=========
     Parameters
@@ -104,15 +103,19 @@ Tree.
     "Mean volume increment per hectare"
     MAI(standVol, stand_age) => ((stand_age > 0) ? (standVol / stand_age) : 0) ~ track(u"m^3/ha")
 
-    trees_delta(mortality, thinning) => -mortality - thinning ~ track(u"ha^-1/hr")
+    trees_delta(#=mortality, =#thinning) => #=-mortality=# - thinning ~ track(u"ha^-1/hr")
     
     trees(trees_delta) ~ accumulate(init=trees_init, u"ha^-1")
 
+    "Hourly change in tree drymass"
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/hr")
 
-    "Total weight"
+    "Total tree drymass"
     W(dW) ~ accumulate(u"kg/ha", init=iW, min=0)
+
+    "Total tree drymass in metric ton"
     W_ton(nounit(W)) => W / 1000 ~ track 
 
-    W_lim(W, step) => W / step ~ track(u"kg/ha/hr")
+    # Do I need this? I don't think so.
+    # W_lim(W, step) => W / step ~ track(u"kg/ha/hr")
 end

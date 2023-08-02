@@ -1,6 +1,6 @@
 """
-`Shooting` keeps track of new shoot growth post-coppicing.
-(Model assumes tree already has a shoot at initialization).
+Keeps track of new shoot growth post-coppicing.
+Model assumes tree already has a shoot at initialization.
 """
 @system Shooting begin
     T_shoot => 8 ~ preserve(parameter, u"°C")

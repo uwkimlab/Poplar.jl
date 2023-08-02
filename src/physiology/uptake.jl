@@ -44,13 +44,15 @@
     "Potential NH4 availability factor"
     NH4_factor(nounit(NH4)) => begin
         f = 1 - exp(-0.08 * NH4) # Potential NH4 availability factor from CROPGRO.
-        f < 0.04 ? 0 : f         # Not sure why 0.04 and below is 0.
+        # f < 0.04 ? 0 : f         # Not sure why 0.04 and below is 0.
+        f
     end ~ track(max=1)
 
     "Potential NO3 availability factor"
     NO3_factor(nounit(NO3)) => begin
-        f = 1 - exp(-0.08 * NO3) # Poptential NO3 availability factor from CROPGRO.
-        f < 0.04 ? 0 : f         # Not sure why 0.04 and below is 0.
+        f = 1 - exp(-0.08 * NO3) # Potential NO3 availability factor from CROPGRO.
+        # f < 0.04 ? 0 : f         # Not sure why 0.04 and below is 0. Also not sure what -0.08 represents
+        f
     end ~ track(max=1)
 
     # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
@@ -59,7 +61,7 @@
         if ASW > field_capacity
             2.0 - (ASW - field_capacity) / (ASW_max - field_capacity)
         else
-            2*((ASW - ASW_min) / (field_capacity - ASW_min))
+            2 * ((ASW - ASW_min) / (field_capacity - ASW_min))
         end
     end ~ track(min=0, max=1) 
 
@@ -70,13 +72,13 @@
     end ~ track(u"kg*cm/mg/ha")
 
     "Amount of NO3 that stays in soil"
-    NO3_min(N_conversion_factor) => 0.25u"μg/g" / N_conversion_factor ~ preserve(u"kg/ha")
+    NO3_min(N_conversion_factor) => 0u"μg/g" / N_conversion_factor ~ preserve(u"kg/ha")
 
     "Maximum NO3 uptake from soil"
     NO3_uptake_max(NO3_extractable, NO3_min) => NO3_extractable - NO3_min ~ preserve(min=0, u"kg/ha")
 
     "Amount of NH4 that stays in soil"
-    NH4_min(N_conversion_factor) => 0.5u"μg/g" / N_conversion_factor ~ preserve(u"kg/ha")
+    NH4_min(N_conversion_factor) => 0u"μg/g" / N_conversion_factor ~ preserve(u"kg/ha")
 
     "Maximum NH4 uptake from soil"
     NH4_uptake_max(NH4_extractable, NH4_min) => NH4_extractable - NH4_min ~ preserve(min=0, u"kg/ha")

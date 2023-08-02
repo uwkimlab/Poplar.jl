@@ -1,7 +1,101 @@
 """
-This system calculate age and stress related mortality.
+Mortality
 """
 @system Mortality begin
+
+    #=================
+    Natural Senescence
+    =================#
+
+    "Fraction of existing leaf senesced per HOUR"
+    LFSEN => 1 - (1 - 0.01)^(1/24) ~ preserve(u"hr^-1", parameter)
+
+    "Fraction of existing root length senesced per HOUR"
+    RTSEN => 1 - (1 - 0.008)^(1/24) ~ preserve(u"hr^-1", parameter)
+
+    "Fraction of existing storage senesced per HOUR"
+    SRSEN => 1 - (1 - 0.009)^(1/24) ~ preserve(u"hr^-1", parameter)
+
+    "Ratio of petiole to leaf weight"
+    petiole_to_leaf => 0.27 ~ preserve(parameter)
+
+    "Thermal factor (between 0 and 1)"
+    DTX(nounit(T_air)) => curve("lin", 3, 25, 33, 45, T_air) ~ track
+
+    "Root length denstiy senesced (cm/cm^3)"
+    RLSEN(RLV, RTSEN, DTX) => RLV * RTSEN * DTX ~ track(u"cm/cm^3/hr")
+
+    "Hourly leaf senescence"
+    senescence_leaf(WF, LFSEN, DTX) => WF * LFSEN * DTX ~ track(u"g/m^2/hr")
+
+    "Maximum hourly stem senescence"
+    senescence_stem_max(WS) => 0.1 * WS / u"hr" ~ track(u"g/m^2/hr")
+
+    "Hourly stem senescence. Appears to be related to leaf senescence rate.
+    Not sure if this behavior is applicable to a woody species like poplar"
+    senescence_stem(senescence_leaf, petiole_to_leaf) => senescence_leaf * petiole_to_leaf ~ track(u"g/m^2/hr", max=senescence_stem_max)
+
+    "Hourly root senescence"
+    senescence_root(RLSEN, RFAC, soil_depth) => RLSEN * soil_depth / RFAC ~ track(u"g/m^2/hr")
+
+    "Hourly storage senescence"
+    senescence_storage(WSR, SRSEN, DTX) => WSR * SRSEN * DTX ~ track(u"g/m^2/hr")
+
+    "Leaf N loss per HOUR"
+    NLOFF(senescence_leaf, SENNLV, PCNL, protein_leaf_min, LFSENWT) => begin
+        senescence_leaf *
+        (SENNLV * (PCNL - protein_leaf_min * 0.16) + protein_leaf_min * 0.16) +
+        (LFSENWT) * protein_leaf_min * 0.16
+        # (SLNDOT + WLIDOT + WLFDOT) * PCNL
+        # water stress + pest + freezing
+    end ~ track(u"g/m^2/hr")
+
+    "Proportion used to calculate..."
+    SENCLV => 1 ~ preserve(parameter)
+
+    "CH2O loss from leaves per HOUR"
+    CLOFF(senescence_leaf, LFSENWT, SENCLV, RHOL, PCHOLFF) => begin
+        (senescence_leaf + LFSENWT) *
+        (SENCLV * (RHOL - PCHOLFF) + PCHOLFF)
+        #(SLNDOT + WLIDOT + WLFDOT) * RHOL
+    end ~ track(u"g/m^2/hr")
+
+    NSOFF(senescence_stem, SENNSV, PCNST, protein_stem_min, STSENWT) => begin
+        senescence_stem *
+        (SENNSV * (PCNST - protein_stem_min * 0.16) + protein_stem_min * 0.16) +
+        (STSENWT) * protein_stem_min * 0.16
+    end ~ track(u"g/m^2/hr")
+
+    SENCSV => 1 ~ preserve(parameter)
+
+    CSOFF(senescence_stem, STSENWT, SENCSV, RHOS, PCHOSTF) => begin
+        (senescence_stem + STSENWT) *
+        (SENCSV * (RHOS - PCHOSTF) + PCHOSTF)
+     end ~ track(u"g/m^2/hr")
+
+    NROFF(senescence_root, SENNRV, PCNRT, protein_root_min) => begin
+        senescence_root *
+        (SENNRV * (PCNRT - protein_root_min * 0.16) + protein_root_min * 0.16)
+    end ~ track(u"g/m^2/hr")
+
+    SENCRV => 1 ~ preserve(parameter)
+
+    CROFF(senescence_root, SENCRV, RHOR, PCHORTF) => begin
+        senescence_root *
+        (SENCRV * (RHOR - PCHORTF) + PCHORTF)
+    end ~ track(u"g/m^2/hr")
+
+    NSROFF(senescence_storage, SENNSRV, PCNSR, PROSRF) => begin
+        senescence_storage *
+        (SENNSRV * (PCNSR - PROSRF * 0.16) + PROSRF * 0.16)
+    end ~ track(u"g/m^2/hr")
+
+    SENCSRV => 1 ~ preserve(parameter)
+
+    CSROFF(senescence_storage, SENCSRV, RHOSR, PCHOSRF) => begin
+        senescence_storage *
+        (SENCSRV * (RHOSR - PCHOSRF) + PCHOSRF)
+    end ~ track(u"g/m^2/hr")
 
     #=========
     Parameters
@@ -39,21 +133,21 @@ This system calculate age and stress related mortality.
     Age & Stress Mortality
     =====================#
 
-    "Mortality rate (yearly)"
-    gammaNyear(stand_age, gammaN0, gammaN1, tgammaN, ngammaN) => begin
-        gammaN1 + (gammaN0 - gammaN1) * exp(-log(2) * (stand_age / tgammaN) ^ ngammaN)
-    end ~ track
+    # "Mortality rate (yearly)"
+    # gammaNyear(stand_age, gammaN0, gammaN1, tgammaN, ngammaN) => begin
+    #     gammaN1 + (gammaN0 - gammaN1) * exp(-log(2) * (stand_age / tgammaN) ^ ngammaN)
+    # end ~ track
     
-    "Mortality rate (daily)"
-    gammaNhour(date, gammaNyear) => begin
-        (1 - (1 - gammaNyear)^(1 / daysinyear(date) / 24)) / u"hr"
-    end ~ track(u"hr^-1")
+    # "Mortality rate (daily)"
+    # gammaNhour(date, gammaNyear) => begin
+    #     (1 - (1 - gammaNyear)^(1 / daysinyear(date) / 24)) / u"hr"
+    # end ~ track(u"hr^-1")
     
-    "Mortality flag"
-    flagMortal(gammaNhour) => gammaNhour > 0u"hr^-1" ~ flag
+    # "Mortality flag"
+    # flagMortal(gammaNhour) => gammaNhour > 0u"hr^-1" ~ flag
 
-    "Age & stress-related mortality rate (hourly)"
-    asMortality(gammaNhour, trees) => gammaNhour * trees ~ track(u"ha^-1/hr", when=flagMortal)
+    # "Age & stress-related mortality rate (hourly)"
+    # asMortality(gammaNhour, trees) => gammaNhour * trees ~ track(u"ha^-1/hr", when=flagMortal)
 
 
     #============
@@ -92,6 +186,6 @@ This system calculate age and stress related mortality.
     Mortality
     ========#
     
-    "Tree mortality rate"
-    mortality(asMortality, self_thinning) => asMortality + self_thinning ~ track(u"ha^-1/hr", when=flagMortal)
+    # "Tree mortality rate"
+    # mortality(#=asMortality, =#self_thinning) => #=asMortality + =#self_thinning ~ track(u"ha^-1/hr", when=flagMortal)
 end

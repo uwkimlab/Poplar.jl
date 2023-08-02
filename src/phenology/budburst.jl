@@ -1,3 +1,4 @@
+"Calculates rate of budburst based on growing degree hours"
 @system Budburst begin
 
     #=========
@@ -19,11 +20,13 @@
     # bud growth per degree hours
     bud_rate => 1 ~ preserve(parameter, u"kg/ha/hr/K")  
 
-
     #=========
     =========#
 
-    # Budburst only when forcing requirement met. No budburst when coppiced i.e. WS == 0.
+    """
+    Budburst only when forcing requirement met.
+    No budburst when coppiced i.e. WS == 0.
+    """
     budburst(F, Rf, bud_max, WF, coppiced) => begin
         (F >= Rf) && (bud_max >= WF) && !coppiced
     end ~ flag

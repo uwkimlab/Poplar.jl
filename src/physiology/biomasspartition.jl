@@ -12,11 +12,16 @@
         # (1 - partition_root) / (1 + pFS)
     end ~ track # stem partition
 
-    "Foliage paritioning proportion"
+    "Foliage partitioning proportion"
     partition_foliage(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].leaf
         # 1 - partition_root - partition_stem # foliage partition
         # (1 - partition_root) / (1 + (1 / pFS))
+    end ~ track
+
+    "Storage partitioning proportion"
+    partition_storage(BBCH_stage, BBCH_table) => begin
+        BBCH_table[BBCH_stage].storage
     end ~ track
 
     # Obsolete code from 3PG below.
