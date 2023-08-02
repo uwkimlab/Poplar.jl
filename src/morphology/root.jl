@@ -35,7 +35,7 @@
     "N available for mobilization from root above lower limit of mining"
     WNRRT(N_root, protein_root_min, WR, C_net_root) => begin
         N_root - protein_root_min * 0.16 * (WR - C_net_root)
-
+    end ~ track(min=0, u"g/m^2")
 
     # CARBON #
 
@@ -44,8 +44,6 @@
 
     "Fraction of new root growth that is mobile C"
     C_mobile_root => 0.08 ~ preserve(parameter)
-
-    end ~ track(min=0, u"g/m^2")
     
     C_net_root_Δ(growth_root, C_mobile_root, CMINERT, CROFF, CADRT) => begin
         growth_root * C_mobile_root - CMINERT - CROFF + CADRT
@@ -66,7 +64,7 @@
     "Percent CH2O in root"
     RHOR(C_net_root, WR) => C_net_root / WR ~ track(u"percent")
 
-
+    
     #==
     3PG
     ==#
