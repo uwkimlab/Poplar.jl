@@ -3,6 +3,6 @@ include("vaporpressure.jl")
 include("weather.jl")
 
 """
-Atmosphere
+Parent system for Sun, VaporPressure, and Weather.
 """
 @system Atmosphere(Sun, VaporPressure, Weather)

@@ -205,4 +205,17 @@
     #         CH2O_req_leaf * partition_foliage + AGRSTM * partition_stem + CH2O_req_root * partition_root
     #     end
     # end ~ preserve(parameter)
+
+    #=
+    DNADRAT(PWLF, WF, WCRLF) => begin
+        PWLF * MAX(0.0,(WTLF - SLDOT - WCRLF)*PROLFR*0.16  
+       - (WTNLF -(SLDOT * PCNL/100 - LFSNMOB))) 
+        + PWST * MAX(0.0,(STMWT - SSDOT - WCRST) * PROSTR * 0.16 
+        - (WTNST -(SSDOT * PCNST/100 - STSNMOB))) 
+       + PWRT * MAX(0.0,(RTWT  - SRDOT - WCRRT) * PRORTR * 0.16 
+       - (WTNRT -(SRDOT * PCNRT/100 - RTSNMOB))) 
+       + PWSR * MAX(0.0,(STRWT - SSRDOT - WCRSR) * PROSRR * 0.16
+       - (WTNSR -(SSRDOT * PCNSR/100 - SRSNMOB)))
+    end
+    =#
 end

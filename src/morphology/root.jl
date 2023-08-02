@@ -4,6 +4,8 @@
     Composition
     ==========#
 
+    # PROTEIN #
+
     "Maximum protein composition in roots during growth with luxurious supply of N (g[protein]/g[root])"
     protein_root_max => 0.092 ~ preserve(parameter)
 
@@ -13,17 +15,14 @@
     "Minimum root protein composition after N mining (g[protein]/g[root])"
     protein_root_min => 0.056 ~ preserve(parameter)
 
+
+    # NITROGEN #
+
     "Maximum N required for root growth"
     N_root_max(protein_root_max) => protein_root_max * 0.16 ~ preserve
 
     "Minimum N required for root growth"
     N_root_min(protein_root_normal) => protein_root_normal * 0.16 ~ preserve
-
-    "Mobile CH2O concentration of root"
-    PCHORTF => 0.020 ~ preserve(parameter)
-
-    "Fraction of new root growth that is mobile C"
-    C_mobile_root => 0.08 ~ preserve(parameter)
 
     N_root_init(iWR, protein_root_normal) => iWR * protein_root_normal * 0.16 ~ preserve(u"g/m^2")
 
@@ -31,14 +30,21 @@
         growth_root_N - RTNMINE - NROFF + NADRT
     end ~ track(u"g/m^2/hr")
 
-    # NROFF => 0 ~ preserve(u"g/m^2/hr")
-    # CROFF => 0 ~ preserve(u"g/m^2/hr")
-
     N_root(N_root_delta) ~ accumulate(u"g/m^2", init=N_root_init)
 
     "N available for mobilization from root above lower limit of mining"
     WNRRT(N_root, protein_root_min, WR, C_net_root) => begin
         N_root - protein_root_min * 0.16 * (WR - C_net_root)
+
+
+    # CARBON #
+
+    "Mobile CH2O concentration of root"
+    PCHORTF => 0.020 ~ preserve(parameter)
+
+    "Fraction of new root growth that is mobile C"
+    C_mobile_root => 0.08 ~ preserve(parameter)
+
     end ~ track(min=0, u"g/m^2")
     
     C_net_root_Δ(growth_root, C_mobile_root, CMINERT, CROFF, CADRT) => begin
@@ -60,9 +66,10 @@
     "Percent CH2O in root"
     RHOR(C_net_root, WR) => C_net_root / WR ~ track(u"percent")
 
-    #=========
-    Parameters
-    =========#
+
+    #==
+    3PG
+    ==#
 
 
     "Initial root drymass"

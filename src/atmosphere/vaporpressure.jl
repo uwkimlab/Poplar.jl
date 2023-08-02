@@ -1,5 +1,5 @@
 """
-Vapor Pressure
+Calculates vapor pressure.
 """
 @system VaporPressure begin
     # Campbell and Norman (1998), p 41 Saturation vapor pressure in kPa

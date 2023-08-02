@@ -1,5 +1,6 @@
 """
-Sun
+Calculates variables related to solar position.
+Perhaps consider moving latitude, longitude, altitude to another system?
 """
 @system Sun begin
     lat: latitude => 47.66u"°" ~ preserve(u"°", parameter)
