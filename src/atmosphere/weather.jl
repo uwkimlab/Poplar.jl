@@ -1,10 +1,11 @@
+"""
+Weather
+"""
 @system Weather begin
     #=========
     Parameters
     =========#
 
-    # DataFrame containing all hourly weather data should be
-    # assigned to this variable during configuration.
     "Data"
     data ~ provide(init=time, parameter)
 
@@ -19,7 +20,7 @@
     ================#
 
     "Solar Radiation"
-    solrad: solar_radiation ~ drive(from=data, by=:SolRad, u"W/m^2")
+    solar_radiation ~ drive(from=data, by=:SolRad, u"W/m^2")
 
     "Relative Humidity"
     RH: relative_humidity ~ drive(from=data, by=:RH, u"percent")

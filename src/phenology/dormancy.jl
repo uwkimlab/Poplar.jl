@@ -1,14 +1,19 @@
+
+"Calculates chilling and forcing "
 @system Dormancy begin
 
     T_dorm: temperature_threshold => 5.94915 ~ preserve(parameter, u"°C")
 
+    "Chilling requirement to start forcing requirement"
     Rc: chilling_requirement => begin
         -100
         #-149.549
     end ~ preserve(parameter, u"K*d")
 
+    "Forcing requirement to break dormancy"
     Rf: forcing_requirement => 100 ~ preserve(parameter, u"K*d")
 
+    "Flag for whether tree is dormant"
     dormant(WF) => begin
         WF == 0u"kg/ha"
     end ~ flag
