@@ -1,3 +1,7 @@
+"""
+Calculates variables related to solar position.
+Perhaps consider moving latitude, longitude, altitude to another system?
+"""
 @system Sun begin
     lat: latitude => 47.66u"°" ~ preserve(u"°", parameter)
     long: longitude => 122.29u"°" ~ preserve(u"°", parameter)
@@ -15,8 +19,8 @@
     # Solar Coordinates #
     #####################
 
-    #HACK always use degrees for consistency and easy tracing
-    #FIXME pascal version of LightEnv uses iqbal()
+    # HACK always use degrees for consistency and easy tracing
+    # FIXME pascal version of LightEnv uses iqbal()
     declination_angle(declination_angle_spencer) ~ track(u"°")
 
     # Goudriaan 1977
@@ -31,20 +35,20 @@
         23.5u"°" * cos(g)
     end ~ track(u"°")
 
-    # Iqbal (1983) Pg 10 Eqn 1.3.3, and sundesign.com
+    # Iqbal (1983) Pg 10 Eqn 1.3.3, and sundesign.com.
     declination_angle_iqbal(d) => begin
         g = 2pi * (d + 284u"d") / 365u"d"
         23.45u"°" * sin(g)
     end ~ track(u"°")
 
-    # Campbell and Norman, p168
+    # Campbell and Norman, p168.
     declination_angle_campbell(d) => begin
         a = deg2rad(356.6 + 0.9856u"d^-1" * d)
         b = deg2rad(278.97 + 0.9856u"d^-1" * d + 1.9165sin(a))
         asind(0.39785sin(b))
     end ~ track(u"°")
 
-    # Spencer equation, Iqbal (1983) Pg 7 Eqn 1.3.1. Most accurate among all
+    # Spencer equation, Iqbal (1983) Pg 7 Eqn 1.3.1. Most accurate among all.
     declination_angle_spencer(d) => begin
         # gamma: day angle
         g = 2pi * (d - 1u"d") / 365u"d"

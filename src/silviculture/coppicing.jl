@@ -9,8 +9,8 @@
     end ~ flag
 
     # Don't have to worry about foliage during dormancy
-    coppicing(step, WS, growthStem, deathStem, thinning_WS, dBud) => begin
-        (WS / step) - (growthStem - deathStem - thinning_WS - dBud)
+    coppicing(step, WS, growth_stem, deathStem, thinning_WS, bud_delta) => begin
+        (WS / step) - (growth_stem - deathStem - thinning_WS - bud_delta)
     end ~ track(when=coppice, u"kg/ha/hr")
 
     # Coppiced when stem biomass is zero.
