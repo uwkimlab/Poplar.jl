@@ -300,9 +300,7 @@ end
     # Leaf Area Index #
     ###################
 
-    minimum_elevation_angle => 5 ~ preserve(u"°", parameter)
-
-    sunrisen(elev_angle, minimum_elevation_angle) => begin
+    sunrisen(elev_angle, minimum_elevation_angle=5u"°") => begin
         elev_angle > minimum_elevation_angle
     end ~ flag
 

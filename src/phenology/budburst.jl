@@ -1,4 +1,3 @@
-"Calculates rate of budburst based on growing degree hours"
 @system Budburst begin
 
     #=========
@@ -20,13 +19,11 @@
     # bud growth per degree hours
     bud_rate => 1 ~ preserve(parameter, u"kg/ha/hr/K")  
 
+
     #=========
     =========#
 
-    """
-    Budburst only when forcing requirement met.
-    No budburst when coppiced i.e. WS == 0.
-    """
+    # Budburst only when forcing requirement met. No budburst when coppiced i.e. WS == 0.
     budburst(F, Rf, bud_max, WF, coppiced) => begin
         (F >= Rf) && (bud_max >= WF) && !coppiced
     end ~ flag
@@ -39,11 +36,13 @@
         # min(T_air, T_bud_opt) - T_bud 
     end ~ track(when=budburst, min=0, u"K")
 
+    BDD(BD): budburst_degree_days ~ accumulate(u"K*hr")
+
     dBud_max(WS, step) => WS / step ~ track(u"kg/ha/hr")
 
     # bud growth per hour (WIP).
-    bud_delta(bud_rate, BD) => bud_rate * BD ~ track(max=dBud_max, u"kg/ha/hr")
+    dBud(bud_rate, BD) => bud_rate * BD ~ track(max=dBud_max, u"kg/ha/hr")
 
     # Accumulated bud growth for the year. Resets to 0 every year. Budburst halts when target is met.
-    # bud(bud_delta) ~ accumulate(reset=senescent, u"kg/ha")
+    # bud(dBud) ~ accumulate(reset=senescent, u"kg/ha")
 end

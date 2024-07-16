@@ -1,30 +1,25 @@
 @system BiomassPartition begin
 
     "Root partitioning proportion"
-    partition_root(BBCH_stage, BBCH_table) => begin
+    pR(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].root
         # (pRx * pRn) / (pRn + (pRx - pRn) * fPhysiology * m1) 
     end ~ track # root partition
 
     "Stem partitioning proportion"
-    partition_stem(BBCH_stage, BBCH_table) => begin
+    pS(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].stem
-        # (1 - partition_root) / (1 + pFS)
+        # (1 - pR) / (1 + pFS)
     end ~ track # stem partition
 
-    "Foliage partitioning proportion"
-    partition_foliage(BBCH_stage, BBCH_table) => begin
+    "Foliage paritioning proportion"
+    pF(BBCH_stage, BBCH_table) => begin
         BBCH_table[BBCH_stage].leaf
-        # 1 - partition_root - partition_stem # foliage partition
-        # (1 - partition_root) / (1 + (1 / pFS))
+        # 1 - pR - pS # foliage partition
+        # (1 - pR) / (1 + (1 / pFS))
     end ~ track
 
-    "Storage partitioning proportion"
-    partition_storage(BBCH_stage, BBCH_table) => begin
-        BBCH_table[BBCH_stage].storage
-    end ~ track
-
-    # Obsolete code from 3PG below.
+    # IGNORE ENTIRE CODE BELOW. OBSOLETE AFTER INCLUSION OF CARBON PARTITIONING TABLE.
     
     #===========
      Parameters
@@ -56,8 +51,8 @@
     # coeffCond => 0.05 ~ preserve(parameter, u"mbar^-1")
     
     # "Soilwater modifier on root partitioning"
-    # fSW(ASW, ASW_max, SWconst, SWpower) => begin
-    #     1 / (1 + ((1 - (ASW / ASW_max)) / SWconst) ^ SWpower)
+    # fSW(ASW, maxASW, SWconst, SWpower) => begin
+    #     1 / (1 + ((1 - (ASW / maxASW)) / SWconst) ^ SWpower)
     # end ~ track
 
     # "VPD modifier on root partitioning"

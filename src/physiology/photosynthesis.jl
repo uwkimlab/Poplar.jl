@@ -43,33 +43,31 @@ Photosynthesis
     # Empirical transpiration scale factor from original 3PG model
     # to account for water deficit.
     "Gross primary production"
-    GPP(A_gross, w=CH2O_weight, transpiration_scale_factor): gross_primary_production => begin
-        A_gross * w * transpiration_scale_factor
+    GPP(A_gross, w=CH2O_weight, transpScaleFactor) => begin
+        A_gross * w * transpScaleFactor
     end ~ track(u"kg/ha/hr")
 
     # From 3PG model, possibly different for poplars.
     # Appears to be the standard value for most species.
-    "NPP/GPP fraction"
-    γ: NPP_GPP_fraction => 0.47 ~ preserve(parameter) # Amichev
+    "NPP/GPP ratio"
+    γ => 0.47 ~ preserve(parameter) # Amichev
 
-    "Total available CH2O for growth & respiration"
-    C_available(GPP, C_mobilized) => GPP + C_mobilized ~ track(u"g/m^2/hr")
-
-    # "Net primary production"
-    NPP(γ, GPP): net_primary_production => begin
+    "Net primary production"
+    NPP(γ, GPP) => begin
         γ*GPP
     end ~ track(u"kg/ha/hr")
 
-    "Water use efficiency (productivity)"
-    WUE(NPP, transpiration): water_use_efficiency => begin
+    WUE(NPP, transpiration) => begin
         NPP / transpiration
     end ~ track(u"g/L")
 
+    # Conversion to mm/hr to match water balance.
     "Canopy transpiration in mm/hr"
     transpiration(ET, w=H2O_weight, d=H2O_density) => begin
         ET * w / d
-    end ~ track(u"mm/hr") # Conversion to mm/hr to match water balance.
+    end ~ track(u"mm/hr")
 
+    # Overall canopy conductance, not used in any calculations.
     "Canopy conductance"
     conductance(gs_sun=sunlit_gasexchange.gs, LAI_sunlit, gs_sh=shaded_gasexchange.gs, LAI_shaded, LAI) => begin
         #HACK ensure 0 when one of either LAI is 0, i.e., night
@@ -77,5 +75,5 @@ Photosynthesis
         c = ((gs_sun * LAI_sunlit) + (gs_sh * LAI_shaded)) / LAI
         #c = max(zero(c), c)
         # iszero(LAI) ? zero(c) : c
-    end ~ track(u"mol/m^2/s/bar") # Overall canopy conductance, not used in any calculations.
+    end ~ track(u"mol/m^2/s/bar")
 end
