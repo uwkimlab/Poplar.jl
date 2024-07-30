@@ -2,9 +2,6 @@
 This file contains a number of sample configurations for convenience.
 ====================================================================#
 
-include("../morphology/radiation.jl")
-include("../rhizosphere/soil.jl")
-
 # Very important. Determines initial and final dates.
 # Weather data MUST include the date range specified.
 config_Calendar = @config(
