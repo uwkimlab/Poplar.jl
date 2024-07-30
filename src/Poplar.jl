@@ -2,7 +2,6 @@ module Poplar
 using Cropbox
 
 include("utils/utils.jl")
-include("atmosphere/atmosphere.jl")
 include("calendar/calendar.jl")
 include("config/config.jl")
 include("morphology/morphology.jl")
