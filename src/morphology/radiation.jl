@@ -7,7 +7,6 @@
     ellipsoidal = 6
 end
 
-
 # @enum WaveBand begin
 #     photosynthetically_active_radiation = 1
 #     near_infrared = 2

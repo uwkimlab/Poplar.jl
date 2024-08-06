@@ -43,6 +43,8 @@ Transpiration
     #     ((Int(soil_class) > 0) ? (11 - 2 * Int(soil_class)) : (SWpower0))
     # end ~ preserve
 
+    field_capacity(maxASW) => 0.5 * maxASW ~ preserve(u"mm")
+
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
         (LAImaxInterception == 0) ? (maxInterception) : (maxInterception * min(1, LAI / LAImaxInterception))

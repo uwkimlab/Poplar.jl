@@ -10,6 +10,9 @@
     "Average monthly root turnover rate"
     gammaR => 0.005 ~ preserve(parameter) # Amichev
 
+    "Root nitrogen ratio"
+    N_ratio_root => 0.01 ~ preserve(parameter)
+
     #=====
     Growth
     =====#
@@ -50,7 +53,15 @@
     Weight
     =====#
     
-    dWR(growthRoot, rootTurnover, deathRoot, thinning_WR, dShoot) => growthRoot - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
+    dWR(growthRoot, N_stress, rootTurnover, deathRoot, thinning_WR, dShoot) => growthRoot * N_stress - rootTurnover - deathRoot - thinning_WR - dShoot ~ track(u"kg/ha/hr")
     WR(dWR) ~ accumulate(u"kg/ha", init=iWR, min=0) # root drymass
     WR_ton(nounit(WR)) => WR / 1000 ~ track
+
+    #==
+    ==#
+    "Specific root length"
+    SRL => 20 ~ preserve(parameter, u"cm/g")
+
+    "Root length density"
+    RLD(WR, soil_depth, SRL) => WR / soil_depth * SRL ~ track(u"cm/cm^3")
 end

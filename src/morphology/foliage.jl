@@ -34,7 +34,18 @@ Foliage
         10 # for poplar?
     end ~ preserve(u"cm", parameter)
 
+    "Foliage nitrogen ratio"
+    N_ratio_foliage => 0.03 ~ preserve(parameter)
+
+    #=====
+    Growth
+    =====#
+
     growthFoliage(NPP, pF) => NPP * pF ~ track(u"kg/ha/hr") # foliage
+
+    #========
+    Mortality
+    ========#
 
     deathFoliage(WF, mF, mortality, stemNo) => begin
         mF * mortality * (WF / stemNo)
@@ -57,8 +68,12 @@ Foliage
 
     litterfall(gammaFhour, WF) => gammaFhour * WF ~ track(u"kg/ha/hr")
 
-    dWF(growthFoliage, litterfall, deathFoliage, defoliation, thinning_WF, dSen, dBud) => begin
-        growthFoliage - litterfall - deathFoliage - defoliation - thinning_WF - dSen + dBud
+    #=====
+    Weight
+    =====#
+
+    dWF(growthFoliage, N_stress, litterfall, deathFoliage, defoliation, thinning_WF, dSen, dBud) => begin
+        growthFoliage * N_stress - litterfall - deathFoliage - defoliation - thinning_WF - dSen + dBud
     end ~ track(u"kg/ha/hr")
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
