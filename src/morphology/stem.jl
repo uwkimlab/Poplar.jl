@@ -6,13 +6,28 @@
     "Initial stem drymass"
     iWS => 4000 ~ preserve(parameter, u"kg/ha")
 
+    "Stem nitrogen ratio"
+    N_ratio_stem => 0.01 ~ preserve(parameter)
+
+    #=====
+    Growth
+    =====#
+
     growthStem(NPP, pS) => NPP * pS ~ track(u"kg/ha/hr") 
+
+    #========
+    Mortality
+    ========#
 
     deathStem(WS, mS, mortality, stemNo) => begin
         mS * mortality * (WS / stemNo)
     end ~ track(u"kg/ha/hr", when=flagMortal, max=WS_lim)
 
-    dWS(growthStem, deathStem, thinning_WS, dBud, coppicing, dShoot) => growthStem - deathStem - thinning_WS - dBud - coppicing + dShoot ~ track(u"kg/ha/hr")
+    #=====
+    Weight
+    =====#
+
+    dWS(growthStem, N_stress, deathStem, thinning_WS, dBud, coppicing, dShoot) => growthStem * N_stress - deathStem - thinning_WS - dBud - coppicing + dShoot ~ track(u"kg/ha/hr")
     
     "Average stem mass"
     avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")

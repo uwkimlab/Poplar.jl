@@ -47,6 +47,9 @@ Photosynthesis
         A_gross * w * transpScaleFactor
     end ~ track(u"kg/ha/hr")
 
+    "C available..."
+    C_available(GPP) ~ track(u"kg/ha/hr")
+
     # From 3PG model, possibly different for poplars.
     # Appears to be the standard value for most species.
     "NPP/GPP ratio"
@@ -57,6 +60,7 @@ Photosynthesis
         γ*GPP
     end ~ track(u"kg/ha/hr")
 
+    "Water-use efficiency"
     WUE(NPP, transpiration) => begin
         NPP / transpiration
     end ~ track(u"g/L")

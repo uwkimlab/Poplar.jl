@@ -7,7 +7,6 @@
     ellipsoidal = 6
 end
 
-
 # @enum WaveBand begin
 #     photosynthetically_active_radiation = 1
 #     near_infrared = 2
@@ -16,7 +15,7 @@ end
 
 # Radiation calculates sunlit and sunshaded areas of the canopy.
 @system Radiation begin
-    leaf_angle => ellipsoidal ~ preserve::LeafAngle(parameter)
+    leaf_angle => spherical ~ preserve::LeafAngle(parameter)
 
     "ratio of horizontal to vertical axis of an ellipsoid"
     LAF: leaf_angle_factor => begin
