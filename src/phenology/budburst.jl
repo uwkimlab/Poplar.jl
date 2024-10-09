@@ -24,8 +24,8 @@
     =========#
 
     # Budburst only when forcing requirement met. No budburst when coppiced i.e. WS == 0.
-    budburst(F, Rf, bud_max, WF, coppiced) => begin
-        (F >= Rf) && (bud_max >= WF) && !coppiced
+    budburst(F, Rf, bud_max, WF) => begin
+        (F >= Rf) && (bud_max >= WF)
     end ~ flag
 
     # Degree units for budburst. Actual

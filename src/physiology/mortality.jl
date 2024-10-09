@@ -71,7 +71,7 @@ This system calculate age and stress related mortality.
     # Follows the "self-thinning" rule.
     "Self-thinning rate"
     selfThinning(accuracy, mS, stemNo, WS, wSx1000, thinPower) => begin
-        n = stemNo / 1000u"ha^-1"
+        n = stemNo / 1000u"ha^-1" # Trees density ?
         x1 = mS * WS / stemNo
         i = 0
         while true
@@ -92,5 +92,5 @@ This system calculate age and stress related mortality.
     Mortality
     ========#
     "Tree mortality rate"
-    mortality(asMortality, selfThinning) => asMortality + selfThinning ~ track(u"ha^-1/hr", when=flagMortal)
+    mortality(asMortality, selfThinning) => asMortality + selfThinning ~ track(u"ha^-1/hr")
 end

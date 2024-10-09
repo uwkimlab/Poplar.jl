@@ -9,7 +9,6 @@
     shoot_max => 1e4 ~ preserve(parameter, u"kg/ha")
 
     shooting(F, Rf, shoot_max, shoot, WS) => begin
-        # false
         (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) 
     end ~ flag
 
