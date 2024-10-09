@@ -15,6 +15,7 @@
 
     DD(T_air, T_dorm): dormant_degrees => (T_air - T_dorm) ~ track(when=dormant, u"K")
 
+    # incorporate effect of day length for chilling requirement
     dC(DD) ~ track(max = 0, u"K")
     C(dC):  chilling_accumulated ~ accumulate(when=!chilled, reset=senescent, u"K*hr")
 
