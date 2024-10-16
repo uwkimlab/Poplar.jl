@@ -87,4 +87,21 @@ Foliage
 
     # Leaf Area Index
     LAI(WF, SLA) => WF * SLA ~ track
+
+    # Leaf respiration
+    Q10_leaf_below30C: leaf_temperature_sensitivity_conefficient_below30C => 2.0 ~ preserve(parameter) #dimensionless
+    Q10_leaf_above30C: leaf_temperature_sensitivity_conefficient_above30C => 2.03 ~ preserve(parameter) #dimensionless
+    k_leaf_20: leaf_maintenance_rate_at_20C => 300.3 * 1000 ~ preserve(parameter, u"ng/kg/s"#=gCHO 20to30oC=#)
+    k_leaf_30(q=Q10_leaf_below30C, k_leaf_20): leaf_maintenance_rate_at_30C => begin
+        k_leaf_20 * q^((30-20)/10)
+    end~track(u"ng/kg/s"#=gCHO 30to40oC=#)
+
+    Leaf_Rp(k_leaf_20, k_leaf_30, WF, a = Q10_leaf_below30C, b=Q10_leaf_above30C, nounit(T_air)): leaf_maintenance_respiration => begin
+        if T_air < 30
+            k_leaf_20 * WF * a^((T_air-20) / 10)
+        else
+            k_leaf_30 * WF * b^((T_air-30) / 10)
+        end
+    end ~ track(u"g/ha/hr"#=g CHO=#)
+
 end

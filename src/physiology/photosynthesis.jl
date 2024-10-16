@@ -56,9 +56,12 @@ Photosynthesis
     γ => 0.47 ~ preserve(parameter) # Amichev
 
     "Net primary production"
-    NPP(γ, GPP) => begin
-        γ*GPP
-    end ~ track(u"kg/ha/hr")
+    NPP(GPP, Root_Rp, Stem_Rp, Leaf_Rp) => begin
+        GPP - Root_Rp - Stem_Rp - Leaf_Rp
+    end ~ track(u"kg/ha/hr")  
+    #NPP(γ, GPP) => begin
+    #    γ*GPP
+    #end ~ track(u"kg/ha/hr")
 
     "Water-use efficiency"
     WUE(NPP, transpiration) => begin

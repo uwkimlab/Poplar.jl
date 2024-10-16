@@ -82,8 +82,8 @@ Transpiration
     end ~ track(u"mm/hr")
     
     "Hourly change in avilable soil water"
-    dASW(dPool, evapotranspiration#=, irrigation=#, rain) => begin
-         -dPool - evapotranspiration#= + irrigation=# + rain
+    dASW(dPool, evapotranspiration, irrigation, rain) => begin
+         -dPool - evapotranspiration + irrigation + rain
     end ~ track(u"mm/hr")
     
     flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
