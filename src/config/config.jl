@@ -62,6 +62,48 @@ config_GasExchange_EI = @config(
     )
 )
 
+# Newly implemented. Made and tested by Sun Woo Chung
+config_GasExchange_Newone = @config(
+    :GasExchange => (
+        Tp25 = 11.55, #from Kim and Lieth (2003)
+        
+        #Rd25 = 1.5, #from Poplar book (?)
+        Rd25 = 0.38, #https://doi.org/10.1093/treephys/tpaa007
+
+        Kc25 = 404, #from Pury and Farquhar (1997)
+        Ko25 = 248, #from Pury and Farquhar (1997)
+        Eac = 59.4, #from Pury and Farquhar (1997)
+        Eao = 36.0, #from Pury and Farquhar (1997)
+        Ear = 66.4, #from Pury and Farquhar (1997)
+        Eag = 37.83, #from Pury and Farquhar (1997)
+
+        #EaVc = 45.5, #from Kim and Lieth (2003)
+        EaVc = 114.74, #https://doi.org/10.1093/treephys/tpaa007
+
+        #Eaj = 43.3,  #from Kim and Lieth (2003)
+        Eaj = 56.97,  #https://doi.org/10.1093/treephys/tpaa007
+
+        EaTp = 47.1, #from Kim and Lieth (2003)
+
+        #Hj = 219.4, #from Kim and Lieth (2003)
+        Hj = 200.0, #https://doi.org/10.1093/treephys/tpaa007
+        
+        #Sj = 704.2, #from Kim and Lieth (2003)
+        Sj = 657.0, #https://doi.org/10.1093/treephys/tpaa007
+
+        #Γ25 = 36.9, #from Pury and Farquhar (1997)
+        Γ25 = 55.72, #https://doi.org/10.1093/treephys/tpaa007
+
+        #Vcm25 = 65.07387082971192, # from GH2306?
+        Vcm25 = 105.57, #https://doi.org/10.1093/treephys/tpaa007
+        #Jm25 = 118.2302458598954, # from GH2306?
+        Jm25 = 119.62,  #https://doi.org/10.1093/treephys/tpaa007
+
+        g1 = 9.670307198008624, # from GH2306?
+    ) 
+)
+
+
 config_Model = @config(
     config_Calendar,
     config_Atmosphere
