@@ -77,11 +77,11 @@
     "Relative drought factor"
     drought_factor(ASW, minASW, field_capacity, maxASW) => begin
         if ASW > field_capacity
-            2.0 - (ASW - field_capacity) / (maxASW - field_capacity)
+            1 - (ASW - field_capacity) / (maxASW - field_capacity)
         else
-            2 * ((ASW - minASW) / (field_capacity - minASW))
+            ((ASW - minASW) / (field_capacity - minASW))
         end
-    end ~ track(min=0, max=1) 
+    end ~ track(min=0.1, max=1) 
 
     # Nitrogen uptake conversion factor.
     # How much kg/ha of nitrogen for mg/cm of nitrogen (root)?
