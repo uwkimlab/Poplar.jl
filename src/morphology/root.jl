@@ -62,6 +62,7 @@
     "Specific root length"
     SRL => 20 ~ preserve(parameter, u"cm/g")
 
+    # From CROPGRO
     "Root length density"
     RLD(WR, soil_depth, SRL) => WR / soil_depth * SRL ~ track(u"cm/cm^3")
 end
