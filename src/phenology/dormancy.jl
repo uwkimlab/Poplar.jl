@@ -1,4 +1,12 @@
+@enum DormancyType begin
+    sequential = 0
+    parallel = 1
+    photoperiod = 2
+end
+
 @system Dormancy begin
+
+    dormancy_type => parallel ~ preserve::DormancyType(parameter)
 
     T_dorm: temperature_threshold => 5.94915 ~ preserve(parameter, u"°C")
 
@@ -15,12 +23,38 @@
 
     DD(T_air, T_dorm): dormant_degrees => (T_air - T_dorm) ~ track(when=dormant, u"K")
 
-    # incorporate effect of day length for chilling requirement
-    dC(DD) ~ track(max = 0, u"K")
+    # arbitrary parameter value
+    δ: photosensitvity => 0.1 ~ preserve(parameter, u"K/hr")
+
+    # arbitrary parameter value
+    Kmin: minimum_competence => 0.1 ~ preserve(parameter)
+    
+    # Kramer (1994) Eq. 6 
+    K(Kmin,Rc,C): competence_function => begin
+        Kmin + (1-Kmin)/Rc*C
+    end ~ track(max=1)
+
+    dC(DD, δ, day_length, dormancy_type) => begin
+        if dormancy_type == photoperiod 
+            DD - δ * day_length # Kramer (1994) Eq. 15
+        else
+            DD
+        end
+    end ~ track(max = 0, u"K")
     C(dC):  chilling_accumulated ~ accumulate(when=!chilled, reset=senescent, u"K*hr")
 
     chilled(C, Rc) => (C <= Rc) ~ flag
 
     dF(DD) ~ track(min = 0, u"K")
-    F(dF):  forcing_accumulated  ~ accumulate(when=chilled, reset=senescent, u"K*hr")
+
+    F(K,dF,dormancy_type,chilled): forcing_accumulated => begin
+        if dormancy_type == parallel    
+            K * dF
+        elseif (dormancy_type == sequential || dormancy_type == photoperiod) && chilled 
+            dF
+        else
+            0
+        end
+    end ~ accumulate(reset=senescent, u"K*hr")
+
 end
