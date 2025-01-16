@@ -4,8 +4,8 @@
     T_sen => 20.93 ~ preserve(parameter, u"°C")
     Tk_sen(T_sen) ~ preserve(u"K")
 
-    senescent(T_air, T_sen, day_length, P_sen, d, WF) => begin
-        (T_air < T_sen) && (day_length < P_sen) && (200u"d" < d) && (WF != 0u"kg/ha")
+    senescent(day_length, P_sen, d, WF) => begin
+        (day_length < P_sen) && (200u"d" < d) && (WF != 0u"kg/ha")
     end ~ flag
     
     SD(day_length, P_sen, Tk_air, Tk_sen): senescent_degrees => begin
