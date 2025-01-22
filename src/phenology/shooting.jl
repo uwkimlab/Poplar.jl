@@ -8,9 +8,14 @@
 
     shoot_max => 1e4 ~ preserve(parameter, u"kg/ha")
 
-    shooting(F, Rf, shoot_max, shoot, WS) => begin
-        (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) 
+    shooting(F, Rf, shoot_max, shoot, WS, coppice_days,shooting_interval) => begin
+        (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) && (coppice_days>0u"d" && coppice_days<shooting_interval)
     end ~ flag
+
+    # Days after coppicing where reshooting can occur
+    shooting_interval => begin
+	365
+    end ~ preserve(parameter,u"d")
 
     ShD(T_air, T_shoot, T_shoot_opt): shooting_degrees => begin
         min(T_air, T_shoot_opt) - T_shoot 
