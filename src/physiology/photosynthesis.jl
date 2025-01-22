@@ -10,10 +10,10 @@ Photosynthesis
     =================#
 
     "Gas exchange model for sunlit leaves"
-    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width) ~ ::GasExchange
+    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width,drought_factor =drought_factor) ~ ::GasExchange
 
     "Gas exchange model for shaded leaves"
-    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width) ~ ::GasExchange
+    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, drought_factor = drought_factor) ~ ::GasExchange
 
     #=================
     =================#
