@@ -44,7 +44,7 @@ Transpiration
     # end ~ preserve
 
     fc => 0.5 ~ preserve(parameter)
-    field_capacity(fc, maxASW) => fc * (maxASW + minASW) ~ preserve(u"mm")
+    field_capacity(fc, maxASW, minASW) => fc * (maxASW + minASW) ~ preserve(u"mm")
 
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
