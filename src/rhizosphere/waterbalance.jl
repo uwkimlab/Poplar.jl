@@ -15,7 +15,7 @@ Transpiration
     soil_saturation => 500 ~ preserve(parameter, u"mm")
     
     "Minimum soil water"
-    minSW => 0 ~ preserve(parameter, u"mm")
+    minSW => 175 ~ preserve(parameter, u"mm")
 
     "Wilting point"
     WP(saturation,soil_table,soil_class):wilting_point => begin
