@@ -9,11 +9,19 @@ Photosynthesis
     Gas-exchange Model
     =================#
 
+#     "Gas exchange model for sunlit leaves"
+
+#     sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width,drought_factor =drought_factor) ~ ::GasExchange
+
+#     "Gas exchange model for shaded leaves"
+#     shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, drought_factor = drought_factor) ~ ::GasExchange
+
     "Gas exchange model for sunlit leaves"
-    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width,drought_factor =drought_factor) ~ ::GasExchange
+    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width, s=s) ~ ::GasExchange
 
     "Gas exchange model for shaded leaves"
-    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, drought_factor = drought_factor) ~ ::GasExchange
+    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, s=s) ~ ::GasExchange
+
 
     #=================
     =================#
@@ -55,10 +63,25 @@ Photosynthesis
     "NPP/GPP ratio"
     γ => 0.47 ~ preserve(parameter) # Amichev
 
+    "Switch parameter to control NPP types"
+    NPP_type => 1 ~ preserve(parameter)
+
     "Net primary production"
-    NPP(γ, GPP) => begin
-        γ*GPP
+    NPP(GPP, γ, NPP_type, Root_Rp, Stem_Rp, Leaf_Rp) => begin
+        if NPP_type == 1 # using NPP/GPP ratio
+            γ * GPP
+        elseif NPP_type == 2 # using maintenance respiration rate
+            GPP - Root_Rp - Stem_Rp - Leaf_Rp
+        else
+            error("Invalid calculation method: $calculation_method. Use 1 or 2 for ratio or respiration, respectively")
+        end
     end ~ track(u"kg/ha/hr")
+    #NPP(GPP, Root_Rp, Stem_Rp, Leaf_Rp) => begin
+    #    GPP - Root_Rp - Stem_Rp - Leaf_Rp
+    #end ~ track(u"kg/ha/hr")  
+    #NPP(γ, GPP) => begin
+    #    γ*GPP
+    #end ~ track(u"kg/ha/hr")
 
     "Water-use efficiency"
     WUE(NPP, transpiration) => begin

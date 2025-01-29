@@ -24,12 +24,14 @@ end
         (hs - RH)*gb ⩵ (1 - hs)*gs
     end ~ solve(lower=0, upper=1) #, u"percent")
 
-    gs(g0, g1, m, A_net, hs, Cs): stomatal_conductance => begin
-        g0 + (g1 * m * (A_net * hs / Cs))
+    gs(g0, g1, m, A_net, hs, Cs, s): stomatal_conductance => begin
+        g0 + (g1 * (1-s) * m * (A_net * hs / Cs))
     end ~ track(u"mol/m^2/s/bar" #= H2O =#, min=g0)
 
     m(drought_factor): transpiration_reduction_factor => begin
         #TODO: implement soil water module
         drought_factor
     end ~ track
+    
+    s: senescence_reduction_factor ~ track(override)
 end

@@ -36,4 +36,22 @@
     WS_lim(WS, step) => WS / step ~ track(u"kg/ha/hr") 
     WS(dWS) ~ accumulate(u"kg/ha", init=iWS, min=0) # stem drymass
     WS_ton(nounit(WS)) => WS / 1000 ~ track
+
+    # stem respiration
+    Q10_stem_below30C: stem_temperature_sensitivity_conefficient_below30C => 2.0 ~ preserve(parameter) #dimensionless
+    Q10_stem_above30C: stem_temperature_sensitivity_conefficient_above30C => 1.61 ~ preserve(parameter) #dimensionless
+    k_stem_20: stem_maintenance_rate_at_20C => 24 * 1000 ~ preserve(parameter, u"ng/kg/s"#=gCHO 20to30oC=#)
+    k_stem_30(q=Q10_stem_below30C, k_stem_20): stem_maintenance_rate_at_30C => begin
+        k_stem_20 * q^((30-20)/10)
+    end~track(u"ng/kg/s"#=gCHO 30to40oC=#)
+
+    Stem_Rp(k_stem_20, k_stem_30, WF, a = Q10_stem_below30C, b=Q10_stem_above30C, nounit(T_air)): stem_maintenance_respiration => begin
+        if T_air < 30
+            k_stem_20 * WF * a^((T_air-20) / 10)
+        else
+            k_stem_30 * WF * b^((T_air-30) / 10)
+        end
+    end ~ track(u"g/ha/hr"#=g CHO=#)
+
+
 end
