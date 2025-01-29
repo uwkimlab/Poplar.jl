@@ -75,18 +75,18 @@
 
     # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
     "Relative drought factor"
-    drought_factor(ASW, minASW, field_capacity, maxASW) => begin
-        if ASW > field_capacity
-            1 - (ASW - field_capacity) / (maxASW - field_capacity)
+    drought_factor(SW, minSW, field_capacity, soil_saturation,WP) => begin
+        if SW > field_capacity
+            1.0 - (SW - field_capacity) / (soil_saturation - field_capacity)
         else
-            ((ASW - minASW) / (field_capacity - minASW))
+            1 * ((SW - WP) / (field_capacity - WP))
         end
     end ~ track(min=0.1, max=1) 
 
     # Nitrogen uptake conversion factor.
     # How much kg/ha of nitrogen for mg/cm of nitrogen (root)?
     N_uptake_conversion_factor(RLD, drought_factor, soil_depth) => begin
-        RLD * sqrt(drought_factor) * soil_depth
+        RLD * sqrt(drought_factor) * soil_depth 
     end ~ track(u"kg*cm/mg/ha")
 
     "Amount of NO3 that stays in soil"

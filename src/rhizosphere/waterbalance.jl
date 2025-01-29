@@ -8,18 +8,35 @@ Transpiration
     Parameters
     =========#
 
-    "Initial available soil water"
-    iASW => 200 ~ preserve(parameter, u"mm")
+    "Initial soil water"
+    iSW => 200 ~ preserve(parameter, u"mm")
 
-    "Maximum available soil water"
-    maxASW => 200 ~ preserve(parameter, u"mm") # (Field capacity - Wilting point) * depth
-    #maxASW => 200 ~ preserve(parameter, u"mm") # previous
+
+    "Maximum soil water/saturation"
+    soil_saturation => 500 ~ preserve(parameter, u"mm")
     
-    "Minimum available soil water"
-    minASW => 0 ~ preserve(parameter, u"mm") # need to be updated based on VWC by soil types
+    "Minimum soil water"
+    minSW => 175 ~ preserve(parameter, u"mm")
+
+    "Wilting point"
+    WP(saturation,soil_table,soil_class):wilting_point => begin
+        175
+        #soil_table[soil_class].wilting_point
+    end ~ preserve(parameter, u"mm")
+    
+    "Irrigation"
+    irrigation => 0 ~ preserve(parameter, u"mm/hr")
+
+#     "Maximum available soil water"
+#     maxASW => 200 ~ preserve(parameter, u"mm") # (Field capacity - Wilting point) * depth
+#     #maxASW => 200 ~ preserve(parameter, u"mm") # previous
+    
+#     "Minimum available soil water"
+#     minASW => 0 ~ preserve(parameter, u"mm") # need to be updated based on VWC by soil types
 
     #"Irrigation"
     #irrigation => 0 ~ preserve(parameter, u"mm/hr")
+
 
     "Fraction of excess water pooled"
     pool_fraction => 0 ~ preserve(parameter)
@@ -44,8 +61,12 @@ Transpiration
     #     ((Int(soil_class) > 0) ? (11 - 2 * Int(c)) : (SWpower0))
     # end ~ preserve
 
-    fc => 0.5 ~ preserve(parameter)
-    field_capacity(fc, maxASW, minASW) => fc * (maxASW + minASW) ~ preserve(u"mm")
+###
+    field_capacity(soil_saturation) => 327 ~ preserve(u"mm")
+
+#     fc => 0.5 ~ preserve(parameter)
+#     field_capacity(fc, maxASW, minASW) => fc * (maxASW + minASW) ~ preserve(u"mm")
+
 
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
@@ -58,16 +79,16 @@ Transpiration
     "Canopy transpiration" # Looks like missing soil surface evaporation 
     evapotranspiration(transpiration, rainInterception) => begin
         transpiration + rainInterception
-    end ~ track(u"mm/hr", max=ASWhour)
+    end ~ track(u"mm/hr", max=SWhour)
     
     "Hourly excess soil water"
-    excessSW(ASWhour, maxASWhour, evapotranspiration, irrigation, rain, poolHour) => begin
-        ASWhour + rain + poolHour - evapotranspiration + irrigation - maxASWhour
+    excessSW(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour) => begin
+        SWhour + rain + poolHour - evapotranspiration + irrigation - maxSWhour
     end ~ track(u"mm/hr", min=0u"mm/hr")
     
     "Hourly loss in water pool"
-    lossPool(ASWhour, maxASWhour, evapotranspiration, irrigation, rain, poolHour) => begin
-        maxASWhour - (ASWhour - evapotranspiration + irrigation + rain + poolHour)
+    lossPool(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour) => begin
+        maxSWhour - (SWhour - evapotranspiration + irrigation + rain + poolHour)
     end ~ track(u"mm/hr", min=0u"mm/hr", max=poolHour)
     
     "Hourly gain in water pool"
@@ -83,6 +104,10 @@ Transpiration
         (1 - pool_fraction) * excessSW
     end ~ track(u"mm/hr")
     
+###
+#     dSW(dPool, evapotranspiration#=, irrigation=#, rain) => begin
+#          -dPool - evapotranspiration#= + irrigation=# + rain
+
     "Hourly change in avilable soil water"
     dASW(dPool, evapotranspiration, irrigation, rain) => begin
          -dPool - evapotranspiration + irrigation + rain
@@ -95,13 +120,13 @@ Transpiration
         evapotranspiration / (transpiration + rainInterception)
     end ~ track(when=flag_transpiration, init=1)
     
-    ASW(dASW) ~ accumulate(u"mm", init=iASW, min=minASW, max=maxASW)
+    SW(dSW) ~ accumulate(u"mm", init=iSW, min=minSW, max=soil_saturation)
     pool(dPool) ~ accumulate(u"mm")
     runoff(dRunoff) ~ accumulate(u"mm")
 
     # ASW and MaxASW and pool in mm/hr
-    ASWhour(ASW) => ASW / u"d" ~ track(u"mm/hr")
-    maxASWhour(maxASW) => maxASW / u"d" ~ track(u"mm/hr")
+    SWhour(SW) => SW / u"d" ~ track(u"mm/hr")
+    maxSWhour(soil_saturation) => soil_saturation / u"d" ~ track(u"mm/hr")
     poolHour(pool) => pool / u"d" ~ track(u"mm/hr")
 
     "Irrigation based on profiling VWC for Slit Loam"
