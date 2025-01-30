@@ -75,7 +75,7 @@
 
     # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
     "Relative drought factor"
-    drought_factor(SW, minSW, field_capacity, soil_saturation,WP) => begin
+    drought_factor(SW, minSW, field_capacity, soil_saturation, WP) => begin
         if SW > field_capacity
             1.0 - (SW - field_capacity) / (soil_saturation - field_capacity)
         else
