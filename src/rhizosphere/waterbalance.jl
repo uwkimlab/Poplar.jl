@@ -105,7 +105,7 @@ Transpiration
 
     "Production modifier for GPP"
     transpScaleFactor(evapotranspiration, transpiration, rainInterception) => begin
-        evapotranspiration / (transpiration + rainInterception)
+        evapotranspiration / (transpiration + rainInterception) # actual / potential
     end ~ track(when=flag_transpiration, init=1)
     
     SW(dSW) ~ accumulate(u"mm", init=iSW, min=minSW, max=soil_saturation)
