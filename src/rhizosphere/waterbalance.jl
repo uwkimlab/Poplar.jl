@@ -68,10 +68,15 @@ Transpiration
     "Intercepted rain"
     rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
       
-    "Canopy transpiration" # Looks like missing soil surface evaporation 
+    "Canopy evapotranspiration" # Looks like missing soil surface evaporation 
     evapotranspiration(transpiration, rainInterception) => begin
         transpiration + rainInterception
     end ~ track(u"mm/hr", max=SWhour)
+
+    "Potential canopy evapotranspiration"
+    potential_evapotranspiration(transpiration, rainInterception) => begin
+        transpiration + rainInterception
+    end ~ track(u"mm/hr")
     
     "Hourly excess soil water"
     excessSW(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour) => begin
@@ -96,7 +101,6 @@ Transpiration
         (1 - pool_fraction) * excessSW
     end ~ track(u"mm/hr")
     
-###
     dSW(dPool, evapotranspiration, irrigation, rain) => begin
          -dPool - evapotranspiration + irrigation + rain
     end ~ track(u"mm/hr")
@@ -104,8 +108,8 @@ Transpiration
     flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
 
     "Production modifier for GPP"
-    transpScaleFactor(evapotranspiration, transpiration, rainInterception) => begin
-        evapotranspiration / (transpiration + rainInterception) # actual / potential
+    transpScaleFactor(evapotranspiration, potential_evapotranspiration) => begin
+        evapotranspiration / potential_evapotranspiration
     end ~ track(when=flag_transpiration, init=1)
     
     SW(dSW) ~ accumulate(u"mm", init=iSW, min=minSW, max=soil_saturation)
