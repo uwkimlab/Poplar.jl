@@ -18,7 +18,7 @@ Transpiration
     minSW => 175 ~ preserve(parameter, u"mm")
 
     "Wilting point"
-    WP(saturation,soil_table,soil_class):wilting_point => begin
+    WP(saturation, #=soil_table,=# soil_class):wilting_point => begin
         175
         #soil_table[soil_class].wilting_point
     end ~ preserve(parameter, u"mm")
