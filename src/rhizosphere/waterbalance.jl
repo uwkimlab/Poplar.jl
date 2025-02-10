@@ -12,17 +12,17 @@ Transpiration
     iSW => 200 ~ preserve(parameter, u"mm")
 
     "Maximum soil water/saturation"
-    soil_saturation => begin 
+    soil_saturation(soil_table,soil_class) => begin 
         soil_table[Symbol(soil_class)].saturation
     end ~ preserve(parameter, u"mm")
     
     "Minimum soil water"
-    minSW => begin
+    minSW(soil_table,soil_class) => begin
         soil_table[Symbol(soil_class)].wilting_point
     end ~ preserve(parameter, u"mm")
 
     "Wilting point"
-    WP(saturation,soil_table,soil_class): wilting_point => begin
+    WP(soil_table,soil_class): wilting_point => begin
         soil_table[Symbol(soil_class)].wilting_point
     end ~ preserve(parameter, u"mm")
 
