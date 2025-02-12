@@ -51,8 +51,8 @@ Photosynthesis
     # Empirical transpiration scale factor from original 3PG model
     # to account for water deficit.
     "Gross primary production"
-    GPP(A_gross, w=CH2O_weight, transpScaleFactor) => begin
-        A_gross * w * transpScaleFactor
+    GPP(A_gross, w=CH2O_weight#=, transpScaleFactor=#) => begin
+        A_gross * w #* transpScaleFactor
     end ~ track(u"kg/ha/hr")
 
     "C available..."
