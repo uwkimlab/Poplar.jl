@@ -9,7 +9,7 @@
     soil_table => [
         63 365 135
         96 420 198
-        111 506 332
+        181 506 332
     ] ~ tabulate(
         rows=(:S, :SL, :CL),
         columns=(:wilting_point,:saturation,:field_capacity),
