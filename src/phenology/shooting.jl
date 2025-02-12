@@ -29,17 +29,18 @@
 	.1
     end ~ preserve(parameter)
 
-    pre_shooting_weight(fraction_NSC,WR) => begin 
+    #Non-structural carbon available when shooting begins
+    shooting_capacity(fraction_NSC,WR) => begin 
 	fraction_NSC*WR
     end ~ track(u"kg/ha")
 
-    non_structural_carbon(shooting,pre_shooting_weight,dShoot,shooting, non_structural_carbon,dWR) => begin
+    non_structural_carbon(shooting,shooting_capacity,dShoot,shooting, non_structural_carbon,dWR) => begin
 	if(shooting)
 		-dShoot
-        else(non_structural_carbon<pre_shooting_weight)
+        else(non_structural_carbon<shooting_capacity)
                 dWR
         end
-    end ~ accumulate(u"kg/ha",min=0u"kg/ha",init=pre_shooting_weight,max=pre_shooting_weight)
+    end ~ accumulate(u"kg/ha",min=0u"kg/ha",init=shooting_capacity,max=shooting_capacity)
 
     ShD(T_air, T_shoot, T_shoot_opt): shooting_degrees => begin
         min(T_air, T_shoot_opt) - T_shoot 
