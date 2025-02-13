@@ -75,8 +75,8 @@
 
     # Nitrogen uptake conversion factor.
     # How much kg/ha of nitrogen for mg/cm of nitrogen (root)?
-    N_uptake_conversion_factor(RLD, drought_factor, soil_depth) => begin
-        RLD * sqrt(drought_factor) * soil_depth 
+    N_uptake_conversion_factor(RLD, water_stress, soil_depth) => begin
+        RLD * sqrt(water_stress) * soil_depth 
     end ~ track(u"kg*cm/mg/ha")
 
     "Amount of NO3 that stays in soil"
