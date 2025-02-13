@@ -166,4 +166,15 @@ Transpiration
             irrigation_rate
         end
     end ~ track(u"mm/hr")
+
+    # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
+    # Captures water stress due to both drought and water logging through reduction in stomatal conductance
+    "Relative water stress factor"
+    water_stress(SW, minSW, field_capacity, soil_saturation, WP) => begin
+        if SW > field_capacity
+            1.0 - (SW - field_capacity) / (soil_saturation - field_capacity)
+        else
+            1 * ((SW - WP) / (field_capacity - WP))
+        end
+    end ~ track(min=0.1, max=1) 
 end
