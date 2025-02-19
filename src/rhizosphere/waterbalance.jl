@@ -65,8 +65,9 @@ Transpiration
     # end ~ preserve
 
 ###
-    field_capacity(soil_saturation) => 327 ~ preserve(u"mm")
-
+    field_capacity(soil_table,soil_class) => begin     	
+        soil_table[Symbol(soil_class)].field_capacity
+    end ~ preserve(u"mm")
 #     fc => 0.5 ~ preserve(parameter)
 #     field_capacity(fc, maxASW, minASW) => fc * (maxASW + minASW) ~ preserve(u"mm")
 
