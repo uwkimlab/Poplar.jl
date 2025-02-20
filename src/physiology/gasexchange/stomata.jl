@@ -15,6 +15,7 @@ end
 
 @system Stomata(StomataBase) begin
     water_stress ~ hold()
+    s: senescence_reduction_factor ~ hold()
     g0 => 0.01 ~ preserve(u"mol/m^2/s/bar" #= H2O =#, parameter)
     g1 => 9.670307198008624 ~ preserve(parameter)
 
@@ -33,5 +34,4 @@ end
         water_stress
     end ~ track
     
-    s: senescence_reduction_factor ~ track(override)
 end
