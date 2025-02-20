@@ -41,6 +41,11 @@ Photosynthesis
         a + b
     end ~ track(u"mmol/m^2/s" #= H2O =#)
 
+    "Net solar radiation absorbed (sunlit + shaded)"
+    R_sw(a=sunlit_gasexchange.R_sw_total, b=shaded_gasexchange.R_sw_total): radiation_absorbed_J_per_s => begin
+        a + b
+    end ~ track(u"W/m^2")
+
     CO2_weight => 44.0098 ~ preserve(u"g/mol")
     C_weight => 12.0107 ~ preserve(u"g/mol")
     CH2O_weight => 30.031 ~ preserve(u"g/mol")
