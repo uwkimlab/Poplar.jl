@@ -71,15 +71,34 @@ Transpiration
 
     "Intercepted rain"
     rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
+
+    "Exess rain and irrigation after transpiration"
+    excessInput(rain, rainInterception, irrigation, transpiration) => begin
+        rain - rainInterception + irrigation - transpiration
+    end ~ track(u"mm/hr", min=0)
+    
+    "Soil surface evaporation modifier"
+    beta(SW, WP, field_capacity) => begin
+        (SW - WP) / (field_capacity - WP)
+    end ~ track
+
+    "Soil surface evaporation"
+    surface_evaporation(potential_surface_evaporation, beta, excessInput) => begin
+        if excessInput > potential_surface_evaporation
+            potential_surface_evaporation
+        else
+            excessInput + beta * (potential_surface_evaporation - excessInput)
+        end
+    end ~ track(u"mm/hr", max=potential_surface_evaporation)
       
-    "Canopy evapotranspiration" # Looks like missing soil surface evaporation 
-    evapotranspiration(transpiration, rainInterception) => begin
-        transpiration + rainInterception
+    "Canopy evapotranspiration"
+    evapotranspiration(transpiration, rainInterception, surface_evaporation) => begin
+        transpiration + rainInterception + surface_evaporation
     end ~ track(u"mm/hr", max=SWhour)
 
     "Potential canopy evapotranspiration"
-    potential_evapotranspiration(transpiration, rainInterception) => begin
-        transpiration + rainInterception
+    potential_evapotranspiration(transpiration, rainInterception, surface_evaporation) => begin
+        transpiration + rainInterception + surface_evaporation
     end ~ track(u"mm/hr")
     
     "Hourly excess soil water"
@@ -166,4 +185,15 @@ Transpiration
             irrigation_rate
         end
     end ~ track(u"mm/hr")
+
+    # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
+    # Captures water stress due to both drought and water logging through reduction in stomatal conductance
+    "Relative water stress factor"
+    water_stress(SW, minSW, field_capacity, soil_saturation, WP) => begin
+        if SW > field_capacity
+            1.0 - (SW - field_capacity) / (soil_saturation - field_capacity)
+        else
+            1 * ((SW - WP) / (field_capacity - WP))
+        end
+    end ~ track(min=0.1, max=1) 
 end

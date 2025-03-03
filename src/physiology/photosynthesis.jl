@@ -11,16 +11,16 @@ Photosynthesis
 
 #     "Gas exchange model for sunlit leaves"
 
-#     sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width, drought_factor =drought_factor) ~ ::GasExchange
+#     sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width, water_stress =water_stress) ~ ::GasExchange
 
 #     "Gas exchange model for shaded leaves"
-#     shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, drought_factor =drought_factor) ~ ::GasExchange
+#     shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, water_stress =water_stress) ~ ::GasExchange
 
     "Gas exchange model for sunlit leaves"
-    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width, s=s, drought_factor=drought_factor) ~ ::GasExchange
+    sunlit_gasexchange(context, PPFD=Q_sun, LAI=LAI_sunlit, w=leaf_width, s=s, water_stress=water_stress) ~ ::GasExchange
 
     "Gas exchange model for shaded leaves"
-    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, s=s, drought_factor=drought_factor) ~ ::GasExchange
+    shaded_gasexchange(context, PPFD=Q_sh, LAI=LAI_shaded, w=leaf_width, s=s, water_stress=water_stress) ~ ::GasExchange
 
 
     #=================
@@ -40,6 +40,11 @@ Photosynthesis
     ET(a=sunlit_gasexchange.E_total, b=shaded_gasexchange.E_total): transpiration_H2O_mol_per_m2_s => begin
         a + b
     end ~ track(u"mmol/m^2/s" #= H2O =#)
+
+    "Net solar radiation absorbed (sunlit + shaded)"
+    R_sw(a=sunlit_gasexchange.R_sw_total, b=shaded_gasexchange.R_sw_total): radiation_absorbed_J_per_s => begin
+        a + b
+    end ~ track(u"W/m^2")
 
     CO2_weight => 44.0098 ~ preserve(u"g/mol")
     C_weight => 12.0107 ~ preserve(u"g/mol")

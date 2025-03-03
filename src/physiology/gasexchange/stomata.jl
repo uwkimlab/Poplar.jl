@@ -14,7 +14,8 @@
 end
 
 @system Stomata(StomataBase) begin
-    drought_factor ~ hold()
+    water_stress ~ hold()
+    s: senescence_reduction_factor ~ hold()
     g0 => 0.01 ~ preserve(u"mol/m^2/s/bar" #= H2O =#, parameter)
     g1 => 9.670307198008624 ~ preserve(parameter)
 
@@ -28,10 +29,9 @@ end
         g0 + (g1 * (1-s) * m * (A_net * hs / Cs))
     end ~ track(u"mol/m^2/s/bar" #= H2O =#, min=g0)
 
-    m(drought_factor): transpiration_reduction_factor => begin
+    m(water_stress): transpiration_reduction_factor => begin
         #TODO: implement soil water module
-        drought_factor
+        water_stress
     end ~ track
     
-    s: senescence_reduction_factor ~ track(override)
 end
