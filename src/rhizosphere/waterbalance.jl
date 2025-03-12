@@ -60,8 +60,12 @@ Transpiration
     #     ((Int(soil_class) > 0) ? (11 - 2 * Int(c)) : (SWpower0))
     # end ~ preserve
 
+
     fc => 0.5 ~ preserve(parameter)
-    field_capacity(fc, soil_saturation, minSW) => fc * (soil_saturation + minSW) ~ preserve(u"mm")
+    field_capacity(soil_table,soil_class) => begin     	
+        soil_table[Symbol(soil_class)].field_capacity
+    end ~ preserve(u"mm")
+
 
 
     "Proportion of rain intercepted"
