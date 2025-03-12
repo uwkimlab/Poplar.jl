@@ -171,8 +171,9 @@ Transpiration
     #end~ track
 
     "Irrigation control parameters"
+    irrigation_level => 1 ~ preserve(parameter) # as percent of field_capacity
     irrigation_start(WP, soil_depth) => WP / soil_depth ~ preserve(parameter) # Irrigation start point VWC- wilting point
-    irrigation_end(field_capacity, soil_depth) => field_capacity / soil_depth ~ preserve(parameter) # Irrigation end point VWC - field capacity
+    irrigation_end(irrigation_level, field_capacity, soil_depth) => irrigation_level * field_capacity / soil_depth ~ preserve(parameter) # Irrigation end point VWC - field capacity
     irrigation_rate => 0.5 ~ preserve(parameter, u"mm/hr") # Irrigation rate mm/hr
 
     "Update irrigation status based on VWC"
