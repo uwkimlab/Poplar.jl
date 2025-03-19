@@ -26,11 +26,7 @@ Transpiration
         soil_table[Symbol(soil_class)].wilting_point
     end ~ preserve(parameter, u"mm")
 
-    ASW(WP,field_capacity): available_soil_water => begin
-        field_capacity - WP
-    end ~ track(u"mm")
-
-    
+   
     # "Irrigation"
     # irrigation => 0 ~ preserve(parameter, u"mm/hr")
 
@@ -178,33 +174,32 @@ Transpiration
     #    (field_capacity / soil_depth) 
     #end~ track
 
-    "Irrigation control parameters"
-    irrigation_start_level => 1 ~ preserve(parameter) # as percent of ASW
-    irrigation_stop_level => 1 ~ preserve(parameter) # as percent of ASW
+       "Irrigation control parameters"
+    irrigation_start_level => 1 ~ preserve(parameter) # as percent of ASW + WP
+    irrigation_end_level => 1 ~ preserve(parameter) # as percent of ASW + WP
     irrigation_rate => 0.5 ~ preserve(parameter, u"mm/hr") # Irrigation rate mm/hr
 
-    irrigation_start(irrigation_start_level, ASW, soil_depth) => begin
-        irrigation_start_level * ASW / soil_depth 
+    irrigation_start(irrigation_start_level, field_capacity, WP, soil_depth) => begin
+        (irrigation_start_level * (field_capacity - WP) + WP) / soil_depth 
     end ~ preserve(parameter) # Irrigation start point VWC
-    irrigation_end(irrigation_stop_level, ASW, soil_depth) => begin
-        irrigation_stop_level * ASW / soil_depth 
+    
+    irrigation_end(irrigation_end_level, field_capacity, WP, soil_depth) => begin
+        (irrigation_end_level * (field_capacity - WP) + WP) / soil_depth 
     end ~ preserve(parameter) # Irrigation end point VWC 
     
-    flag_irrigation(irrigation) => irrigation > 0u"mm/hr" ~ flag
-    
     "Update irrigation status based on VWC"
-    irrigation(VWC, irrigation_rate, irrigation_start, irrigation_end, flag_irrigation) => begin
-        if VWC < irrigation_start
-            irrigation_rate
-        elseif VWC > irrigation_end
-            0
-        elseif flag_irrigation
+    flag_irrigation(VWC, irrigation_start, irrigation_end, flag_irrigation) => begin
+        (VWC < irrigation_start) || (VWC < irrigation_end && flag_irrigation)
+    end ~ flag
+    
+    irrigation(irrigation_rate, flag_irrigation) => begin
+        if flag_irrigation
             irrigation_rate
         else
             0
         end
     end ~ track(u"mm/hr")
-
+    
     # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
     # Captures water stress due to both drought and water logging through reduction in stomatal conductance
     "Relative water stress factor"
