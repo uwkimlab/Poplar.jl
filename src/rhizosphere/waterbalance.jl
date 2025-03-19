@@ -26,6 +26,10 @@ Transpiration
         soil_table[Symbol(soil_class)].wilting_point
     end ~ preserve(parameter, u"mm")
 
+    ASW(WP,field_capacity): available_soil_water => begin
+        field_capacity - WP
+    end ~ track(u"mm")
+
     
     # "Irrigation"
     # irrigation => 0 ~ preserve(parameter, u"mm/hr")
@@ -175,19 +179,29 @@ Transpiration
     #end~ track
 
     "Irrigation control parameters"
-    irrigation_level => 1 ~ preserve(parameter) # as percent of field_capacity
-    irrigation_start(WP, soil_depth) => WP / soil_depth ~ preserve(parameter) # Irrigation start point VWC- wilting point
-    irrigation_end(irrigation_level, field_capacity, soil_depth) => irrigation_level * field_capacity / soil_depth ~ preserve(parameter) # Irrigation end point VWC - field capacity
+    irrigation_start_level => 1 ~ preserve(parameter) # as percent of ASW
+    irrigation_stop_level => 1 ~ preserve(parameter) # as percent of ASW
     irrigation_rate => 0.5 ~ preserve(parameter, u"mm/hr") # Irrigation rate mm/hr
 
+    irrigation_start(irrigation_start_level, ASW, soil_depth) => begin
+        irrigation_start_level * ASW / soil_depth 
+    end ~ preserve(parameter) # Irrigation start point VWC
+    irrigation_end(irrigation_stop_level, ASW, soil_depth) => begin
+        irrigation_stop_level * ASW / soil_depth 
+    end ~ preserve(parameter) # Irrigation end point VWC 
+    
+    flag_irrigation(irrigation) => irrigation > 0u"mm/hr" ~ flag
+    
     "Update irrigation status based on VWC"
-    irrigation(VWC, irrigation_rate, irrigation_start, irrigation_end) => begin
+    irrigation(VWC, irrigation_rate, irrigation_start, irrigation_end, flag_irrigation) => begin
         if VWC < irrigation_start
             irrigation_rate
         elseif VWC > irrigation_end
             0
-        else
+        elseif flag_irrigation
             irrigation_rate
+        else
+            0
         end
     end ~ track(u"mm/hr")
 
