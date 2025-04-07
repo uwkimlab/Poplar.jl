@@ -76,9 +76,11 @@ Transpiration
     "Intercepted rain"
     rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
 
-    "Exess rain and irrigation after transpiration"
-    excessInput(rain, rainInterception, irrigation, transpiration) => begin
-        rain - rainInterception + irrigation - transpiration
+    drainage => 0 ~ preserve(parameter, u"mm/hr")
+
+    "Excess rain and irrigation after transpiration"
+    excessInput(rain, rainInterception, irrigation, transpiration, drainage) => begin
+        rain - rainInterception + irrigation - transpiration - drainage
     end ~ track(u"mm/hr", min=0)
     
     "Soil surface evaporation modifier"
@@ -128,8 +130,8 @@ Transpiration
         (1 - pool_fraction) * excessSW
     end ~ track(u"mm/hr")
     
-    dSW(dPool, evapotranspiration, irrigation, rain) => begin
-         -dPool - evapotranspiration + irrigation + rain
+    dSW(dPool, evapotranspiration, irrigation, rain, drainage) => begin
+         -dPool - evapotranspiration - drainage + irrigation + rain
     end ~ track(u"mm/hr")
     
     flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
