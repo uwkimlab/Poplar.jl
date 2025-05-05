@@ -212,9 +212,11 @@ Transpiration
             1 * ((SW - WP) / (field_capacity - WP))
         end
     end ~ track(min=0.1, max=1) 
+        
+    # annual cumulative water usage for comparing WUE
+    IR_annual(irrigation) ~ accumulate(reset=dormant)
+    T_annual(transpiration) ~ accumulate(reset=dormant)
+    E_annual(evapotranspiration) ~ accumulate(reset=dormant)
+    
 end
 
-# annual cumulative water usage for comparing WUE
-IR_annual(irrigation) ~ accumulate(reset=dormant)
-T_annual(transpiration) ~ accumulate(reset=dormant)
-E_annual(evapotranspiration) ~ accumulate(reset=dormant)
