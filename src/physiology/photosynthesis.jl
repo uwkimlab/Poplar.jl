@@ -88,9 +88,15 @@ Photosynthesis
     #    γ*GPP
     #end ~ track(u"kg/ha/hr")
 
+    NPP_annual(NPP) ~ accumulate(reset=dormant)
+
     "Water-use efficiency"
     WUE(NPP, transpiration) => begin
         NPP / transpiration
+    end ~ track(u"g/L")
+
+    WUEir_annual(IR_annual, NPP_annual) => begin
+        NPP_annual / IR_annual
     end ~ track(u"g/L")
 
     # Conversion to mm/hr to match water balance.
