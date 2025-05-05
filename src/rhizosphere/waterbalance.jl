@@ -213,3 +213,8 @@ Transpiration
         end
     end ~ track(min=0.1, max=1) 
 end
+
+# annual cumulative water usage for comparing WUE
+IR_annual(irrigation) ~ accumulate(reset=dormant)
+T_annual(transpiration) ~ accumulate(reset=dormant)
+E_annual(evapotranspiration) ~ accumulate(reset=dormant)
