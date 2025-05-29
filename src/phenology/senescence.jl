@@ -17,7 +17,7 @@
     
     SDD(SD) ~ accumulate(reset=budburst, u"K*d")
 
-    # applied to physiology through gs 
+    # applied to physiology through gs (Palm, 2022)
     s(SDD,Rs): senescence_reduction_factor => begin
         SDD/Rs
     end ~ track
