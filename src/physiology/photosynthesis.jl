@@ -88,7 +88,7 @@ Photosynthesis
     #    γ*GPP
     #end ~ track(u"kg/ha/hr")
 
-    NPP_annual(NPP) ~ accumulate(reset=dormant, u"g/ha")
+    NPP_annual(NPP) ~ accumulate(reset=budburst, u"g/ha")
 
     "Water-use efficiency"
     WUE(NPP, transpiration) => begin
