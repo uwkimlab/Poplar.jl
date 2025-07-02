@@ -214,9 +214,12 @@ Transpiration
     end ~ track(min=0.1, max=1) 
         
     # annual cumulative water usage for comparing WUE
-    IR_annual(irrigation) ~ accumulate(reset=budburst, u"L/ha")
-    T_annual(transpiration) ~ accumulate(reset=budburst, u"L/ha")
-    ET_annual(evapotranspiration) ~ accumulate(reset=budburst, u"L/ha")
+    IR_ac(irrigation) ~ accumulate(reset=budburst, u"L/ha")
+    IR_annual(IR_ac) ~ remember(when=dormant, u"L/ha")
+    T_ac(transpiration) ~ accumulate(reset=budburst, u"L/ha")
+    T_annual(T_ac) ~ remember(when=dormant, u"L/ha")
+    ET_ac(evapotranspiration) ~ accumulate(reset=budburst, u"L/ha")
+    ET_annual(ET_ac) ~ remember(when=dormant, u"L/ha")
     
 end
 
