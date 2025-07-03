@@ -28,10 +28,10 @@ include("root.jl")
     
     # Basic density
     "Minimum basic density (for young trees)"
-    rho0 => 0.358 ~ preserve(parameter, u"kg/m^3") # Amichev
+    rho0 => 358 ~ preserve(parameter, u"kg/m^3") # Amichev
     
     "Maximum basic density (for older trees)"
-    rho1 => 0.358 ~ preserve(parameter, u"kg/m^3") # Amichev
+    rho1 => 358 ~ preserve(parameter, u"kg/m^3") # Amichev
     
     "Age at which rho = (rhoMin + rhoMax) / 2"
     tRho => 4 ~ preserve(parameter) # Sands
