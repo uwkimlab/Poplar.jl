@@ -4,8 +4,8 @@
     coppicing_date => [] ~ preserve::Vector(parameter, optional)
 
     # Coppicing only possible when dormant (for now), 
-    coppice(coppicing_date, time, dormant) => begin
-        (time in coppicing_date) && (dormant)
+    coppice(coppicing_date, time) => begin
+        (time in coppicing_date) 
     end ~ flag
 
     # True after coppicing has occurred for the first time
