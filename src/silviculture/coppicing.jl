@@ -12,6 +12,7 @@
     first_coppice(coppice) ~ flag(once)
 
     # Don't have to worry about foliage during dormancy
+    # TO DO: if coppicing outside of dormancy need to remove foliage too (7/11/25 - CC)
     coppicing(step, WS, growthStem, deathStem, thinning_WS, dBud) => begin
         (WS / step) - (growthStem - deathStem - thinning_WS - dBud)
     end ~ track(when=coppice, u"kg/ha/hr")
