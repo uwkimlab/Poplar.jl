@@ -76,9 +76,11 @@ Transpiration
     "Intercepted rain"
     rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
 
-    "Exess rain and irrigation after transpiration"
-    excessInput(rain, rainInterception, irrigation, transpiration) => begin
-        rain - rainInterception + irrigation - transpiration
+    drainage => 0 ~ preserve(parameter, u"mm/hr")
+
+    "Excess rain and irrigation after transpiration"
+    excessInput(rain, rainInterception, irrigation, transpiration, drainage) => begin
+        rain - rainInterception + irrigation - transpiration - drainage
     end ~ track(u"mm/hr", min=0)
     
     "Soil surface evaporation modifier"
@@ -128,8 +130,8 @@ Transpiration
         (1 - pool_fraction) * excessSW
     end ~ track(u"mm/hr")
     
-    dSW(dPool, evapotranspiration, irrigation, rain) => begin
-         -dPool - evapotranspiration + irrigation + rain
+    dSW(dPool, evapotranspiration, irrigation, rain, drainage) => begin
+         -dPool - evapotranspiration - drainage + irrigation + rain
     end ~ track(u"mm/hr")
     
     flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
@@ -210,4 +212,14 @@ Transpiration
             1 * ((SW - WP) / (field_capacity - WP))
         end
     end ~ track(min=0.1, max=1) 
+        
+    # annual cumulative water usage for comparing WUE
+    IR_ac(irrigation) ~ accumulate(when=!dormant, u"L/ha")
+    IR_annual(IR_ac) ~ remember(when=dormant, u"L/ha")
+    T_ac(transpiration) ~ accumulate(when=!dormant, u"L/ha")
+    T_annual(T_ac) ~ remember(when=dormant, u"L/ha")
+    ET_ac(evapotranspiration) ~ accumulate(when=!dormant, u"L/ha")
+    ET_annual(ET_ac) ~ remember(when=dormant, u"L/ha")
+    
 end
+
