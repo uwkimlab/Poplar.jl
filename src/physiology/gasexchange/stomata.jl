@@ -25,13 +25,13 @@ end
         (hs - RH)*gb ⩵ (1 - hs)*gs
     end ~ solve(lower=0, upper=1) #, u"percent")
 
-    gs(g0, g1, m, A_net, hs, Cs, s): stomatal_conductance => begin
-        g0 + (g1 * (1-s) * m * (A_net * hs / Cs))
+    gs(g0, g1, m, A_net, hs, Cs): stomatal_conductance => begin
+        g0 + (g1 * m * (A_net * hs / Cs))
     end ~ track(u"mol/m^2/s/bar" #= H2O =#, min=g0)
 
-    m(water_stress): transpiration_reduction_factor => begin
+    m(water_stress, s): transpiration_reduction_factor => begin
         #TODO: implement soil water module
-        water_stress
+        water_stress * (1 - s)
     end ~ track
     
 end
