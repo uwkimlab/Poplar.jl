@@ -68,15 +68,18 @@ Photosynthesis
     "NPP/GPP ratio"
     γ => 0.47 ~ preserve(parameter) # Amichev
 
+    "Growth yield"
+    Yg => 0.75 ~ preserve(parameter)
+
     "Switch parameter to control NPP types"
     NPP_type => 1 ~ preserve(parameter)
 
     "Net primary production"
-    NPP(GPP, γ, NPP_type, Root_Rp, Stem_Rp, Leaf_Rp) => begin
+    NPP(GPP, γ, NPP_type, Root_Rp, Stem_Rp, Leaf_Rp, Yg) => begin
         if NPP_type == 1 # using NPP/GPP ratio
             γ * GPP
-        elseif NPP_type == 2 # using maintenance respiration rate
-            GPP - Root_Rp - Stem_Rp - Leaf_Rp
+        elseif NPP_type == 2 # using growth-maintenance respiration regime
+            (GPP - Root_Rp - Stem_Rp - Leaf_Rp) * Yg
         else
             error("Invalid calculation method: $calculation_method. Use 1 or 2 for ratio or respiration, respectively")
         end
