@@ -193,9 +193,19 @@ Transpiration
     flag_irrigation(VWC, irrigation_start, irrigation_end, flag_irrigation) => begin
         (VWC < irrigation_start) || (VWC < irrigation_end && flag_irrigation)
     end ~ flag
+
+    irrigation_cut_date ~ preserve(parameter, optional)::ZonedDateTime
     
-    irrigation(irrigation_rate, flag_irrigation) => begin
-        if flag_irrigation
+    flag_irrigation_date(irrigation_cut_date, time) => begin
+        if isnothing(irrigation_cut_date)
+            true
+        else
+            time < irrigation_cut_date
+        end
+    end ~ flag
+    
+    irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date) => begin
+        if flag_irrigation & flag_irrigation_date
             irrigation_rate
         else
             0
