@@ -230,6 +230,9 @@ Transpiration
     T_annual(T_ac) ~ remember(when=dormant, u"L/ha")
     ET_ac(evapotranspiration) ~ accumulate(when=!dormant, u"L/ha")
     ET_annual(ET_ac) ~ remember(when=dormant, u"L/ha")
+    waterIn_ac(rain, irrigation) => begin
+        rain + irrigation
+    end ~ accumulate(u"L/ha")
     
 end
 
