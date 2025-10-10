@@ -103,6 +103,93 @@ config_GasExchange_Newone = @config(
     ) 
 )
 
+config_GasExchange_NIWW = @config(
+    :GasExchange => (
+        Tp25 = 11.55, #from Kim and Lieth (2003)
+        Rd25 = 0.38, #https://doi.org/10.1093/treephys/tpaa007
+        Kc25 = 404, #from Pury and Farquhar (1997)
+        Ko25 = 248, #from Pury and Farquhar (1997)
+        Eac = 59.4, #from Pury and Farquhar (1997)
+        Eao = 36.0, #from Pury and Farquhar (1997)
+        Ear = 66.4, #from Pury and Farquhar (1997)
+        Eag = 37.83, #from Pury and Farquhar (1997)
+        EaVc = 114.74, #https://doi.org/10.1093/treephys/tpaa007
+        Eaj = 56.97,  #https://doi.org/10.1093/treephys/tpaa007
+        EaTp = 47.1, #from Kim and Lieth (2003)
+        Hj = 200.0, #https://doi.org/10.1093/treephys/tpaa007
+        Sj = 657.0, #https://doi.org/10.1093/treephys/tpaa007
+        Γ25 = 55.72, #https://doi.org/10.1093/treephys/tpaa007
+        Vcm25 = 56.81, # from GH2204
+        Jm25 = 114.82, # from GH2204
+        g1 = 13.52, # from GH2204
+    ) 
+)
+
+config_GasExchange_NIWD = @config(
+    :GasExchange => (
+        Tp25 = 11.55, #from Kim and Lieth (2003)
+        Rd25 = 0.38, #https://doi.org/10.1093/treephys/tpaa007
+        Kc25 = 404, #from Pury and Farquhar (1997)
+        Ko25 = 248, #from Pury and Farquhar (1997)
+        Eac = 59.4, #from Pury and Farquhar (1997)
+        Eao = 36.0, #from Pury and Farquhar (1997)
+        Ear = 66.4, #from Pury and Farquhar (1997)
+        Eag = 37.83, #from Pury and Farquhar (1997)
+        EaVc = 114.74, #https://doi.org/10.1093/treephys/tpaa007
+        Eaj = 56.97,  #https://doi.org/10.1093/treephys/tpaa007
+        EaTp = 47.1, #from Kim and Lieth (2003)
+        Hj = 200.0, #https://doi.org/10.1093/treephys/tpaa007
+        Sj = 657.0, #https://doi.org/10.1093/treephys/tpaa007
+        Γ25 = 55.72, #https://doi.org/10.1093/treephys/tpaa007
+        Vcm25 = 56.81, # from GH2204
+        Jm25 = 114.82, # from GH2204
+        g1 = 11.19, # from GH2204
+    ) 
+)
+
+config_GasExchange_EIWW = @config(
+    :GasExchange => (
+        Tp25 = 11.55, #from Kim and Lieth (2003)
+        Rd25 = 0.38, #https://doi.org/10.1093/treephys/tpaa007
+        Kc25 = 404, #from Pury and Farquhar (1997)
+        Ko25 = 248, #from Pury and Farquhar (1997)
+        Eac = 59.4, #from Pury and Farquhar (1997)
+        Eao = 36.0, #from Pury and Farquhar (1997)
+        Ear = 66.4, #from Pury and Farquhar (1997)
+        Eag = 37.83, #from Pury and Farquhar (1997)
+        EaVc = 114.74, #https://doi.org/10.1093/treephys/tpaa007
+        Eaj = 56.97,  #https://doi.org/10.1093/treephys/tpaa007
+        EaTp = 47.1, #from Kim and Lieth (2003)
+        Hj = 200.0, #https://doi.org/10.1093/treephys/tpaa007
+        Sj = 657.0, #https://doi.org/10.1093/treephys/tpaa007
+        Γ25 = 55.72, #https://doi.org/10.1093/treephys/tpaa007
+        Vcm25 = 58.39, # from GH2204
+        Jm25 = 119.74, # from GH2204
+        g1 = 11.38, # from GH2204
+    ) 
+)
+
+config_GasExchange_EIWD = @config(
+    :GasExchange => (
+        Tp25 = 11.55, #from Kim and Lieth (2003)
+        Rd25 = 0.38, #https://doi.org/10.1093/treephys/tpaa007
+        Kc25 = 404, #from Pury and Farquhar (1997)
+        Ko25 = 248, #from Pury and Farquhar (1997)
+        Eac = 59.4, #from Pury and Farquhar (1997)
+        Eao = 36.0, #from Pury and Farquhar (1997)
+        Ear = 66.4, #from Pury and Farquhar (1997)
+        Eag = 37.83, #from Pury and Farquhar (1997)
+        EaVc = 114.74, #https://doi.org/10.1093/treephys/tpaa007
+        Eaj = 56.97,  #https://doi.org/10.1093/treephys/tpaa007
+        EaTp = 47.1, #from Kim and Lieth (2003)
+        Hj = 200.0, #https://doi.org/10.1093/treephys/tpaa007
+        Sj = 657.0, #https://doi.org/10.1093/treephys/tpaa007
+        Γ25 = 55.72, #https://doi.org/10.1093/treephys/tpaa007
+        Vcm25 = 58.39, # from GH2204
+        Jm25 = 119.74, # from GH2204
+        g1 = 9.79, # from GH2204
+    ) 
+)
 
 config_Model = @config(
     config_Calendar,
