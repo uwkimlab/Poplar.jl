@@ -4,7 +4,7 @@
     coppicing_date => [] ~ preserve::Vector(parameter, optional)
 
     # Coppicing only possible when dormant (for now), 
-    coppice(coppicing_date, time) => begin
+    coppice(coppicing_date, time, dormant) => begin
         (time in coppicing_date) 
     end ~ flag
 
@@ -12,7 +12,6 @@
     first_coppice(coppice) ~ flag(once)
 
     # Don't have to worry about foliage during dormancy
-    # TO DO: if coppicing outside of dormancy need to remove foliage too (7/11/25 - CC)
     coppicing(step, WS, growthStem, deathStem, thinning_WS, dBud) => begin
         (WS / step) - (growthStem - deathStem - thinning_WS - dBud)
     end ~ track(when=coppice, u"kg/ha/hr")
@@ -27,4 +26,14 @@
     coppiced(WS, W, first_coppice) => begin
         WS == 0u"kg/ha" && W != 0u"kg/ha" && first_coppice
     end ~ flag
+
+    harvested_stem( WS, harvested_stem,coppice) => begin
+	if(coppice)
+        	harvested_stem + WS
+	else 
+		harvested_stem
+	end
+    end ~ track( u"kg/ha",init=0)
+
+
 end
