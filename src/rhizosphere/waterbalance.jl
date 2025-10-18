@@ -193,9 +193,19 @@ Transpiration
     flag_irrigation(VWC, irrigation_start, irrigation_end, flag_irrigation) => begin
         (VWC < irrigation_start) || (VWC < irrigation_end && flag_irrigation)
     end ~ flag
+
+    irrigation_cut_date ~ preserve::ZonedDateTime(parameter, optional)
     
-    irrigation(irrigation_rate, flag_irrigation) => begin
-        if flag_irrigation
+    flag_irrigation_date(irrigation_cut_date, time) => begin
+        if isnothing(irrigation_cut_date)
+            true
+        else
+            time < irrigation_cut_date
+        end
+    end ~ flag
+    
+    irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date) => begin
+        if flag_irrigation & flag_irrigation_date
             irrigation_rate
         else
             0
@@ -214,12 +224,16 @@ Transpiration
     end ~ track(min=0.1, max=1) 
         
     # annual cumulative water usage for comparing WUE
-    IR_ac(irrigation) ~ accumulate(when=!dormant, u"L/ha")
-    IR_annual(IR_ac) ~ remember(when=dormant, u"L/ha")
-    T_ac(transpiration) ~ accumulate(when=!dormant, u"L/ha")
-    T_annual(T_ac) ~ remember(when=dormant, u"L/ha")
-    ET_ac(evapotranspiration) ~ accumulate(when=!dormant, u"L/ha")
-    ET_annual(ET_ac) ~ remember(when=dormant, u"L/ha")
+    IR_ac(irrigation) ~ accumulate(u"L/ha")
+    # IR_annual(IR_ac) ~ remember(when=dormant, u"L/ha")
+    T_ac(transpiration) ~ accumulate(u"L/ha")
+    # T_annual(T_ac) ~ remember(when=dormant, u"L/ha")
+    ET_ac(evapotranspiration) ~ accumulate(u"L/ha")
+    # ET_annual(ET_ac) ~ remember(when=dormant, u"L/ha")
+    rain_ac(rain) ~ accumulate(u"L/ha")
+    waterIn_ac(rain, irrigation) => begin
+        rain + irrigation
+    end ~ accumulate(u"L/ha")
     
 end
 
