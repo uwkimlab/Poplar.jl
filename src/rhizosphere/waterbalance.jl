@@ -204,8 +204,8 @@ Transpiration
         end
     end ~ flag
     
-    irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date) => begin
-        if flag_irrigation & flag_irrigation_date
+    irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date, dormant) => begin
+        if flag_irrigation & flag_irrigation_date & !dormant
             irrigation_rate
         else
             0
