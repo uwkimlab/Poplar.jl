@@ -74,11 +74,11 @@
         k_root_20 * q^((30-20)/10)
     end~track(u"ng/kg/s"#=gCHO 30to40oC=#)
 
-    Root_Rp(k_root_20, k_root_30, WF, a = Q10_root_below30C, b=Q10_root_above30C, nounit(T_air)): root_maintenance_respiration => begin
+    Root_Rp(k_root_20, k_root_30, WR, a = Q10_root_below30C, b=Q10_root_above30C, nounit(T_air)): root_maintenance_respiration => begin
         if T_air < 30
-            k_root_20 * WF * a^((T_air-20) / 10)
+            k_root_20 * WR * a^((T_air-20) / 10)
         else
-            k_root_30 * WF * b^((T_air-30) / 10)
+            k_root_30 * WR * b^((T_air-30) / 10)
         end
     end ~ track(u"g/ha/hr"#=g CHO=#)
 
