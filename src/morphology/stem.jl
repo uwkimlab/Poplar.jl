@@ -45,11 +45,11 @@
         k_stem_20 * q^((30-20)/10)
     end~track(u"ng/kg/s"#=gCHO 30to40oC=#)
 
-    Stem_Rp(k_stem_20, k_stem_30, WF, a = Q10_stem_below30C, b=Q10_stem_above30C, nounit(T_air)): stem_maintenance_respiration => begin
+    Stem_Rp(k_stem_20, k_stem_30, WS, a = Q10_stem_below30C, b=Q10_stem_above30C, nounit(T_air)): stem_maintenance_respiration => begin
         if T_air < 30
-            k_stem_20 * WF * a^((T_air-20) / 10)
+            k_stem_20 * WS * a^((T_air-20) / 10)
         else
-            k_stem_30 * WF * b^((T_air-30) / 10)
+            k_stem_30 * WS * b^((T_air-30) / 10)
         end
     end ~ track(u"g/ha/hr"#=g CHO=#)
 
