@@ -96,6 +96,10 @@ Photosynthesis
 
     GPP_ac(GPP) ~ accumulate(u"kg/ha")
 
+    # output NPP/GPP ratio for comparison when NPP_type = 2
+    γ_out(NPP, GPP) => NPP / GPP ~ track
+    γ_out_ac(NPP_ac, GPP_ac) => NPP_ac / GPP_ac ~ track
+
     "Water-use efficiency"
     WUE(NPP, transpiration) => begin
         NPP / transpiration
