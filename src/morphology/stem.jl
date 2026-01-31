@@ -40,7 +40,7 @@
     # stem respiration
     Q10_stem_below30C: stem_temperature_sensitivity_conefficient_below30C => 2.0 ~ preserve(parameter) #dimensionless
     Q10_stem_above30C: stem_temperature_sensitivity_conefficient_above30C => 1.61 ~ preserve(parameter) #dimensionless
-    k_stem_20: stem_maintenance_rate_at_20C => 24 * 1000 ~ preserve(parameter, u"ng/kg/s"#=gCHO 20to30oC=#)
+    k_stem_20: stem_maintenance_rate_at_20C => 2.4 * 1000 ~ preserve(parameter, u"ng/kg/s"#=gCHO 20to30oC=#)
     k_stem_30(q=Q10_stem_below30C, k_stem_20): stem_maintenance_rate_at_30C => begin
         k_stem_20 * q^((30-20)/10)
     end~track(u"ng/kg/s"#=gCHO 30to40oC=#)
