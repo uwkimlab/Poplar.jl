@@ -8,8 +8,12 @@
 
     shoot_max => 1e4 ~ preserve(parameter, u"kg/ha")
 
-    shooting(F, Rf, shoot_max, shoot, WS, coppice_days,shooting_interval) => begin
-        (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) && (coppice_days>0u"d" && coppice_days<shooting_interval)
+    shooting(F, Rf, shoot_max, shoot, WS, coppice_days,shooting_interval, cutting) => begin
+        (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) && (coppice_days>0u"d" && coppice_days<shooting_interval) || cutting
+    end ~ flag
+
+    cutting(standAgeYear) => begin 
+	standAgeYear<1u"yr"
     end ~ flag
 
     # Days after coppicing where reshooting can occur
@@ -25,7 +29,20 @@
          .1
     end ~ preserve(parameter)
 
-    fraction_NSC => begin
+    fraction_NSC(cutting, fraction_NSC_cutting, fraction_NSC_coppiced) =>  begin
+	if cutting
+		fraction_NSC_cutting
+	else
+		fraction_NSC_coppiced
+
+	end
+    end ~ preserve(parameter)
+    
+    fraction_NSC_cutting => begin
+	.01
+    end ~ preserve(parameter)
+    
+    fraction_NSC_coppiced => begin
 	.1
     end ~ preserve(parameter)
 
@@ -34,11 +51,15 @@
 	fraction_NSC*WR
     end ~ track(u"kg/ha")
 
-    non_structural_carbon(shooting,shooting_capacity,dShoot,shooting, non_structural_carbon,dWR) => begin
+    non_structural_carbon(shooting,shooting_capacity,dShoot,shooting, non_structural_carbon,dWR, fraction_NSC) => begin
 	if(shooting)
 		-dShoot
         else(non_structural_carbon<shooting_capacity)
-                dWR
+		if(dWR>0u"kg/ha/hr")
+			dWR
+		else
+			fraction_NSC*dWR
+		end
         end
     end ~ accumulate(u"kg/ha",min=0u"kg/ha",init=shooting_capacity,max=shooting_capacity)
 

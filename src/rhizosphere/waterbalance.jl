@@ -26,6 +26,11 @@ Transpiration
         soil_table[Symbol(soil_class)].wilting_point
     end ~ preserve(parameter, u"mm")
 
+    "Field capacity" 
+    field_capacity(soil_table,soil_class) => begin     	
+        soil_table[Symbol(soil_class)].field_capacity
+    end ~ preserve(parameter, u"mm")
+
    
     # "Irrigation"
     # irrigation => 0 ~ preserve(parameter, u"mm/hr")
@@ -60,13 +65,7 @@ Transpiration
     #     ((Int(soil_class) > 0) ? (11 - 2 * Int(c)) : (SWpower0))
     # end ~ preserve
 
-
-    fc => 0.5 ~ preserve(parameter)
-    field_capacity(soil_table,soil_class) => begin     	
-        soil_table[Symbol(soil_class)].field_capacity
-    end ~ preserve(u"mm")
-
-
+    # fc => 0.5 ~ preserve(parameter) # not used
 
     "Proportion of rain intercepted"
     interception(LAI, maxInterception, LAImaxInterception) => begin
@@ -204,8 +203,8 @@ Transpiration
         end
     end ~ flag
     
-    irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date) => begin
-        if flag_irrigation & flag_irrigation_date
+    irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date, dormant) => begin
+        if flag_irrigation & flag_irrigation_date & !dormant
             irrigation_rate
         else
             0
