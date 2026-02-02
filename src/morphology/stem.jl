@@ -27,10 +27,28 @@
     Weight
     =====#
 
-    dWS(growthStem, N_stress, deathStem, thinning_WS, dBud, coppicing, dShoot) => growthStem * N_stress - deathStem - thinning_WS - dBud - coppicing + dShoot ~ track(u"kg/ha/hr")
+    dWS(growthStem, N_stress, deathStem, thinning_WS, dBud, coppicing, dShoot, root_conversion_efficiency) => growthStem * N_stress - deathStem - thinning_WS - dBud - coppicing + root_conversion_efficiency * dShoot ~ track(u"kg/ha/hr")
     
     "Average stem mass"
     avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")
+    
+    root_conversion_efficiency_cutting => begin
+	.6 
+    end ~ preserve(parameter)
+    
+    root_conversion_efficiency_coppice => begin
+	.75
+    end ~ preserve(parameter)
+	
+    root_conversion_efficiency(cutting, root_conversion_efficiency_cutting
+, root_conversion_efficiency_coppice)  => begin
+	if cutting
+		root_conversion_efficiency_cutting
+	else
+		root_conversion_efficiency_coppice
+	end
+    end ~ preserve(parameter)
+
 
     # Reset when coppice == true (not sure if it resets in the beginning or the end of the loop)
     WS_lim(WS, step) => WS / step ~ track(u"kg/ha/hr") 

@@ -36,6 +36,11 @@ Photosynthesis
         a + b
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
+    canopy_efficiency(A_gross,R_sw) => begin
+	A_gross/R_sw
+    end ~ track(u"μmol/s/W") 
+
+
     "Transpiration rate (sunlit + shaded)"
     ET(a=sunlit_gasexchange.E_total, b=shaded_gasexchange.E_total): transpiration_H2O_mol_per_m2_s => begin
         a + b
