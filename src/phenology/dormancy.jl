@@ -57,4 +57,8 @@ end
         end
     end ~ accumulate(reset=senescent, u"K*hr")
 
+    # track biomass during dormancy to inform bud_max and leaf_max
+    dWD(W, x=context.clock.step) => W/x^2 ~ capture(u"kg/ha/hr", when=dormant)
+    WD(dWD): dormant_biomass ~ accumulate(u"kg/ha", max=W)
+
 end
