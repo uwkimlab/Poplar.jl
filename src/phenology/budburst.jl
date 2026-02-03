@@ -15,8 +15,8 @@
 
     # Yearly target bud growth. Should possibly be a function of stem biomass?
     # bud_max => 1e3 ~ preserve(parameter, u"kg/ha")
-    bud_max_percent => 0.1
-    bud_max(bud_max_percent, WD) => WD * bud_max_percent ~ track(u"kg/ha")
+    bud_max_factor => 0.1 ~ preserve(parameter)
+    bud_max(bud_max_factor, WD) => bud_max_factor * WD ~ track(u"kg/ha")
 
     # bud growth per degree hours
     bud_rate => 1 ~ preserve(parameter, u"kg/ha/hr/K")  
