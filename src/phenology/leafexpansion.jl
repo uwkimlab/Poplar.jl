@@ -1,6 +1,6 @@
 @system LeafExpansion begin
 
-    dWD(dW) ~ capture(u"kg/ha/hr", when=dormant)
+    dWD(W) ~ capture(u"kg/ha/hr", when=dormant)
     WD(dWD): dormant_biomass ~ accumulate(u"kg/ha", max=W)
 
     leaf_max_percent => 0.25 ~ preserve(parameter)
