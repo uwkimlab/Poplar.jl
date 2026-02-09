@@ -51,6 +51,9 @@ Transpiration
     "LAI for maximum rainfall interception"
     LAImaxInterception => 0 ~ preserve(parameter) # Sands
 
+    "Daily drainage proportion"
+    DRp: daily_drainage => 0.1 ~ preserve(parameter, u"cm^3/cm^3/d")
+
     # "Moisture ratio deficit for fTheta = 0.5"
     # SWconst0 => 0.7 ~ preserve(parameter)
     
@@ -75,7 +78,10 @@ Transpiration
     "Intercepted rain"
     rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
 
-    drainage => 0 ~ preserve(parameter, u"mm/hr")
+    "Drainage"
+    drainage(SW, field_capacity, DRp) => begin
+        (SW - field_capacity) * DRp
+    end ~ preserve(u"mm/hr", min=0)
 
     "Excess rain and irrigation after transpiration"
     excessInput(rain, rainInterception, irrigation, transpiration, drainage) => begin
@@ -107,13 +113,13 @@ Transpiration
     end ~ track(u"mm/hr")
     
     "Hourly excess soil water"
-    excessSW(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour) => begin
-        SWhour + rain + poolHour - evapotranspiration + irrigation - maxSWhour
+    excessSW(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour, drainage) => begin
+        SWhour + rain + poolHour - evapotranspiration + irrigation - drainage - maxSWhour
     end ~ track(u"mm/hr", min=0u"mm/hr")
     
     "Hourly loss in water pool"
-    lossPool(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour) => begin
-        maxSWhour - (SWhour - evapotranspiration + irrigation + rain + poolHour)
+    lossPool(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour, drainage) => begin
+        maxSWhour - (SWhour - evapotranspiration + irrigation + rain + poolHour - drainage)
     end ~ track(u"mm/hr", min=0u"mm/hr", max=poolHour)
     
     "Hourly gain in water pool"
@@ -210,13 +216,16 @@ Transpiration
             0
         end
     end ~ track(u"mm/hr")
+
+    # scales water stress from excess water - waterlogging tolerant (0) to sensitive (1)
+    wls: waterlogging_sensitivity => 0 ~ preserve(parameter, min=0, max=1)
     
     # Relative drought factor from CROPGRO. Used for N_uptake_conversion_factor.
     # Captures water stress due to both drought and water logging through reduction in stomatal conductance
     "Relative water stress factor"
-    water_stress(SW, minSW, field_capacity, soil_saturation, WP) => begin
+    water_stress(SW, minSW, field_capacity, soil_saturation, WP, wls) => begin
         if SW > field_capacity
-            1.0 - (SW - field_capacity) / (soil_saturation - field_capacity)
+            1.0 - ((SW - field_capacity) / (soil_saturation - field_capacity)) * wls
         else
             1 * ((SW - WP) / (field_capacity - WP))
         end
