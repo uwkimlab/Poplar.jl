@@ -81,7 +81,7 @@ Transpiration
     "Drainage"
     drainage(SW, field_capacity, DRp) => begin
         (SW - field_capacity) * DRp
-    end ~ preserve(u"mm/hr", min=0)
+    end ~ track(u"mm/hr", min=0)
 
     "Excess rain and irrigation after transpiration"
     excessInput(rain, rainInterception, irrigation, transpiration, drainage) => begin
