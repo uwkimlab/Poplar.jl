@@ -13,10 +13,15 @@
     "Maximum temperature for budburst"
     T_bud_max => 40 ~ preserve(parameter, u"°C")
 
-    # Yearly target bud growth. Should possibly be a function of stem biomass?
-    # bud_max => 1e3 ~ preserve(parameter, u"kg/ha")
+    # Yearly target bud growth
+    bud_max_const => 1e3 ~ preserve(parameter, u"kg/ha")
+    # Yearly target bud growth as fraction of dormant biomass
     bud_max_factor => 0.02 ~ preserve(parameter)
-    bud_max(bud_max_factor, WD) => bud_max_factor * WD ~ track(u"kg/ha")
+    
+    # set bud_max_factor = 0 for constant bud_max = bud_max_const
+    bud_max(bud_max_factor, WD, bud_max_const) => begin
+        bud_max_factor == 0 ? bud_max_const : bud_max_factor * WD 
+    end ~ track(u"kg/ha")
 
     # bud growth per degree hours
     bud_rate => 1 ~ preserve(parameter, u"kg/ha/hr/K")  
