@@ -31,4 +31,8 @@
             0
         end
     end ~ track(u"kg/ha/hr")
+
+    # Accumulated leaf drop for the year, resets to 0 every year - modeling meeting 10/2/26
+    WFSen_annual(dSen) ~ accumulate(reset=senescent, u"kg/ha")
+    WFSen_total(dSen) ~ accumulate(u"kg/ha")
 end
