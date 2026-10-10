@@ -25,7 +25,7 @@
 	Respiration from biomass
 	=======================#
 	
-	mRRoot(NPP, Rp, Root_Rp) => -NPP * Root_Rp / Rp ~ track(u"kg/ha/hr", when=!growthFlag)
+    mRRoot(NPP, Rp, Root_Rp) => abs(NPP * Root_Rp / Rp) ~ track(u"kg/ha/hr", when=!growthFlag)
 
     #========
     Mortality
@@ -34,7 +34,7 @@
     "Canopy root mortality rate"
     deathRoot(WR, mR, mortality, stemNo) => begin
         mR * mortality * (WR / stemNo)
-    end ~ track(u"kg/ha/hr", when=flagMortal)
+    end ~ track(u"kg/ha/hr") #, when=flagMortal) removed flagMortal so selfThinning reduces biomass -- CC 3/20/26
 
     #=======
     Turnover

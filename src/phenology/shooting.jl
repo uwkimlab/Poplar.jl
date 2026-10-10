@@ -13,53 +13,45 @@
     end ~ flag
 
     cutting(standAgeYear) => begin 
-	standAgeYear<1u"yr"
+	    standAgeYear < 1u"yr"
     end ~ flag
 
     # Days after coppicing where reshooting can occur
-    shooting_interval => begin
-	365
-    end ~ preserve(parameter,u"d")
+    shooting_interval => 365 ~ preserve(parameter,u"d")
 
     root_shoot_ratio(WR,WS,WF) => begin
         (WR)/(WS+WF)
     end ~ track()
 
-    min_RSR:min_root_shoot_ratio => begin
-         .1
-    end ~ preserve(parameter)
+    min_RSR:min_root_shoot_ratio => .1 ~ preserve(parameter)
+
+    fraction_NSC_cutting => .01 ~ preserve(parameter)
+    
+    fraction_NSC_coppiced => .1 ~ preserve(parameter)
 
     fraction_NSC(cutting, fraction_NSC_cutting, fraction_NSC_coppiced) =>  begin
-	if cutting
-		fraction_NSC_cutting
-	else
-		fraction_NSC_coppiced
-
-	end
-    end ~ preserve(parameter)
+        if cutting
+            fraction_NSC_cutting
+        else
+            fraction_NSC_coppiced
+        end
+    end ~ track
     
-    fraction_NSC_cutting => begin
-	.01
-    end ~ preserve(parameter)
     
-    fraction_NSC_coppiced => begin
-	.1
-    end ~ preserve(parameter)
-
     #Non-structural carbon available when shooting begins
     shooting_capacity(fraction_NSC,WR) => begin 
-	fraction_NSC*WR
+	    fraction_NSC*WR
     end ~ track(u"kg/ha")
 
     non_structural_carbon(shooting,shooting_capacity,dShoot,shooting, non_structural_carbon,dWR, fraction_NSC) => begin
-	if(shooting)
-		-dShoot
+	    if(shooting)
+		    -dShoot
         else(non_structural_carbon<shooting_capacity)
-		if(dWR>0u"kg/ha/hr")
-			dWR
-		else
-			fraction_NSC*dWR
-		end
+		    if(dWR>0u"kg/ha/hr")
+			    dWR
+		    else
+			    fraction_NSC*dWR
+		    end
         end
     end ~ accumulate(u"kg/ha",min=0u"kg/ha",init=shooting_capacity,max=shooting_capacity)
 
@@ -75,7 +67,7 @@
     # Hourly shoot growth rate.
     dShoot(shoot_rate, ShD, root_shoot_ratio,non_structural_carbon,shoot,min_RSR) => begin 
         if(root_shoot_ratio<min_RSR || non_structural_carbon<=0u"kg/ha") 
-	   0
+	        0
         else
            shoot_rate * ShD 
         end
@@ -83,4 +75,13 @@
 
     # Accumulated shoot growth for the season, resets every year.
     shoot(dShoot) ~ accumulate(reset=senescent, u"kg/ha")
+
+    # Shoot number per stem
+    avShootNo => 2.8 ~ preserve(parameter) # shoots/stem after coppice (Hart, 2015)
+
+    # Number of new shoots post-coppicing
+    dShootNo(avShootNo, stemNo) => begin
+        stemNo * (avShootNo - 1) * u"hr^-1"
+    end ~ track(when=coppice, u"ha^-1/hr")
+
 end

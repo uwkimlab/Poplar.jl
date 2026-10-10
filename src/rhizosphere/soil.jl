@@ -7,18 +7,15 @@
     NH4 => 25 ~ preserve(parameter, u"μg/g")
 
     soil_table => [
-	0 200 200
-        71 377 144
-        93 418 198
-        184 502 321
-	88 402 169
+	    0   200 200 0.70 9
+        71  377 144 0.70 9
+	    88  402 169 0.65 8
+        93  418 198 0.60 7
+        184 502 321 0.50 5 
     ] ~ tabulate(
-        rows=(:N, :S, :SL, :CL,:LS),
-        columns=(:wilting_point,:saturation,:field_capacity),
+        rows=(:N, :S, :LS, :SL, :CL),
+        columns=(:wilting_point, :saturation, :field_capacity, :cθ, :nθ),
         parameter
     )
-
-
-
 
 end

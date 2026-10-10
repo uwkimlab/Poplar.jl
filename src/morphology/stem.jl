@@ -18,8 +18,8 @@
 	#=======================
 	Respiration from biomass
 	=======================#
-	
-	mRStem(NPP, Rp, Stem_Rp) => -NPP * Stem_Rp / Rp ~ track(u"kg/ha/hr", when=!growthFlag)
+
+    mRStem(NPP, Rp, Stem_Rp) => abs(NPP * Stem_Rp / Rp) ~ track(u"kg/ha/hr", when=!growthFlag)
 	
     #========
     Mortality
@@ -27,7 +27,7 @@
 
     deathStem(WS, mS, mortality, stemNo) => begin
         mS * mortality * (WS / stemNo)
-    end ~ track(u"kg/ha/hr", when=flagMortal, max=WS_lim)
+    end ~ track(u"kg/ha/hr", max=WS_lim) #, when=flagMortal) removed flagMortal so selfThinning reduces biomass -- CC 3/20/26
 
     #=====
     Weight
@@ -39,22 +39,20 @@
     
     "Average stem mass"
     avStemMass(WS, stemNo) => WS / stemNo ~ track(u"kg")
+
+    "Average stem mass in grams"
+    avStemMass_g(avStemMass) ~ track(u"g")
     
-    root_conversion_efficiency_cutting => begin
-	.6 
-    end ~ preserve(parameter)
+    root_conversion_efficiency_cutting => .6  ~ preserve(parameter)
     
-    root_conversion_efficiency_coppice => begin
-	.75
-    end ~ preserve(parameter)
+    root_conversion_efficiency_coppice => .75 ~ preserve(parameter)
 	
-    root_conversion_efficiency(cutting, root_conversion_efficiency_cutting
-, root_conversion_efficiency_coppice)  => begin
-	if cutting
-		root_conversion_efficiency_cutting
-	else
-		root_conversion_efficiency_coppice
-	end
+    root_conversion_efficiency(cutting, root_conversion_efficiency_cutting, root_conversion_efficiency_coppice)  => begin
+	    if cutting
+		    root_conversion_efficiency_cutting
+	    else
+		    root_conversion_efficiency_coppice
+	    end
     end ~ preserve(parameter)
 
 

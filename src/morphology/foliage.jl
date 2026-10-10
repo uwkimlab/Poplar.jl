@@ -55,7 +55,7 @@ Foliage
 	Respiration from biomass
 	=======================#
 	
-	mRFoliage(NPP, Rp, Leaf_Rp) => -NPP * Leaf_Rp / Rp ~ track(u"kg/ha/hr", when=!growthFlag)
+	mRFoliage(NPP, Rp, Leaf_Rp) => abs(NPP * Leaf_Rp / Rp) ~ track(u"kg/ha/hr", when=!growthFlag)
 
     #========
     Mortality
@@ -63,7 +63,7 @@ Foliage
 
     deathFoliage(WF, mF, mortality, stemNo) => begin
         mF * mortality * (WF / stemNo)
-    end ~ track(u"kg/ha/hr", when=flagMortal)
+    end ~ track(u"kg/ha/hr") #, when=flagMortal) removed flagMortal so selfThinning reduces biomass -- CC 3/20/26
 
     # Monthly litterfall rate
     gammaFmonth(gammaF1, gammaF0, standAge, tgammaF) => begin

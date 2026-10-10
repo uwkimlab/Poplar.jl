@@ -1,4 +1,4 @@
-@enum DormancyType begin
+ @enum DormancyType begin
     sequential = 0
     parallel = 1
     photoperiod = 2
@@ -57,12 +57,12 @@ end
         end
     end ~ accumulate(reset=senescent, u"K*hr")
 
-    # track biomass during dormancy to inform bud_max and leaf_max
+    # track biomass during dormancy to inform bud_target and leaf_max
     ### HACK: capture will multiply by time interval (u"kg/ha*hr") so divide by 
     ###       step twice to make units work with accumulate
     ### HACK: pair capture and accumulate so dWD = W during dormancy and 0 otherwise, 
     ###       then accumulate with max=W so WD = W during dormancy and holds constant otherwise
-    dWD(W, x=context.clock.step) => W/x^2 ~ capture(u"kg/ha/hr", when=dormant)
-    WD(dWD): dormant_biomass ~ accumulate(u"kg/ha", max=W)
+    # dWD(W, x=context.clock.step) => W/x^2 ~ capture(u"kg/ha/hr", when=dormant)
+    # WD(dWD): dormant_biomass ~ accumulate(u"kg/ha", max=W)
 
 end
