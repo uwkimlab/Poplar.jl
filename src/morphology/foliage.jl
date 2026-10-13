@@ -91,16 +91,19 @@ Foliage
     end ~ track(u"kg/ha/hr")
 
     cumulative_WF(dWF) => begin
-	if dWF>0u"kg/ha/hr"
-	  dWF
-	else
-	  0u"kg/ha/hr" 
-	end
+        if dWF>0u"kg/ha/hr"
+            dWF
+        else
+            0u"kg/ha/hr" 
+        end
     end ~ accumulate(u"kg/ha", init=iWF,min=0)
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
 
     WF_ton(nounit(WF)) => WF / 1000 ~ track # conversion to metric
+
+    "Average foliage mass"
+    avFoliageMass(WF, stemNo) => WF / stemNo ~ track(u"kg")
 
     # # Specific leaf area based on stand age (years)
     # SLA(standAge, SLA0, SLA1, tSLA) => begin
