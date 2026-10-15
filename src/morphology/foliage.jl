@@ -11,14 +11,22 @@ Foliage
     iWF => 1000 ~ preserve(parameter, u"kg/ha")
 
     # Specific leaf area
-    "Specific leaf area at age 0"
-    SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+    # "Specific leaf area at age 0"
+    # SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+    
+    # "Specfic leaf area for mature leaves"
+    # SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+
+    "Specific leaf area at day since budburst 0"
+    SLA0 => 19.9 ~ preserve(parameter, u"m^2/kg") # Fuertes
     
     "Specfic leaf area for mature leaves"
-    SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+    SLA1 => 10.4 ~ preserve(parameter, u"m^2/kg") # Fuertes
     
-    "Age at which specific leaf area = (SLA0 + SLA1)/2"
-    tSLA => 1 ~ preserve(parameter) # Amichev
+    # "Age at which specific leaf area = (SLA0 + SLA1)/2"
+    # tSLA => 1 ~ preserve(parameter) # Amichev
+    "Days since budburst at which specific leaf area = (SLA0 + SLA1)/2"
+    tSLA => 42 ~ preserve(parameter, u"d") # Fuertes
     
     "Maximum litterfall rate"
     gammaF1 => 0 ~ preserve(parameter) # Amichev
@@ -83,11 +91,11 @@ Foliage
     end ~ track(u"kg/ha/hr")
 
     cumulative_WF(dWF) => begin
-	if dWF>0u"kg/ha/hr"
-	  dWF
-	else
-	  0u"kg/ha/hr" 
-	end
+        if dWF>0u"kg/ha/hr"
+            dWF
+        else
+            0u"kg/ha/hr" 
+        end
     end ~ accumulate(u"kg/ha", init=iWF,min=0)
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
@@ -97,9 +105,15 @@ Foliage
     "Average foliage mass"
     avFoliageMass(WF, stemNo) => WF / stemNo ~ track(u"kg")
 
-    # Specific leaf area based on stand age (years)
-    SLA(standAge, SLA0, SLA1, tSLA) => begin
-        SLA1 + (SLA0 - SLA1) * exp(-log(2) * (standAge / tSLA) ^ 2)
+    # # Specific leaf area based on stand age (years)
+    # SLA(standAge, SLA0, SLA1, tSLA) => begin
+    #     SLA1 + (SLA0 - SLA1) * exp(-log(2) * (standAge / tSLA) ^ 2)
+    # end ~ track(u"m^2/kg")
+    # Specific leaf area based on days since budburst
+    days_since_budburst => 1 ~ accumulate(when=!dormant, reset=dormant, u"d")
+
+    SLA(days_since_budburst, SLA0, SLA1, tSLA) => begin
+        SLA1 + (SLA0 - SLA1) * exp(-log(2) * (days_since_budburst / tSLA) ^ 2)
     end ~ track(u"m^2/kg")
 
     # Leaf Area Index
