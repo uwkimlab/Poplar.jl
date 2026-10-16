@@ -10,7 +10,8 @@
     
     # Parameters for  both allometric allocation types
     "Fertility rating"
-    FR => 0.4582 ~ preserve(parameter) # 
+    FR => 1.0 ~ preserve(parameter) # 9/4/26 default value updated
+    # FR => 0.4582 ~ preserve(parameter) # Amichev? 
     
     "Value of 'm1' when FR = 0"
     m0 => 0 ~ preserve(parameter)
@@ -67,7 +68,7 @@
     # end ~ track
     
 
-    # TODO: Better variable name? Empirical value used in foliage to stem ratio.
+    # TODO: Better variable name? Empirical value used in root to stem ratio. - CC 9/4/26
     m1(m0, FR) => m0 + (1 - m0) * FR ~ preserve
     
     # #Total partitionable (?) partition

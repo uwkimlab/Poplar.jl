@@ -4,9 +4,10 @@
     "Stress"
     =======#
 
+    #Changed from N_stress from 0 to 1 when N_demand==0 in modeling meeting 10/2/2026
     N_stress(N_demand, N_uptake) => begin
         if N_demand == 0u"g/m^2/hr"
-            0
+            1 
         else
             N_uptake / N_demand
         end
