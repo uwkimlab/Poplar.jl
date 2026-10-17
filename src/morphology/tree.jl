@@ -9,6 +9,8 @@ include("root.jl")
     Parameters
     =========#
 
+    init_weight => 16.54 ~ preserve(parameter,u"g")
+
     # Initialization
     "Initial total drymass"
     iW(iWS, iWF, iWR) => iWS + iWF + iWR ~ preserve(u"kg/ha")

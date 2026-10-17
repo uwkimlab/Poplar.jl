@@ -3,8 +3,11 @@
     Parameters
     =========#
 
+
+    init_ps =>0.05 ~ preserve(parameter)
+
     "Initial stem drymass"
-    iWS => 4000 ~ preserve(parameter, u"kg/ha")
+    iWS(init_ps,init_weight,iStemNo) => init_weight*init_ps*iStemNo ~ preserve(parameter, u"kg/ha")
 
     "Stem nitrogen ratio"
     N_ratio_stem => 0.01 ~ preserve(parameter)
