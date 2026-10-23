@@ -50,13 +50,14 @@
     
     root_conversion_efficiency_coppice => .75 ~ preserve(parameter)
 	
+    # Follow the establishment phase after the cutting flag has been evaluated.
     root_conversion_efficiency(cutting, root_conversion_efficiency_cutting, root_conversion_efficiency_coppice)  => begin
 	    if cutting
 		    root_conversion_efficiency_cutting
 	    else
 		    root_conversion_efficiency_coppice
 	    end
-    end ~ preserve(parameter)
+    end ~ track
 
 
     # Reset when coppice == true (not sure if it resets in the beginning or the end of the loop)

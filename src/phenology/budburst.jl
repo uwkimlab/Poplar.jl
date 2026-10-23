@@ -70,8 +70,8 @@
         bud_allocation_type == 1 ? bud_target_const : bud_max_factor * avTargetWF * stemNo
     end ~ track(u"kg/ha", max=bud_max)
    
-    # mass of buds remaining
-    bud_mass(bud_target, bud) => bud_target - bud ~ track(u"kg/ha")
+    # A falling target stops further transfer; it must not reverse prior transfers.
+    bud_mass(bud_target, bud) => max(bud_target - bud, 0u"kg/ha") ~ track(u"kg/ha")
 
     # maximum bud growth per hour
     dBud_max(bud_mass, step) => bud_mass / step ~ track(u"kg/ha/hr")

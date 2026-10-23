@@ -12,6 +12,7 @@
         (F >= Rf) && (shoot_max >= shoot) && (WS <= shoot_max) && (coppice_days>0u"d" && coppice_days<shooting_interval) || cutting
     end ~ flag
 
+    # First-year establishment phase, not a persistent planting-origin label.
     cutting(standAgeYear) => begin 
 	    standAgeYear < 1u"yr"
     end ~ flag

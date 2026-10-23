@@ -5,6 +5,10 @@ using Cropbox
 @testset "Poplar.jl" begin
     include("waterbalance.jl")
     include("irrigation_integration.jl")
+    include("budburst.jl")
+    include("conversion.jl")
+    include("senescence.jl")
+    include("stomata.jl")
     @testset "default soil parameter construction" begin
         s = instance(Model; config=Poplar.config_Model)
         @test s.maxSW' == 1004u"mm"

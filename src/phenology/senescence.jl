@@ -17,16 +17,21 @@
     
     SDD(SD) ~ accumulate(reset=budburst, u"K*d")
 
-    # applied to physiology through gs (Palm, 2022)
-    s(SDD,Rs): senescence_reduction_factor => begin
+    # Retain full progress for leaf drop without changing accumulated temperature.
+    senescence_progress(SDD, Rs) => begin
         SDD/Rs
-    end ~ track
+    end ~ track(min=0, max=1)
+
+    # Applied to physiology through gs (Palm, 2022). The numerical margin
+    # avoids the original stomatal solver's zero slope at full senescence.
+    # It does not handle zero slopes caused by other inputs (e.g. A_net=0).
+    s(senescence_progress): senescence_reduction_factor => senescence_progress ~ track(min=0, max=1-1e-6)
     
-    dSen(WF, s, step, Rld) => begin
-        if s >= 1
-            WF / step   # completes leaf drop when s > 1
-        elseif s >= Rld
-            (s - Rld) * WF / 1u"d"   # starts leaf drop when s > Rld
+    dSen(WF, senescence_progress, step, Rld) => begin
+        if senescence_progress >= 1
+            WF / step   # completes leaf drop at full progress
+        elseif senescence_progress >= Rld
+            (senescence_progress - Rld) * WF / 1u"d"
         else 
             0
         end
