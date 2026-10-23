@@ -40,7 +40,7 @@ Transpiration
     end ~ preserve
 
     ### Soil parameters based on reference depth ### 
-    soil_saturation(soil_table,soil_class, depth) => begin 
+    soil_saturation(soil_table,soil_class) => begin
         soil_table[Symbol(soil_class)].saturation
     end ~ preserve(parameter, u"mm")
 
@@ -90,7 +90,11 @@ Transpiration
     end ~ preserve(parameter)
 
     "Fraction of excess water pooled"
-    pool_fraction => 0 ~ preserve(parameter)
+    pool_fraction => 0 ~ preserve(parameter, min=0, max=1)
+
+    # Explicitly retain the previous one-day release timescale for ponded water.
+    # This is a modeling assumption, not a calibrated infiltration law.
+    pool_release_time => 1 ~ preserve(parameter, u"d")
 
     "Maximum propotion of rainfall evaporated from canopy"
     maxInterception => 0.15 ~ preserve(parameter) # Sands
@@ -127,9 +131,11 @@ Transpiration
     rainInterception(interception, rain) => interception * rain ~ track(u"mm/hr")
 
     "Drainage rate"
-    drainage(SW, FC, DRp) => begin
-        (SW - FC) * DRp
-    end ~ track(u"mm/hr", min=0)
+    drainage(SW, FC, minSW, DRp, step) => begin
+        demand = max((SW - FC) * DRp, 0u"mm/hr")
+        available = max((SW - max(FC, minSW)) / step, 0u"mm/hr")
+        min(demand, available)
+    end ~ track(u"mm/hr")
 
     "Excess rain and irrigation after transpiration"
     excessInput(rain, rainInterception, irrigation, transpiration, drainage) => begin
@@ -151,44 +157,59 @@ Transpiration
         end
     end ~ track(u"mm/hr", max=potential_surface_evaporation)
       
-    "Canopy evapotranspiration"
-    evapotranspiration(transpiration, rainInterception, surface_evaporation) => begin
-        transpiration + rainInterception + surface_evaporation
-    end ~ track(u"mm/hr", max=SWhour)
+    # Total water available to meet ET during this timestep, after drainage.
+    # Includes rainfall because the ET total includes intercepted-rain evaporation.
+    water_available_for_ET(SW, minSW, step, rain, irrigation, poolHour, drainage) => begin
+        max((SW - minSW) / step + rain + irrigation + poolHour - drainage,
+            0u"mm/hr")
+    end ~ track(u"mm/hr")
+
+    "Actual total evapotranspiration used in the water balance"
+    evapotranspiration(potential_evapotranspiration, water_available_for_ET) => begin
+        min(max(potential_evapotranspiration, 0u"mm/hr"), water_available_for_ET)
+    end ~ track(u"mm/hr")
+
+    # If nonzero, the component demand outputs do not sum to actual total ET.
+    # Component reporting and gas-exchange coupling need a separate decision.
+    unmet_evapotranspiration(potential_evapotranspiration, evapotranspiration) => begin
+        max(potential_evapotranspiration - evapotranspiration, 0u"mm/hr")
+    end ~ track(u"mm/hr")
 
     "Potential canopy evapotranspiration"
     potential_evapotranspiration(transpiration, rainInterception, surface_evaporation) => begin
         transpiration + rainInterception + surface_evaporation
     end ~ track(u"mm/hr")
     
-    "Hourly excess soil water"
-    excessSW(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour, drainage) => begin
-        SWhour + rain + poolHour - evapotranspiration + irrigation - drainage - maxSWhour
-    end ~ track(u"mm/hr", min=0u"mm/hr")
-    
-    "Hourly loss in water pool"
-    lossPool(SWhour, maxSWhour, evapotranspiration, irrigation, rain, poolHour, drainage) => begin
-        maxSWhour - (SWhour - evapotranspiration + irrigation + rain + poolHour - drainage)
-    end ~ track(u"mm/hr", min=0u"mm/hr", max=poolHour)
-    
-    "Hourly gain in water pool"
-    gainPool(excessSW, pool_fraction) => begin
-        pool_fraction * excessSW
-    end ~ track(u"mm/hr", min=0u"mm/hr")
-    
-    "Hourly net change in water pool"
+    "Net input to soil before pooling and runoff"
+    netWaterInput(rain, irrigation, evapotranspiration, drainage) => begin
+        rain + irrigation - evapotranspiration - drainage
+    end ~ track(u"mm/hr")
+
+    # New overflow only. Existing pooled water is not counted as new input here.
+    excessSW(SW, maxSW, step, netWaterInput) => begin
+        max(netWaterInput - (maxSW - SW) / step, 0u"mm/hr")
+    end ~ track(u"mm/hr")
+
+    # Existing pool can fill the room left after this timestep's net new input.
+    lossPool(SW, maxSW, step, netWaterInput, poolHour) => begin
+        room = max((maxSW - SW) / step - netWaterInput, 0u"mm/hr")
+        min(poolHour, room)
+    end ~ track(u"mm/hr")
+
+    "New overflow retained in the surface pool"
+    gainPool(excessSW, pool_fraction) => pool_fraction * excessSW ~ track(u"mm/hr")
+
+    "New overflow leaving as runoff"
+    dRunoff(excessSW, pool_fraction) => (1 - pool_fraction) * excessSW ~ track(u"mm/hr")
+
+    "Net change in surface water storage"
     dPool(gainPool, lossPool) => gainPool - lossPool ~ track(u"mm/hr")
-    
-    "Hourly runoff rate"
-    dRunoff(pool_fraction, excessSW) => begin
-        (1 - pool_fraction) * excessSW
+
+    "Net change in soil water storage"
+    dSW(netWaterInput, dPool, dRunoff) => begin
+        netWaterInput - dPool - dRunoff
     end ~ track(u"mm/hr")
-    
-    "Hourly net change in soil water content"
-    dSW(dPool, evapotranspiration, irrigation, rain, drainage) => begin
-         -dPool - evapotranspiration - drainage + irrigation + rain
-    end ~ track(u"mm/hr")
-    
+
     flag_transpiration(transpiration) => transpiration > 0u"mm/hr" ~ flag
 
     #=== Not used -- 5/1/26 CC ===
@@ -201,14 +222,18 @@ Transpiration
     "Soil water content"
     SW(dSW) ~ accumulate(u"mm", init=iSW, min=minSW, max=maxSW)
 
-    pool(dPool) ~ accumulate(u"mm")
+    pool(dPool) ~ accumulate(u"mm", min=0)
 
     runoff(dRunoff) ~ accumulate(u"mm")
 
-    # ASW and MaxASW and pool in mm/hr
-    SWhour(SW) => SW / u"d" ~ track(u"mm/hr")
-    maxSWhour(maxSW) => maxSW / u"d" ~ track(u"mm/hr")
-    poolHour(pool) => pool / u"d" ~ track(u"mm/hr")
+    # Storage-equivalent rates over the actual simulation timestep.
+    SWhour(SW, step) => SW / step ~ track(u"mm/hr")
+    maxSWhour(maxSW, step) => maxSW / step ~ track(u"mm/hr")
+
+    # Potential release of existing pool water; never offer more than the pool.
+    poolHour(pool, step, pool_release_time) => begin
+        pool / max(step, pool_release_time)
+    end ~ track(u"mm/hr")
 
     #=== CC (8/24/2026) ================
     not necessary to include
