@@ -3,8 +3,11 @@
     Parameters
     =========#
 
+
+    init_ps =>0.05 ~ preserve(parameter)
+
     "Initial stem drymass"
-    iWS => 4000 ~ preserve(parameter, u"kg/ha")
+    iWS(init_ps,init_weight,iStemNo) => init_weight*init_ps*iStemNo ~ preserve(parameter, u"kg/ha")
 
     "Stem nitrogen ratio"
     N_ratio_stem => 0.01 ~ preserve(parameter)
@@ -47,13 +50,18 @@
     
     root_conversion_efficiency_coppice => .75 ~ preserve(parameter)
 	
+    # Follow the establishment phase after the cutting flag has been evaluated.
+    # TODO: The old root_conversion_efficiency parameter override is now silently
+    # ignored because this selector is a track. Preserve or explicitly reject that
+    # legacy setting. For now, configure the two phase-specific parameters above;
+    # set both to the same value when a constant efficiency is intended. JHJ
     root_conversion_efficiency(cutting, root_conversion_efficiency_cutting, root_conversion_efficiency_coppice)  => begin
 	    if cutting
 		    root_conversion_efficiency_cutting
 	    else
 		    root_conversion_efficiency_coppice
 	    end
-    end ~ preserve(parameter)
+    end ~ track
 
 
     # Reset when coppice == true (not sure if it resets in the beginning or the end of the loop)
