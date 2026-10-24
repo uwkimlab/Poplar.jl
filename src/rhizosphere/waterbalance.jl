@@ -296,7 +296,10 @@ Transpiration
     end ~ flag
     
     irrigation(irrigation_rate, flag_irrigation, flag_irrigation_date, dormant,irrigation_dates,time,irrigation_amts) => begin
-	if !isnothing(irrigation_dates) & (time in irrigation_dates)
+        # Use && to skip the date lookup if this optional parameter is nothing.
+        # Omission normally produces an empty list; either case falls through to
+        # the existing automatic-irrigation rule below. JHJ
+	if !isnothing(irrigation_dates) && (time in irrigation_dates)
 	    matching_date = findfirst(item -> item == time, irrigation_dates)
 	    irrigation_amts[matching_date]
         elseif flag_irrigation & flag_irrigation_date & !dormant

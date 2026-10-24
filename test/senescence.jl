@@ -27,27 +27,37 @@ end
     budburst => false ~ flag
 end
 
-# Evaluate the production stomatal multiplier without reproducing its formula
-# or requiring unrelated leaf energy-balance drivers in these fixtures.
-multiplier(s) = Cropbox.value(Poplar.Stomata, :m; water_stress=.4, s=s.s')
+# Instantiate production stomata so Track's minimum is applied. The debugging
+# form Cropbox.value(System, :m; ...) evaluates only the body, without bounds.
+@system SenescenceMultiplierHarness(Poplar.Stomata, Controller) begin
+    water_stress => .4 ~ preserve(parameter)
+    s => 0 ~ preserve(parameter)
+    A_net => 10 ~ preserve(u"μmol/m^2/s", parameter)
+    gb => .5 ~ preserve(u"mol/m^2/s/bar", parameter)
+    RH => .5 ~ preserve(parameter)
+    CO2 => 400 ~ preserve(u"μmol/mol", parameter)
+    P_air => 100 ~ preserve(u"kPa", parameter)
+end
+multiplier(s) = instance(SenescenceMultiplierHarness;
+    config=:SenescenceMultiplierHarness=>(s=s.s',)).m'
 
-@testset "senescence margin and independent leaf-drop progress" begin
+@testset "bounded senescence and stomatal multiplier floor" begin
     @testset "physiology and leaf drop at boundaries" begin
         for (raw, expected_s, expected_m, leaf_drop) in (
             (-8., 0., .4, 0.),
             (0., 0., .4, 0.),
             (20., .2, .32, 0.),
             (75., .75, .1, 2.5/24),
-            (99.99995, 1-1e-6, .4e-6, (.9999995-.5)*10/24),
-            (100., 1-1e-6, .4e-6, 10.),
-            (120., 1-1e-6, .4e-6, 10.))
+            (99.99995, .9999995, 1e-5, (.9999995-.5)*10/24),
+            (100., 1., 1e-5, 10.),
+            (120., 1., 1e-5, 10.))
             s = instance(SenescenceBoundaryHarness; config=@config(
                 :SenescenceBoundaryHarness => (SDD=raw,)))
             @test s.s' ≈ expected_s
-            @test 0 <= s.s' <= 1-1e-6
+            @test 0 <= s.s' <= 1
             @test s.senescence_progress' ≈ clamp(raw/100,0,1)
             @test multiplier(s) ≈ expected_m
-            @test 0 <= multiplier(s) <= .4
+            @test 1e-5 <= multiplier(s) <= .4
             @test s.dSen' ≈ leaf_drop * u"kg/ha/hr"
         end
     end

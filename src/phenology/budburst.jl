@@ -70,9 +70,17 @@
         bud_allocation_type == 1 ? bud_target_const : bud_max_factor * avTargetWF * stemNo
     end ~ track(u"kg/ha", max=bud_max)
    
-    # A falling target stops further transfer; it must not reverse prior transfers.
+    # bud is biomass already transferred from stems to leaves this cycle.
+    # The dynamic target can fall below that amount (e.g. 30 vs 40 kg/ha).
+    # A negative remaining demand would make dBud_max negative and force
+    # transfer back from leaves to stems. Clamp it to zero to stop further
+    # transfer when the target is met or falls below the amount already transferred.
     bud_mass(bud_target, bud) => max(bud_target - bud, 0u"kg/ha") ~ track(u"kg/ha")
 
+    # TODO: This limit only caps remaining bud demand, not available stem biomass.
+    # Bud transfer can still overdraw stems (also reproduced with package defaults).
+    # Account for competing stem withdrawals and use the same permitted transfer
+    # when subtracting from stems and adding to leaves. JHJ
     # maximum bud growth per hour
     dBud_max(bud_mass, step) => bud_mass / step ~ track(u"kg/ha/hr")
 

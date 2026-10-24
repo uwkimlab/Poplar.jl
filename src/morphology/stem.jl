@@ -51,6 +51,10 @@
     root_conversion_efficiency_coppice => .75 ~ preserve(parameter)
 	
     # Follow the establishment phase after the cutting flag has been evaluated.
+    # TODO: The old root_conversion_efficiency parameter override is now silently
+    # ignored because this selector is a track. Preserve or explicitly reject that
+    # legacy setting. For now, configure the two phase-specific parameters above;
+    # set both to the same value when a constant efficiency is intended. JHJ
     root_conversion_efficiency(cutting, root_conversion_efficiency_cutting, root_conversion_efficiency_coppice)  => begin
 	    if cutting
 		    root_conversion_efficiency_cutting

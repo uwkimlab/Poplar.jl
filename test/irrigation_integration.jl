@@ -2,6 +2,48 @@ module IrrigationIntegrationTests
 using Cropbox, Poplar, Test, Dates, TimeZones
 using Poplar.DataFrames: DataFrame
 
+@testset "absent irrigation schedules retain automatic irrigation" begin
+    for schedule_config in ((;), (irrigation_data=nothing,),
+                            (irrigation_dates=nothing,), (irrigation_dates=ZonedDateTime[],))
+        for rate in (0.0, 2.0)
+            @testset "schedule=$schedule_config rate=$rate" begin
+                s = instance(Poplar.Model; config=@config(Poplar.config_Model,
+                    :Model => (iWF=1000, iWS=5000, iWR=2000, iAge=2, iSW=368,
+                               bud_rate=0, shoot_rate=0, NPP_type=2, irrigation_rate=rate),
+                    :Model => schedule_config))
+                if haskey(schedule_config, :irrigation_dates) && isnothing(schedule_config.irrigation_dates)
+                    @test isnothing(s.irrigation_dates')
+                else
+                    @test isempty(s.irrigation_dates')
+                end
+                @test !s.dormant'
+                @test s.flag_irrigation'
+                @test s.irrigation' == rate*u"mm/hr"
+                before = s.IR_ac'
+                step = s.step'
+                update!(s)
+                @test s.IR_ac' - before ≈ rate*u"mm/hr" * step
+                @test s.irrigation' == rate*u"mm/hr"
+            end
+        end
+    end
+end
+
+@testset "scheduled amounts take precedence over automatic irrigation" begin
+    schedule = DataFrame(year=fill(2014, 2), jday=fill(95, 2),
+                         time=[Time(0), Time(1)], irrigation=[0.0, 5.0])
+    s = instance(Poplar.Model; config=@config(Poplar.config_Model,
+        :Model => (irrigation_data=schedule, timezone=tz"America/Los_Angeles",
+                   iWF=1000, iWS=5000, iWR=2000, iAge=2, iSW=368,
+                   bud_rate=0, shoot_rate=0, NPP_type=2, irrigation_rate=2)))
+    for amount in (0.0, 5.0, 2.0)
+        @test s.flag_irrigation' && !s.dormant'
+        @test s.irrigation' == amount*u"mm/hr"
+        update!(s)
+    end
+    @test s.IR_ac' ≈ 7u"mm"
+end
+
 @testset "initial biomass from planting material" begin
     s = instance(Poplar.Model; config=@config(Poplar.config_Model,
         :Model => (init_weight=16.54, iStemNo=3586,

@@ -30,8 +30,9 @@ end
     end ~ track(u"mol/m^2/s/bar" #= H2O =#, min=g0)
 
     m(water_stress, s): transpiration_reduction_factor => begin
-        #TODO: implement soil water module
+        # Numerical floor for the original humidity solver at full senescence
+        # or zero water stress. Zero A_net or g1 remains a solver limitation.
         water_stress * (1 - s)
-    end ~ track
+    end ~ track(min=1e-5)
     
 end

@@ -40,10 +40,12 @@ end
     SDD => 100 ~ preserve(parameter, u"K*d")
 end
 
-@testset "original stomata with the senescence margin" begin
-    @testset "ordinary conditions and the production senescence cap" begin
+@testset "original stomata with a minimum multiplier" begin
+    @testset "ordinary conditions, full senescence, and zero water stress" begin
         for cfg in (
             (s=0.,), (s=.5,), (s=.99,), (s=1-1e-6,),
+            (s=1.,), (s=prevfloat(1.),),
+            (s=0.,water_stress=0.), (s=.5,water_stress=1e-8),
             (s=1-1e-6,A_net=-2.), (s=0.,A_net=-2.),
             (s=0.,RH=0.), (s=0.,RH=1.))
             s=instance(StomatalBoundaryHarness;config=:StomatalBoundaryHarness=>cfg)
@@ -57,15 +59,26 @@ end
         end
     end
 
+    @testset "floor applies to the combined multiplier" begin
+        for (cfg,expected) in (
+            ((s=0.,water_stress=.4),.4),
+            ((s=.75,water_stress=.4),.1),
+            ((s=1.,water_stress=.4),1e-5),
+            ((s=0.,water_stress=0.),1e-5),
+            ((s=.5,water_stress=1e-8),1e-5))
+            s=instance(StomatalBoundaryHarness;config=:StomatalBoundaryHarness=>cfg)
+            @test s.m' ≈ expected
+        end
+    end
+
     @testset "known original-solver limitations (not fixed by this workaround)" begin
-        for cfg in ((s=1.,), (s=1-1e-6,A_net=0.),
-                    (s=1-1e-6,water_stress=0.), (s=1-1e-6,g1=0.))
+        for cfg in ((s=1.,A_net=0.), (s=1.,g1=0.))
             s=instance(StomatalBoundaryHarness;config=:StomatalBoundaryHarness=>cfg)
             @test_broken isfinite(s.hs')
         end
     end
 
-    @testset "full senescence with production margin, day/night and leaves/no leaves" begin
+    @testset "full senescence and leaf drop, day/night and leaves/no leaves" begin
         for radiation in (0.,800.), foliage in (0.,1000.)
             start=ZonedDateTime(2014,4,5,12,tz"UTC-8")
             weather=DataFrame(index=[start+Hour(i) for i in 0:2],
@@ -78,12 +91,12 @@ end
                     irrigation_rate=0,irrigation_start_level=0,irrigation_end_level=0,
                     bud_rate=0,shoot_rate=0,NPP_type=2)))
             for step in 0:1
-                @test s.s' == 1-1e-6
+                @test s.s' == 1
                 @test s.senescence_progress' == 1
                 @test s.dSen' == s.WF'/s.step'
                 for leaf in (s.sunlit_gasexchange,s.shaded_gasexchange)
-                    @test leaf.s' == 1-1e-6
-                    @test leaf.m' > 0
+                    @test leaf.s' == 1
+                    @test leaf.m' == 1e-5
                     @test isfinite(leaf.hs')
                     @test leaf.gs' >= leaf.g0'
                     @test isfinite(leaf.A_net')

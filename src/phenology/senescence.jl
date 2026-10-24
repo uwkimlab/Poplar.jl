@@ -22,10 +22,9 @@
         SDD/Rs
     end ~ track(min=0, max=1)
 
-    # Applied to physiology through gs (Palm, 2022). The numerical margin
-    # avoids the original stomatal solver's zero slope at full senescence.
-    # It does not handle zero slopes caused by other inputs (e.g. A_net=0).
-    s(senescence_progress): senescence_reduction_factor => senescence_progress ~ track(min=0, max=1-1e-6)
+    # Applied to physiology through gs (Palm, 2022). Full senescence is 1;
+    # the numerical floor is applied to the combined stomatal multiplier m.
+    s(senescence_progress): senescence_reduction_factor => senescence_progress ~ track
     
     dSen(WF, senescence_progress, step, Rld) => begin
         if senescence_progress >= 1
