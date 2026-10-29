@@ -41,12 +41,15 @@ end
             DD
         end
     end ~ track(max = 0, u"K")
-    C(dC):  chilling_accumulated ~ accumulate(when=!chilled, reset=senescent, u"K*hr")
+    C0(Rc) ~ parameter(optional, u"K")
+    C_init => 0 ~ track(init = C0, u"K")
+    C(dC): chilling_accumulated ~ accumulate(init=C_init, when=!chilled, reset=senescent, u"K*hr")
 
     chilled(C, Rc) => (C <= Rc) ~ flag
 
     dF(DD) ~ track(min = 0, u"K")
-
+    F0(Rf) ~ parameter(optional, u"K")
+    F_init => 0 ~ track(init=F0, u"K")
     F(K,dF,dormancy_type,chilled): forcing_accumulated => begin
         if dormancy_type == parallel    
             K * dF
@@ -55,7 +58,7 @@ end
         else
             0
         end
-    end ~ accumulate(reset=senescent, u"K*hr")
+    end ~ accumulate(init=F_init, reset=senescent, u"K*hr")
 
     # track biomass during dormancy to inform bud_max and leaf_max
     ### HACK: capture will multiply by time interval (u"kg/ha*hr") so divide by 
