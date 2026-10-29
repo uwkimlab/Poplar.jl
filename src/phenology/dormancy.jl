@@ -41,14 +41,14 @@ end
             DD
         end
     end ~ track(max = 0, u"K")
-    C0(Rc) ~ parameter(optional, u"K")
+    C0(Rc) ~ preserve(parameter, optional, u"K")
     C_init => 0 ~ track(init = C0, u"K")
     C(dC): chilling_accumulated ~ accumulate(init=C_init, when=!chilled, reset=senescent, u"K*hr")
 
     chilled(C, Rc) => (C <= Rc) ~ flag
 
     dF(DD) ~ track(min = 0, u"K")
-    F0(Rf) ~ parameter(optional, u"K")
+    F0(Rf) ~ preserve(parameter, optional, u"K")
     F_init => 0 ~ track(init=F0, u"K")
     F(K,dF,dormancy_type,chilled): forcing_accumulated => begin
         if dormancy_type == parallel    
