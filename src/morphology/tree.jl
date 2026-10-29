@@ -9,11 +9,16 @@ include("root.jl")
     Parameters
     =========#
 
+    init_weight => 16.54 ~ preserve(parameter,u"g")
+
     # Initialization
     "Initial total drymass"
     iW(iWS, iWF, iWR) => iWS + iWF + iWR ~ preserve(u"kg/ha")
 
     "Initial tree count"
+    iStumpNo => 1000 ~ preserve(parameter, u"ha^-1")
+
+    "Initial stem count"
     iStemNo => 1000 ~ preserve(parameter, u"ha^-1")
 
     # Branch and bark fraction
@@ -46,7 +51,7 @@ include("root.jl")
     "Power of stocking in the stem height relationship"
     nHN => 0.1064 ~ preserve(parameter) # Amichev
     
-    # Stem volume
+    # Stem volume and DBH
     "Constant in the stem volume relationship"
     aV => 0.0001 ~ preserve(parameter) # Amichev
     
@@ -62,25 +67,27 @@ include("root.jl")
     "Stem mass vs. diameter exponent"
     nWs => 2.2704 ~ preserve(parameter) # Amichev
     
-    #==========
-    Stem Volume
-    ==========#
+    # Volume index
+    "power in volume index-drymass relationship"
+    γDM => 0.887 ~ preserve(parameter) # Hart
 
-    "Branch and bark fraction based on stand age"
-    fracBB(standAge, fracBB0, fracBB1, tBB) => begin
-    fracBB1 + (fracBB0 - fracBB1) * exp(-log(2) * (standAge / tBB))
-    end ~ track
+    "constant in volume index-drymass relationsip"
+    βDM => 161.5 ~ preserve(parameter) # Hart
 
-    "Density based on stand age"
-    density(standAge, rho0, rho1, tRho) => begin
-        rho1 + (rho0 - rho1) * exp(-log(2) * (standAge / tRho))
-    end ~ track(u"kg/m^3")
-    
+    "power in volume index-leaf area relationship"
+    γLA => 0.496 ~ preserve(parameter) # Hart
+
+    "constant in volume index-leaf area relationship"
+    βLA => exp(-0.273) ~ preserve(parameter) # Hart
+
+    #============
+    DBH allometry
+    ============#
     "Average diameter at breast height"
     avDBH(nounit(avStemMass), aWs, nWs) => begin
         (avStemMass / aWs) ^ (1 / nWs)
     end ~ track(u"cm")
-    
+
     "Base area"
     basArea(avDBH, stemNo) => begin
         (((avDBH / 2) ^ 2) * pi) * stemNo
@@ -90,7 +97,38 @@ include("root.jl")
     height(aH, nounit(avDBH), nHB, nHN, nounit(stemNo)) => begin
         aH * avDBH ^ nHB * stemNo ^ nHN * u"m"
     end ~ track(u"m")
-    
+   
+    "Foliage weight per tree predicted from DBH"
+    avTargetWF_dbh(pFS_dbh, avStemMass_g) => begin
+        pFS_dbh * avStemMass_g
+    end ~ track(u"g")
+
+    #===========
+    VI allometry (Hart, 2015)
+    ===========#
+    "Volume index"
+    VI(nounit(avStemMass_g), γDM, βDM) => begin
+        (avStemMass_g / βDM)^(1 / γDM)
+    end ~ track
+
+    "Foliage weight per tree predicted from VI"
+    avTargetWF_vi(VI, γLA, βLA, SLA) => begin
+        βLA * VI ^ γLA * u"m^2" / SLA
+    end ~ track(u"g")
+
+    #=======================
+    Stand Density and Volume
+    =======================#
+    "Branch and bark fraction based on stand age"
+    fracBB(standAge, fracBB0, fracBB1, tBB) => begin
+    fracBB1 + (fracBB0 - fracBB1) * exp(-log(2) * (standAge / tBB))
+    end ~ track
+
+    "Density based on stand age"
+    density(standAge, rho0, rho1, tRho) => begin
+        rho1 + (rho0 - rho1) * exp(-log(2) * (standAge / tRho))
+    end ~ track(u"kg/m^3")
+      
     "Stand volume per hectare"
     standVol(WS, aV, nounit(avDBH), nVB, nVN, fracBB, nounit(stemNo), density) => begin
         if aV > 0
@@ -103,12 +141,18 @@ include("root.jl")
     "Mean volume increment per hectare"
     MAI(standVol, standAge) => ((standAge > 0) ? (standVol / standAge) : 0) ~ track(u"m^3/ha")
 
-    dStemNo(mortality, thinning) => -mortality - thinning ~ track(u"ha^-1/hr")
+    #==========
+    Stem number
+    ==========#
+    dStemNo(mortality, thinning, dShootNo) => -mortality - thinning + dShootNo ~ track(u"ha^-1/hr")
     
     stemNo(dStemNo) ~ accumulate(init=iStemNo, u"ha^-1")
 
     dW(dWF, dWR, dWS) => dWF + dWR + dWS ~ track(u"kg/ha/hr")
 
+    #============
+    Total biomass
+    ============#
     "Total weight"
     W(dW) ~ accumulate(u"kg/ha", init=iW, min=0)
     W_ton(nounit(W)) => W / 1000 ~ track 

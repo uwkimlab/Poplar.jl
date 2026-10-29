@@ -4,9 +4,10 @@
     "Stress"
     =======#
 
+    #Changed from N_stress from 0 to 1 when N_demand==0 in modeling meeting 10/2/2026
     N_stress(N_demand, N_uptake) => begin
         if N_demand == 0u"g/m^2/hr"
-            0
+            1 
         else
             N_uptake / N_demand
         end
@@ -75,8 +76,9 @@
 
     # Nitrogen uptake conversion factor.
     # How much kg/ha of nitrogen for mg/cm of nitrogen (root)?
+    # Removed square root when using sigmoidal water_stress instead of linear -- Modeling meeting 5/1/26
     N_uptake_conversion_factor(RLD, water_stress, soil_depth) => begin
-        RLD * sqrt(water_stress) * soil_depth 
+        RLD * water_stress * soil_depth 
     end ~ track(u"kg*cm/mg/ha")
 
     "Amount of NO3 that stays in soil"

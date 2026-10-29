@@ -7,18 +7,29 @@ Foliage
     #=========
     Parameters
     ==========#
+
+    init_pf =>0 ~ preserve(parameter)
+
     "Initial foliage drymass"
-    iWF => 1000 ~ preserve(parameter, u"kg/ha")
+    iWF(init_weight,init_pf,iStemNo) => init_weight*init_pf*iStemNo~ preserve(parameter, u"kg/ha")
 
     # Specific leaf area
-    "Specific leaf area at age 0"
-    SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+    # "Specific leaf area at age 0"
+    # SLA0 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+    
+    # "Specfic leaf area for mature leaves"
+    # SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+
+    "Specific leaf area at day since budburst 0"
+    SLA0 => 19.9 ~ preserve(parameter, u"m^2/kg") # Fuertes
     
     "Specfic leaf area for mature leaves"
-    SLA1 => 10.8 ~ preserve(parameter, u"m^2/kg") # Amichev
+    SLA1 => 10.4 ~ preserve(parameter, u"m^2/kg") # Fuertes
     
-    "Age at which specific leaf area = (SLA0 + SLA1)/2"
-    tSLA => 1 ~ preserve(parameter) # Amichev
+    # "Age at which specific leaf area = (SLA0 + SLA1)/2"
+    # tSLA => 1 ~ preserve(parameter) # Amichev
+    "Days since budburst at which specific leaf area = (SLA0 + SLA1)/2"
+    tSLA => 42 ~ preserve(parameter, u"d") # Fuertes
     
     "Maximum litterfall rate"
     gammaF1 => 0 ~ preserve(parameter) # Amichev
@@ -47,7 +58,7 @@ Foliage
 	Respiration from biomass
 	=======================#
 	
-	mRFoliage(NPP, Rp, Leaf_Rp) => -NPP * Leaf_Rp / Rp ~ track(u"kg/ha/hr", when=!growthFlag)
+	mRFoliage(NPP, Rp, Leaf_Rp) => abs(NPP * Leaf_Rp / Rp) ~ track(u"kg/ha/hr", when=!growthFlag)
 
     #========
     Mortality
@@ -55,7 +66,7 @@ Foliage
 
     deathFoliage(WF, mF, mortality, stemNo) => begin
         mF * mortality * (WF / stemNo)
-    end ~ track(u"kg/ha/hr", when=flagMortal)
+    end ~ track(u"kg/ha/hr") #, when=flagMortal) removed flagMortal so selfThinning reduces biomass -- CC 3/20/26
 
     # Monthly litterfall rate
     gammaFmonth(gammaF1, gammaF0, standAge, tgammaF) => begin
@@ -83,20 +94,29 @@ Foliage
     end ~ track(u"kg/ha/hr")
 
     cumulative_WF(dWF) => begin
-	if dWF>0u"kg/ha/hr"
-	  dWF
-	else
-	  0u"kg/ha/hr" 
-	end
+        if dWF>0u"kg/ha/hr"
+            dWF
+        else
+            0u"kg/ha/hr" 
+        end
     end ~ accumulate(u"kg/ha", init=iWF,min=0)
 
     WF(dWF) ~ accumulate(u"kg/ha", init=iWF, min=0) # foliage drymass
 
     WF_ton(nounit(WF)) => WF / 1000 ~ track # conversion to metric
 
-    # Specific leaf area based on stand age (years)
-    SLA(standAge, SLA0, SLA1, tSLA) => begin
-        SLA1 + (SLA0 - SLA1) * exp(-log(2) * (standAge / tSLA) ^ 2)
+    "Average foliage mass"
+    avFoliageMass(WF, stemNo) => WF / stemNo ~ track(u"kg")
+
+    # # Specific leaf area based on stand age (years)
+    # SLA(standAge, SLA0, SLA1, tSLA) => begin
+    #     SLA1 + (SLA0 - SLA1) * exp(-log(2) * (standAge / tSLA) ^ 2)
+    # end ~ track(u"m^2/kg")
+    # Specific leaf area based on days since budburst
+    days_since_budburst => 1 ~ accumulate(when=!dormant, reset=dormant, u"d")
+
+    SLA(days_since_budburst, SLA0, SLA1, tSLA) => begin
+        SLA1 + (SLA0 - SLA1) * exp(-log(2) * (days_since_budburst / tSLA) ^ 2)
     end ~ track(u"m^2/kg")
 
     # Leaf Area Index

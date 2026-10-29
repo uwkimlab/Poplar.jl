@@ -17,18 +17,26 @@
     
     SDD(SD) ~ accumulate(reset=budburst, u"K*d")
 
-    # applied to physiology through gs (Palm, 2022)
-    s(SDD,Rs): senescence_reduction_factor => begin
+    # Retain full progress for leaf drop without changing accumulated temperature.
+    senescence_progress(SDD, Rs) => begin
         SDD/Rs
-    end ~ track
+    end ~ track(min=0, max=1)
+
+    # Applied to physiology through gs (Palm, 2022). Full senescence is 1;
+    # the numerical floor is applied to the combined stomatal multiplier m.
+    s(senescence_progress): senescence_reduction_factor => senescence_progress ~ track
     
-    dSen(WF, s, step, Rld) => begin
-        if s >= 1
-            WF / step   # completes leaf drop when s > 1
-        elseif s >= Rld
-            (s - Rld) * WF / 1u"d"   # starts leaf drop when s > Rld
+    dSen(WF, senescence_progress, step, Rld) => begin
+        if senescence_progress >= 1
+            WF / step   # completes leaf drop at full progress
+        elseif senescence_progress >= Rld
+            (senescence_progress - Rld) * WF / 1u"d"
         else 
             0
         end
     end ~ track(u"kg/ha/hr")
+
+    # Accumulated leaf drop for the year, resets to 0 every year - modeling meeting 10/2/26
+    WFSen_annual(dSen) ~ accumulate(reset=budburst, u"kg/ha")
+    WFSen_total(dSen) ~ accumulate(u"kg/ha")
 end

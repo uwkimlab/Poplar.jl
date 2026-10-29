@@ -4,8 +4,10 @@
     Parameters
     =========#
 
+    init_pr =>0.95 ~ preserve(parameter)
+
     "Initial root drymass"
-    iWR => 3000 ~ preserve(parameter, u"kg/ha")
+    iWR(init_weight,init_pr,iStemNo) => init_weight*init_pr*iStemNo~ preserve(parameter, u"kg/ha")
     
     "Average monthly root turnover rate"
     gammaR => 0.005 ~ preserve(parameter) # Amichev
@@ -25,7 +27,7 @@
 	Respiration from biomass
 	=======================#
 	
-	mRRoot(NPP, Rp, Root_Rp) => -NPP * Root_Rp / Rp ~ track(u"kg/ha/hr", when=!growthFlag)
+    mRRoot(NPP, Rp, Root_Rp) => abs(NPP * Root_Rp / Rp) ~ track(u"kg/ha/hr", when=!growthFlag)
 
     #========
     Mortality
@@ -34,7 +36,7 @@
     "Canopy root mortality rate"
     deathRoot(WR, mR, mortality, stemNo) => begin
         mR * mortality * (WR / stemNo)
-    end ~ track(u"kg/ha/hr", when=flagMortal)
+    end ~ track(u"kg/ha/hr") #, when=flagMortal) removed flagMortal so selfThinning reduces biomass -- CC 3/20/26
 
     #=======
     Turnover

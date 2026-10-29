@@ -221,3 +221,33 @@ config_coppicing = @config(
         ],
     )
 )
+
+# Partitioning configs
+# constant BBCH based partitioning, constant NPP/GPP ratio
+config_partition_constant = @config(
+    :Model => (
+        partition_type = 1,
+        bud_allocation_type = 1,
+        NPP_type = 1
+    )
+) 
+
+# allometric partitioning based on DBH
+config_partition_DBH = @config(
+    :Model => (
+        partition_type = 2,
+        bud_allocation_type = 2,
+        NPP_type = 2,
+        leaf_max_factor = 1
+    )
+) 
+
+# allometric partitioning based on VI
+config_partition_VI = @config(
+    :Model => (
+        partition_type = 3,
+        bud_allocation_type = 3,
+        NPP_type = 2, 
+        leaf_max_factor = 1
+    )
+) 

@@ -73,16 +73,31 @@ Photosynthesis
     "NPP/GPP ratio"
     γ => 0.47 ~ preserve(parameter) # Amichev
 
-    "Growth yield"
-    Yg => 0.75 ~ preserve(parameter)
+    # growth respiration and carbon contents from Grossman & Dejong (1994) - PEACH
+    "Growth respiration coefficient"
+    Gr => 0.211 ~ preserve(parameter #=gCHO/gDW=#) # peach fruit
+    "Carbon content foliage"
+    Cf => 0.453 ~ preserve(parameter #=gC/gDW=#) # peach leaf
+    "Carbon content stem"
+    Cs => 0.475 ~ preserve(parameter #=gC/gDW=#) # peach trunk
+    "Carbon content root"
+    Cr => 0.458 ~ preserve(parameter #=gC/gDW=#) # peach root
 
+    "Growth yield"
+    Yg(Cf, Cs, Cr, pF, pS, pR, C_weight, CH2O_weight, Gr) => begin
+        1 / ((Cf*pF + Cs*pS + Cr*pR) * (CH2O_weight / C_weight) + Gr) 
+    end ~ track(when=growthFlag) #=gDW/gCHO=#
+    # Yg => 0.75 ~ preserve(parameter)
+
+    # 1--constant NPP:GPP ratio (recommended with constant allocation); 
+    # 2--dynamic respiration (recommended with allometric allocation types)
     "Switch parameter to control NPP types"
     NPP_type => 1 ~ preserve(parameter)
 
     "total maintenance respiration"
 	Rp(Root_Rp, Stem_Rp, Leaf_Rp) =>  Root_Rp + Stem_Rp + Leaf_Rp ~ track(u"kg/ha/hr")
 
-	growthFlag(GPP, Rp) => (GPP - Rp) > 0u"kg/ha/hr" ~ flag
+	growthFlag(GPP, Rp) => GPP > Rp ~ flag
 	
 	"Net primary production"
     NPP(GPP, γ, NPP_type, Rp, Yg, growthFlag) => begin
@@ -95,18 +110,11 @@ Photosynthesis
 				GPP - Rp
 			end
         else
-            error("Invalid calculation method: $calculation_method. Use 1 or 2 for ratio or respiration, respectively")
+            @error "Invalid NPP_type: $NPP_type. Use 1 or 2 for ratio or respiration, respectively"
         end
     end ~ track(u"kg/ha/hr")
-    #NPP(GPP, Root_Rp, Stem_Rp, Leaf_Rp) => begin
-    #    GPP - Root_Rp - Stem_Rp - Leaf_Rp
-    #end ~ track(u"kg/ha/hr")  
-    #NPP(γ, GPP) => begin
-    #    γ*GPP
-    #end ~ track(u"kg/ha/hr")
 
     NPP_ac(NPP) ~ accumulate(u"kg/ha")
-    # NPP_annual(NPP_ac) ~ remember(when=dormant, u"g/ha")
 
     GPP_ac(GPP) ~ accumulate(u"kg/ha")
 
