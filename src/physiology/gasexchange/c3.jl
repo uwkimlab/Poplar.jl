@@ -65,11 +65,12 @@ end
     
     Jmax(Tk, Tbk, T_dep, Jm25, Eaj, Sj, Hj): maximum_electron_transport_rate => begin
         R = u"R"
-        Jm25 * begin
+	Jm25 * begin
             T_dep(Eaj) *
             (1 + exp((Sj*Tbk - Hj) / (R*Tbk))) /
             (1 + exp((Sj*Tk  - Hj) / (R*Tk)))
         end
+
     end ~ track(u"μmol/m^2/s" #= Electron =#)
 
     # θ: sharpness of transition from light limitation to light saturation
@@ -128,7 +129,7 @@ end
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
     Ap(Tp, Rd): triose_phosphate_limited_photosynthesis_rate => begin
-        3Tp - Rd
+	3Tp - Rd
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
     A_net(Ac, Aj, Ap): net_photosynthesis => begin
@@ -139,5 +140,5 @@ end
         # gets negative when PFD = 0, Rd needs to be examined, 10/25/04, SK
         A_gross = A_net + Rd
         #max(A_gross, zero(A_gross))
-    end ~ track(u"μmol/m^2/s" #= CO2 =#)
+    end ~ track(min=0, u"μmol/m^2/s" #= CO2 =#)
 end

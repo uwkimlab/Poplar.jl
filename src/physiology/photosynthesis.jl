@@ -33,7 +33,11 @@ Photosynthesis
 
     "Net photosynthetic rate (sunlit + shaded)"
     A_net(a=sunlit_gasexchange.A_net_total, b=shaded_gasexchange.A_net_total, w=leaf_width): net_CO2_umol_per_m2_s => begin
-        a + b
+        if abs(a+b)>1e-8u"μmol/m^2/s"
+		a + b
+	else
+		0
+	end
     end ~ track(u"μmol/m^2/s" #= CO2 =#)
 
     canopy_efficiency(A_gross,R_sw) => begin
