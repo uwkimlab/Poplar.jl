@@ -3,7 +3,13 @@
     long: longitude => 122.29u"°" ~ preserve(u"°", parameter)
     alt: altitude => 30u"m" ~ preserve(u"m", parameter)
     
-    τ: transmissivity => 0.5 ~ preserve(parameter) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
+    τ(insolation,solrad): transmissivity => begin
+	if insolation!=0 && isfinite(solrad/insolation)
+		solrad/insolation
+	else
+		.5
+	end
+    end ~ track(min=.3,max=.7) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
 
     Q: photosynthetic_active_radiation_conversion_factor => begin
         # 4.55 is a conversion factor from W to photons for solar radiation, Goudriaan and van Laar (1994)
@@ -187,8 +193,8 @@
         campbell(τ, m)
     end ~ track
 
-    directional_fraction(Fdif, Fdir) => (1 / (1 + Fdif/Fdir)) ~ track
-    diffusive_fraction(Fdir, Fdif) => (1 / (1 + Fdir/Fdif)) ~ track
+    directional_fraction(Fdif, Fdir) => (Fdir / (Fdir + Fdif)) ~ track
+    diffusive_fraction(Fdir, Fdif) => (Fdif / (Fdif + Fdir)) ~ track
 
     # PARfr
     #TODO better naming: extinction? transmitted_fraction?
