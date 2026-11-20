@@ -28,13 +28,12 @@ potential soil surface evaporation is determined from a modified Priestly-Taylor
         solrad - R_sw
     end ~ track(u"W/m^2")
 
-    G(R_soil,ghr,LAI,T_air): ground_heat_flux => begin
+    G(R_soil,ghr): ground_heat_flux => begin
         ghr *R_soil
     end ~ track(u"W/m^2")
 
-    psychrometric_constant(Cp,P_air,λ,T_air) => begin
+    psychrometric_constant(Cp,P_air,λ) => begin
         Cp * P_air / λ
-	#101.3*P_air /(0.622(2500.78-2.36*ustrip(T_air))*1000u"K")
     end ~ track(u"kPa/K")
 
     λE_soil(pt,RH,R_soil,G,d=VPD_Δ,g=psychrometric_constant): soil_latent_heat_flux => begin
