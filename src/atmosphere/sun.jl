@@ -9,7 +9,7 @@
 	else
 		.5
 	end
-    end ~ track(min=.3,max=.7) # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
+    end ~ track() # atmospheric transmissivity, Goudriaan and van Laar (1994) p 30
 
     Q: photosynthetic_active_radiation_conversion_factor => begin
         # 4.55 is a conversion factor from W to photons for solar radiation, Goudriaan and van Laar (1994)
@@ -159,16 +159,16 @@
         Fdif * solar_radiation
     end ~ track(u"W/m^2")
 
-    Fdir(τ, m=optical_air_mass_number): directional_coeff => begin
+    Fdir(τ, m=optical_air_mass_number, Fdif): directional_coeff => begin
         # Goudriaan and van Laar's global solar radiation
         #FIXME should be goudriaan() version
-        goudriaan(τ) = τ * (1 - diffusive_coeff)
+        goudriaan(τ) = (1 - Fdif)
         #FIXME: check if equation is same as campbell()
         # Takakura (1993), p 5.11
         takakura(τ, m) = τ^m
         # Campbell and Norman (1998), p 173
         campbell(τ, m) = τ^m
-        campbell(τ, m)
+        goudriaan(τ)
     end ~ track
 
     # Fdif: Fraction of diffused light
@@ -190,7 +190,7 @@
         takakura(τ, m) = (1 - τ^m) / (1 - 1.4log(τ)) / 2
         # Campbell and Norman (1998), p 173
         campbell(τ, m) = 0.3(1 - τ^m)
-        campbell(τ, m)
+        goudriaan(τ)
     end ~ track
 
     directional_fraction(Fdif, Fdir) => (Fdir / (Fdir + Fdif)) ~ track
