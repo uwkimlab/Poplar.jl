@@ -69,7 +69,7 @@ end
 
     Kb(Kb_at, current_zenith_angle): projection_ratio => begin
         Kb_at(current_zenith_angle)
-    end ~ track
+    end ~ track(min=0,max=1)
 
     "diffused light ratio to ambient, integrated over all incident angles from 0 to 90"
     Kd_F(leaf_angle_coeff, LAI; a): diffused_fraction_for_Kd => begin

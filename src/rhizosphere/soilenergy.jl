@@ -1,9 +1,9 @@
+using Cropbox.Unitful:ustrip
 """
 `SoilEnergy` keeps track of soil energy balance.
 potential soil surface evaporation is determined from a modified Priestly-Taylor model
 (Yan & Shugart, 2010) - doi:10.1029/2009JD013598
 """
-
 @system SoilEnergy begin
 
     #=========
@@ -15,6 +15,7 @@ potential soil surface evaporation is determined from a modified Priestly-Taylor
 
     pt: priestly_taylor_parameter => 1.35 ~ preserve(parameter) # (Yan and Shugart, 2010)
 
+	
     ghr: ground_heat_ratio => 0 ~ preserve(parameter) # ASSUMPTION: ground heat flux is negligible
 
     H2O_weight => 18.01528 ~ preserve(u"g/mol")
@@ -28,7 +29,7 @@ potential soil surface evaporation is determined from a modified Priestly-Taylor
     end ~ track(u"W/m^2")
 
     G(R_soil,ghr): ground_heat_flux => begin
-        ghr * R_soil
+        ghr *R_soil
     end ~ track(u"W/m^2")
 
     psychrometric_constant(Cp,P_air,λ) => begin
@@ -39,6 +40,7 @@ potential soil surface evaporation is determined from a modified Priestly-Taylor
         pt * RH * d / (d + g) * (R_soil - G)
     end ~ track(u"W/m^2")
 
+
     E0_soil(λE_soil,λ): potential_soil_evaporation_mmol_per_m2_s => begin
         λE_soil / λ
     end ~ track(u"mmol/m^2/s")
@@ -48,5 +50,7 @@ potential soil surface evaporation is determined from a modified Priestly-Taylor
     potential_surface_evaporation(E0_soil, w=H2O_weight, d=H2O_density) => begin
         E0_soil * w / d
     end ~ track(u"mm/hr")
+
+
 
 end
